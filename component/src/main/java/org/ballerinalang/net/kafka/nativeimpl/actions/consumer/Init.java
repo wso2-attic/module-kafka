@@ -59,3 +59,4 @@ public class Init extends AbstractNativeAction {
         return false;
     }
 }
+

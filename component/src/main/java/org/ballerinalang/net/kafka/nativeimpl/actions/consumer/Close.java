@@ -28,6 +28,9 @@ import org.ballerinalang.net.kafka.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@code }
+ */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "close",
         connectorName = Constants.CONSUMER_CONNECTOR_NAME,
@@ -54,3 +57,4 @@ public class Close extends AbstractNativeAction {
     }
 
 }
+

@@ -60,3 +60,4 @@ public class GetCommittedOffset extends AbstractNativeAction {
     }
 
 }
+

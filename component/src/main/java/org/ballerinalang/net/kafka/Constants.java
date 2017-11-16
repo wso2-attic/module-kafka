@@ -18,12 +18,6 @@
 
 package org.ballerinalang.net.kafka;
 
-import org.wso2.carbon.transport.jms.utils.JMSConstants;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Constants for kafka.
  *
@@ -38,3 +32,4 @@ public class Constants {
     public static final String CONSUMER_CONNECTOR_NAME = "KafkaConsumerConnector";
 
 }
+

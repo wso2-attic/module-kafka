@@ -28,6 +28,9 @@ import org.ballerinalang.net.kafka.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@code }
+ */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "getTopicPartitions",
         connectorName = Constants.PRODUCER_CONNECTOR_NAME,

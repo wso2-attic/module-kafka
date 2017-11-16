@@ -60,3 +60,4 @@ public class CommitOffset extends AbstractNativeAction {
     }
 
 }
+
