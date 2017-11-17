@@ -16,10 +16,17 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.actions.consumer;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.bre.Context;
+import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStringArray;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
@@ -27,6 +34,8 @@ import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 
 
 /**
@@ -51,7 +60,25 @@ public class Subscribe extends AbstractNativeAction {
         //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
         //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
         //  String destination = getStringArgument(context, 0);
+        BConnector consumerConnector = (BConnector) getRefArgument(context, 0);
+        BStringArray topicArray = (BStringArray) getRefArgument(context, 1);
+        ArrayList<String> topics = new ArrayList<String>();
+        for (int counter = 0; counter < topicArray.size(); counter++) {
+            topics.add(topicArray.get(counter));
+        }
 
+        BMap consumerMap = (BMap) consumerConnector.getRefField(1);
+        BStruct consumerStruct = (BStruct) consumerMap.get(new BString(Constants.NATIVE_CONSUMER));
+
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
+                .getNativeData(Constants.NATIVE_CONSUMER);
+
+        try {
+            kafkaConsumer.subscribe(topics);
+        } catch (Exception e) {
+            context.getControlStackNew().getCurrentFrame().returnValues[0] =
+                    BLangVMErrors.createError(context, 0, e.getMessage());
+        }
 
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();

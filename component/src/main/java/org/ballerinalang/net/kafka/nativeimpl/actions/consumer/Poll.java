@@ -25,8 +25,10 @@ import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
@@ -63,7 +65,10 @@ public class Poll extends AbstractNativeAction {
     public ConnectorFuture execute(Context context) {
 
         BConnector consumerConnector = (BConnector) getRefArgument(context, 0);
-        BStruct consumerStruct = ((BStruct) consumerConnector.getRefField(1));
+        //BStruct consumerStruct = ((BStruct) consumerConnector.getRefField(1));
+        BMap consumerMap = (BMap) consumerConnector.getRefField(1);
+        BStruct consumerStruct = (BStruct) consumerMap.get(new BString(Constants.NATIVE_CONSUMER));
+
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(Constants.NATIVE_CONSUMER);
         long timeout = getIntArgument(context, 0);

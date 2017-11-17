@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * {@code }
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
-        actionName = "poll",
+        actionName = "commit",
         connectorName = Constants.CONSUMER_CONNECTOR_NAME,
         args = {
                 @Argument(name = "c",

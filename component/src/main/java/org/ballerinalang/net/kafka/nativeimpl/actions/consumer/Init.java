@@ -22,6 +22,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
+import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
@@ -31,6 +32,8 @@ import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.codegen.PackageInfo;
+import org.ballerinalang.util.codegen.StructInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +66,20 @@ public class Init extends AbstractNativeAction {
         for (String key : consumerBalConfig.keySet()) {
             consumerProperties.put(key, consumerBalConfig.get(key).stringValue());
         }
-        KafkaConsumer kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
-        BStruct consumerStruct = ((BStruct) consumerConnector.getRefField(1));
+
+        // TODO: Move setting default properties
+        consumerProperties.put("key.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        consumerProperties.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
+//        BStruct consumerStruct = ((BStruct) consumerConnector.getRefField(1));
+//        consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
+
+        BMap consumerMap = (BMap) consumerConnector.getRefField(1);
+        BStruct consumerStruct =  createConsumerStruct(context);
         consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
+        consumerMap.put(new BString(Constants.NATIVE_CONSUMER), consumerStruct);
+
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;
@@ -75,5 +89,15 @@ public class Init extends AbstractNativeAction {
     public boolean isNonBlockingAction() {
         return false;
     }
+
+    private BStruct createConsumerStruct(Context context) {
+        PackageInfo kafkaPackageInfo = context.getProgramFile()
+                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
+        StructInfo consumerRecordStructInfo = kafkaPackageInfo.getStructInfo(Constants.CONSUMER_STRUCT_NAME);
+        BStructType structType = consumerRecordStructInfo.getType();
+        BStruct bStruct = new BStruct(structType);
+        return bStruct;
+    }
+
 }
 

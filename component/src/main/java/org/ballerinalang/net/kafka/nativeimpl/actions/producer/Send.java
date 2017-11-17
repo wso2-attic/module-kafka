@@ -24,6 +24,8 @@ import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
@@ -54,8 +56,11 @@ public class Send extends AbstractNativeAction {
     public ConnectorFuture execute(Context context) {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
-        BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
-        KafkaProducer kafkaProducer = (KafkaProducer) consumerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+        //BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
+        BMap producerMap = (BMap) producerConnector.getRefField(1);
+        BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
+
+        KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
         BStruct producerRecord = ((BStruct) getRefArgument(context, 1));
 
 
@@ -73,7 +78,7 @@ public class Send extends AbstractNativeAction {
         String topic = producerRecord.getStringField(0);
 
 
-        ProducerRecord kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, key, value);
+        ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, key, value);
 
         try {
             kafkaProducer.send(kafkaRecord).get();

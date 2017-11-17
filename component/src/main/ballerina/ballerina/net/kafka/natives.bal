@@ -33,7 +33,7 @@ public struct PartitionInfo {
 
 public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
-    KafkaProducer producer = {};
+    map producer = {};
 
     native action send (ProducerRecord record) (error);
 
@@ -61,7 +61,7 @@ public struct ConsumerRecord {
 
 public connector KafkaConsumerConnector (KafkaConsumerConf conf) {
 
-    KafkaConsumer consumer = {};
+    map consumer = {};
 
     native action subscribe(string[] topics) (error);
 
@@ -71,7 +71,7 @@ public connector KafkaConsumerConnector (KafkaConsumerConf conf) {
 
     native action getCommittedOffset(TopicPartition partition) (int, error);
 
-    native action poll(int timeout) (ConsumerRecord[], error);
+    native action poll(int timeoutValue) (ConsumerRecord[], error);
 
     native action commit() (error);
 
@@ -79,10 +79,14 @@ public connector KafkaConsumerConnector (KafkaConsumerConf conf) {
 
     native action seek(TopicPartition partition, int offset) (error);
 
-    native action getTopicPartitions (PartitionInfo[], error);
+    native action getTopicPartitions () (PartitionInfo[], error);
 
     native action unsubscribe() (error);
 
     native action close() (error);
 
 }
+
+public native function serialize (string s) (blob);
+
+public native function deserialize (blob b) (string);

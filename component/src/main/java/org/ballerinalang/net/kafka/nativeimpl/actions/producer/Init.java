@@ -22,6 +22,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
+import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
@@ -31,6 +32,8 @@ import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.codegen.PackageInfo;
+import org.ballerinalang.util.codegen.StructInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +66,20 @@ public class Init extends AbstractNativeAction {
         for (String key : producerBalConfig.keySet()) {
             producerProperties.put(key, producerBalConfig.get(key).stringValue());
         }
-        KafkaProducer kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
-        BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
-        consumerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
+
+        // TODO: Move setting default properties
+        producerProperties.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+        producerProperties.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+
+
+
+        KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
+        //BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
+        //consumerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
+        BMap producerMap = (BMap) producerConnector.getRefField(1);
+        BStruct producerStruct =  createProducerStruct(context);
+        producerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
+        producerMap.put(new BString(Constants.NATIVE_PRODUCER), producerStruct);
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;
@@ -74,6 +88,15 @@ public class Init extends AbstractNativeAction {
     @Override
     public boolean isNonBlockingAction() {
         return false;
+    }
+
+    private BStruct createProducerStruct(Context context) {
+        PackageInfo kafkaPackageInfo = context.getProgramFile()
+                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
+        StructInfo consumerRecordStructInfo = kafkaPackageInfo.getStructInfo(Constants.PRODUCER_STRUCT_NAME);
+        BStructType structType = consumerRecordStructInfo.getType();
+        BStruct bStruct = new BStruct(structType);
+        return bStruct;
     }
 }
 
