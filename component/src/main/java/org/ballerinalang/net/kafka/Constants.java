@@ -30,6 +30,10 @@ public class Constants {
 
     public static final String PRODUCER_CONNECTOR_NAME = "KafkaProducerConnector";
     public static final String CONSUMER_CONNECTOR_NAME = "KafkaConsumerConnector";
+    public static final String NATIVE_CONSUMER = "KafkaConsumer";
+    public static final String NATIVE_PRODUCER = "KafkaProducer";
+    public static final String KAFKA_NATIVE_PACKAGE = "ballerina.net.kafka";
+    public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
 
 }
 

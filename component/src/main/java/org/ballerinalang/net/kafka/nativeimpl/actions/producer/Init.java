@@ -18,16 +18,23 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.net.kafka.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
 
 /**
  * {@code Init}.
@@ -48,7 +55,17 @@ public class Init extends AbstractNativeAction {
     public ConnectorFuture execute(Context context) {
         // Producer initialization
 
+        BConnector producerConnector = (BConnector) getRefArgument(context, 0);
+        BStruct consumerConf = ((BStruct) producerConnector.getRefField(0));
+        BMap<String, BString> producerBalConfig = (BMap<String, BString>) consumerConf.getRefField(0);
 
+        Properties producerProperties = new Properties();
+        for (String key : producerBalConfig.keySet()) {
+            producerProperties.put(key, producerBalConfig.get(key).stringValue());
+        }
+        KafkaProducer kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
+        BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
+        consumerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;

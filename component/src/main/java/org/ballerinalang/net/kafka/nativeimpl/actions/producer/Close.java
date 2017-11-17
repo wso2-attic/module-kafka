@@ -16,10 +16,14 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.ballerinalang.bre.Context;
+import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
@@ -38,18 +42,23 @@ import org.slf4j.LoggerFactory;
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR)
         },
-        returnType = { @ReturnType(type = TypeKind.STRUCT)})
+        returnType = {@ReturnType(type = TypeKind.STRUCT)})
 public class Close extends AbstractNativeAction {
     private static final Logger log = LoggerFactory.getLogger(Close.class);
 
     @Override
     public ConnectorFuture execute(Context context) {
 
-        //  Extract argument values
-        //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
-        //  String destination = getStringArgument(context, 0);
+        BConnector producerConnector = (BConnector) getRefArgument(context, 0);
+        BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
+        KafkaProducer kafkaProducer = (KafkaProducer) consumerStruct.getNativeData(Constants.NATIVE_PRODUCER);
 
+        try {
+            kafkaProducer.close();
+        } catch (Exception e) {
+            context.getControlStackNew().getCurrentFrame().returnValues[0] =
+                    BLangVMErrors.createError(context, 0, e.getMessage());
+        }
 
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();

@@ -16,10 +16,15 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.ballerinalang.bre.Context;
+import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
@@ -33,26 +38,49 @@ import org.slf4j.LoggerFactory;
  * {@code }
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
-                 actionName = "send",
-                 connectorName = Constants.PRODUCER_CONNECTOR_NAME,
-                 args = {
-                         @Argument(name = "c",
-                                   type = TypeKind.CONNECTOR),
-                         @Argument(name = "record", type = TypeKind.STRUCT, structType = "ProducerRecord",
-                         structPackage = "ballerina.net.kafka")
-                 },
-                 returnType = { @ReturnType(type = TypeKind.STRUCT)})
+        actionName = "send",
+        connectorName = Constants.PRODUCER_CONNECTOR_NAME,
+        args = {
+                @Argument(name = "c",
+                        type = TypeKind.CONNECTOR),
+                @Argument(name = "record", type = TypeKind.STRUCT, structType = "ProducerRecord",
+                        structPackage = "ballerina.net.kafka")
+        },
+        returnType = {@ReturnType(type = TypeKind.STRUCT)})
 public class Send extends AbstractNativeAction {
     private static final Logger log = LoggerFactory.getLogger(Send.class);
 
     @Override
     public ConnectorFuture execute(Context context) {
 
-        //  Extract argument values
-        //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
-        //  String destination = getStringArgument(context, 0);
+        BConnector producerConnector = (BConnector) getRefArgument(context, 0);
+        BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
+        KafkaProducer kafkaProducer = (KafkaProducer) consumerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+        BStruct producerRecord = ((BStruct) getRefArgument(context, 1));
 
+
+//        public struct ProducerRecord {
+//            blob key;
+//            blob value;
+//            string topic;
+//            int  partition;
+//            int timestamp;
+//        }
+
+        //TODO: validate params
+        byte[] key = producerRecord.getBlobField(0);
+        byte[] value = producerRecord.getBlobField(1);
+        String topic = producerRecord.getStringField(0);
+
+
+        ProducerRecord kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, key, value);
+
+        try {
+            kafkaProducer.send(kafkaRecord).get();
+        } catch (Exception e) {
+            context.getControlStackNew().getCurrentFrame().returnValues[0] =
+                    BLangVMErrors.createError(context, 0, e.getMessage());
+        }
 
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
