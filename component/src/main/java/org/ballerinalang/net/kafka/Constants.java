@@ -71,7 +71,6 @@ public class Constants {
         mappingParameters.put(ALIAS_BOOTSTRAP_SERVERS, PARAM_BOOTSTRAP_SERVERS);
         mappingParameters.put(ALIAS_GROUP_ID, PARAM_GROUP_ID);
         mappingParameters.put(ALIAS_ENABLE_AUTO_COMMIT, PARAM_ENABLE_AUTO_COMMIT);
-
     }
 
     public static final Map<String, String> MAPPING_PARAMETERS = Collections.unmodifiableMap(mappingParameters);

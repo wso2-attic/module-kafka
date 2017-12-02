@@ -52,7 +52,9 @@ public class KafkaServerConnectorImpl implements org.ballerinalang.net.kafka.api
                                     KafkaListener kafkaListener) throws KafkaConnectorException {
         this.kafkaListener = kafkaListener;
         this.serviceId = serviceId;
-        this.numOfConcurrentConsumers = (int) configParams.get(Constants.ALIAS_CONCURRENT_CONSUMERS);
+        if (configParams.get(Constants.ALIAS_CONCURRENT_CONSUMERS) != null) {
+            this.numOfConcurrentConsumers = (Integer) configParams.get(Constants.ALIAS_CONCURRENT_CONSUMERS);
+        }
         this.configParams = configParams;
     }
 

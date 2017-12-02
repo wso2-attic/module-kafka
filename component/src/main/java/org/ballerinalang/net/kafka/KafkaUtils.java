@@ -102,7 +102,6 @@ public class KafkaUtils {
         addIntParamIfPresent(Constants.ALIAS_CONCURRENT_CONSUMERS, kafkaConfig, configParams);
         addIntParamIfPresent(Constants.ALIAS_POLLING_TIMEOUT, kafkaConfig, configParams);
 
-        addBooleanParamIfPresent(Constants.ALIAS_POLLING_TIMEOUT, kafkaConfig, configParams);
         addBooleanParamIfPresent(Constants.ALIAS_DECOUPLE_PROCESSING, kafkaConfig, configParams);
 
         processPropertiesArray(kafkaConfig, configParams);
@@ -172,7 +171,7 @@ public class KafkaUtils {
     private static void addIntParamIfPresent(String paramName, Annotation jmsConfig, Properties configParams) {
         AnnAttrValue value = jmsConfig.getAnnAttrValue(paramName);
         if (value != null) {
-            configParams.put(paramName, value.getIntValue());
+            configParams.put(paramName, ((Long) value.getIntValue()).intValue());
         }
     }
 

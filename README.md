@@ -42,7 +42,60 @@ function getConnectorConfig () (kafka:KafkaConsumerConf) {
     return conf;
 }
 ````
-    
+Message consuming is coupled with message processing. ( Ordering semantics are preserved - single thread is used to
+deliver messages from each polling cycle. Once processing of records from a single polling cycle is done from
+a resource dispatch next polling cycle records will be dispatched. This is similar to single thread semantics
+of Kafka )
+
+```ballerina
+import ballerina.net.kafka;
+
+@kafka:configuration {
+    bootstrapServers: "localhost:9092, localhost:9093",
+    groupId: "abc",
+    topics: ["test"],
+    pollingTimeout: 1000,
+    decoupleProcessing: false
+}
+service<kafka> kafkaService {
+    resource onMessage (kafka:ConsumerRecord[] records, kafka:KafkaConsumer consumer) {
+       int counter = 0;
+       while (counter < lengthof records ) {
+             blob byteMsg = records[counter].value;
+             string msg = kafka:deserialize(byteMsg);
+             println("Topic: " + records[counter].topic + " Received Message: " + msg);
+             counter = counter + 1;
+       }
+    }
+}
+````
+
+Message consuming is DE-coupled with message processing. ( Ordering semantics are NOT preserved - order
+which the messages are processed are not guaranteed since those are handled in separate threads. Offset management
+ is hard since it is hard to achieve synchronization among processing threads.)
+
+```ballerina
+import ballerina.net.kafka;
+
+@kafka:configuration {
+    bootstrapServers: "localhost:9092, localhost:9093",
+    groupId: "abc",
+    topics: ["test"],
+    pollingTimeout: 1000,
+    decoupleProcessing: false
+}
+service<kafka> kafkaService {
+    resource onMessage (kafka:ConsumerRecord[] records, kafka:KafkaConsumer consumer) {
+       int counter = 0;
+       while (counter < lengthof records ) {
+             blob byteMsg = records[counter].value;
+             string msg = kafka:deserialize(byteMsg);
+             println("Topic: " + records[counter].topic + " Received Message: " + msg);
+             counter = counter + 1;
+       }
+    }
+}
+````
  
 Ballerina as a Kafka Producer
 

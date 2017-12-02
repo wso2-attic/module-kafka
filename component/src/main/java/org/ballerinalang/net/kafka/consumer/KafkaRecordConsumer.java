@@ -41,7 +41,7 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
     private static final Logger logger = LoggerFactory.getLogger(KafkaRecordConsumer.class);
 
     private KafkaConsumer<byte[], byte[]> kafkaConsumer;
-    private int polliungTimeout;
+    private int polliungTimeout = 1000;
     private KafkaMessageHandler kafkaMessageHandler;
     private boolean decoupleProcessing = true;
 
@@ -50,10 +50,14 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
     public KafkaRecordConsumer(KafkaListener kafkaListener, String serviceId, Properties configParams) {
         this.kafkaConsumer = new KafkaConsumer<byte[], byte[]>(configParams);
         ArrayList<String> topics = (ArrayList<String>) configParams.get(Constants.ALIAS_TOPICS);
-        this.polliungTimeout = (int) configParams.get(Constants.ALIAS_POLLING_TIMEOUT);
+        if (configParams.get(Constants.ALIAS_POLLING_TIMEOUT) != null) {
+            this.polliungTimeout = (Integer) configParams.get(Constants.ALIAS_POLLING_TIMEOUT);
+        }
         this.kafkaConsumer.subscribe(topics);
         this.kafkaMessageHandler = new KafkaMessageHandler(kafkaListener);
-        this.decoupleProcessing = (boolean) configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING);
+        if (configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING) != null) {
+            this.decoupleProcessing = (Boolean) configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING);
+        }
     }
 
     @Override
