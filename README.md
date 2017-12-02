@@ -133,5 +133,45 @@ function getConnectorConfig () (kafka:KafkaProducerConf) {
 }
 ````
 
+Kafka Producer Transactions
+
+```ballerina
+import ballerina.net.kafka;
+
+function main (string[] args) {
+    string msg1 = "Hello World";
+    blob byteMsg1 = kafka:serialize(msg1);
+    kafka:ProducerRecord record1 = {};
+    record1.value = byteMsg1;
+    record1.topic = "test";
+
+    string msg2 = "Hello World 2";
+    blob byteMsg2 = kafka:serialize(msg2);
+    kafka:ProducerRecord record2 = {};
+    record2.value = byteMsg2;
+    record2.topic = "test";
+
+    kafkaProduce(record1, record2);
+
+}
+
+function kafkaProduce(kafka:ProducerRecord record1, kafka:ProducerRecord record2) {
+    endpoint<kafka:KafkaProducerConnector> kafkaEP {
+        create kafka:KafkaProducerConnector (getConnectorConfig());
+    }
+    transaction {
+       var e1 = kafkaEP.send(record1);
+       var e2 = kafkaEP.send(record2);
+    }
+}
+
+function getConnectorConfig () (kafka:KafkaProducerConf) {
+    kafka:KafkaProducerConf conf = {};
+    map m = {"bootstrap.servers":"localhost:9092, localhost:9093", "transactional.id":"test-transactional-id"};
+    conf.properties = m;
+    return conf;
+}
+````
+
 
 For more Kafka Connector Ballerina configurations please refer to the samples directory.

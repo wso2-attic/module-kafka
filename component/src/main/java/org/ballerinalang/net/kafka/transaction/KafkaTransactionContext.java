@@ -20,6 +20,7 @@ package org.ballerinalang.net.kafka.transaction;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.ballerinalang.bre.BallerinaTransactionContext;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +40,21 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
 
     @Override
     public void commit() {
-        this.kafkaProducer.commitTransaction();
+        try {
+            this.kafkaProducer.commitTransaction();
+        } catch (Exception ex) {
+            throw new BallerinaException("transaction commit failed:" + ex.getMessage());
+
+        }
     }
 
     @Override
     public void rollback() {
-        this.kafkaProducer.abortTransaction();
+        try {
+            this.kafkaProducer.abortTransaction();
+        } catch (Exception ex) {
+            throw new BallerinaException("transaction rollback failed:" + ex.getMessage());
+        }
     }
 
     @Override

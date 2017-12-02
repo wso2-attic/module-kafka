@@ -18,8 +18,9 @@ package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.ballerinalang.bre.BallerinaTransactionContext;
+import org.ballerinalang.bre.BallerinaTransactionManager;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
@@ -32,6 +33,8 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.transaction.KafkaTransactionContext;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,10 @@ public class Send extends AbstractNativeAction {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
         //BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
+
+        BStruct consumerConf = ((BStruct) producerConnector.getRefField(0));
+        BMap<String, BString> producerBalConfig = (BMap<String, BString>) consumerConf.getRefField(0);
+
         BMap producerMap = (BMap) producerConnector.getRefField(1);
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
 
@@ -81,10 +88,23 @@ public class Send extends AbstractNativeAction {
         ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, key, value);
 
         try {
+            if (producerBalConfig.get(Constants.PARAM_TRANSACTION_ID) != null
+                    && context.isInTransaction()) {
+                String transactionID = producerBalConfig.get(Constants.PARAM_TRANSACTION_ID).stringValue();
+                BallerinaTransactionManager ballerinaTxManager = context.getBallerinaTransactionManager();
+                BallerinaTransactionContext regTxContext = ballerinaTxManager.getTransactionContext(transactionID);
+                if (regTxContext == null) {
+                    KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
+                    ballerinaTxManager.registerTransactionContext(transactionID, txContext);
+                    kafkaProducer.initTransactions();
+                    kafkaProducer.beginTransaction();
+                }
+            }
             kafkaProducer.send(kafkaRecord).get();
         } catch (Exception e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+//            context.getControlStackNew().getCurrentFrame().returnValues[0] =
+//                    BLangVMErrors.createError(context, 0, e.getMessage());
+            throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
 
         ClientConnectorFuture future = new ClientConnectorFuture();

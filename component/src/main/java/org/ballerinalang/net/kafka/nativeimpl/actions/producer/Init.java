@@ -19,6 +19,7 @@
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
@@ -70,6 +71,11 @@ public class Init extends AbstractNativeAction {
         // TODO: Move setting default properties
         producerProperties.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
         producerProperties.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+
+        //TODO make configurable
+        //TODO ADD Kafka Exception
+        //TODO change sample
+        producerProperties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 
 
 

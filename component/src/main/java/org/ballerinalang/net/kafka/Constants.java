@@ -58,6 +58,8 @@ public class Constants {
     public static final String PARAM_KEY_DESERIALIZER = "key.deserializer";
     public static final String PARAM_VALUE_DESERIALIZER = "value.deserializer";
 
+    public static final String PARAM_TRANSACTION_ID = "transactional.id";
+
     public static final String DEFAULT_KEY_DESERIALIZER
             = "org.apache.kafka.common.serialization.ByteArrayDeserializer";
     public static final String DEFAULT_VALUE_DESERIALIZER
