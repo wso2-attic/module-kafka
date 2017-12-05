@@ -16,17 +16,26 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.actions.consumer;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.PartitionInfo;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
+import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.*;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.codegen.PackageInfo;
+import org.ballerinalang.util.codegen.StructInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@code }
@@ -47,15 +56,50 @@ public class GetTopicPartitions extends AbstractNativeAction {
     @Override
     public ConnectorFuture execute(Context context) {
 
-        //  Extract argument values
-        //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
-        //  String destination = getStringArgument(context, 0);
+        BConnector consumerConnector = (BConnector) getRefArgument(context, 0);
+        String topic = getStringArgument(context, 0);
 
+        BMap consumerMap = (BMap) consumerConnector.getRefField(1);
+        BStruct consumerStruct = (BStruct) consumerMap.get(new BString(Constants.NATIVE_CONSUMER));
 
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
+                .getNativeData(Constants.NATIVE_CONSUMER);
+        List<PartitionInfo> partitionInfos = kafkaConsumer.partitionsFor(topic);
+        List<BStruct> infoList = new ArrayList<>();
+        if (!partitionInfos.isEmpty()) {
+            partitionInfos.forEach(partitionInfo -> {
+//                public struct PartitionInfo {
+//                    string  topic;
+//                    int partition;
+//                    int leader;
+//                    int  replicas;
+//                    int  isr;
+//                }
+                BStruct infoStruct = createRecordStruct(context);
+                infoStruct.setStringField(0, partitionInfo.topic());
+                infoStruct.setIntField(0, partitionInfo.partition());
+                infoStruct.setIntField(1, partitionInfo.leader().id());
+                infoStruct.setIntField(2, partitionInfo.replicas().length);
+                infoStruct.setIntField(3, partitionInfo.inSyncReplicas().length);
+                infoList.add(infoStruct);
+            });
+            context.getControlStackNew().getCurrentFrame().returnValues[0] =
+                    new BRefValueArray(infoList.toArray(new BRefType[0]), createRecordStruct(context).getType());
+
+        }
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;
+    }
+
+    private BStruct createRecordStruct(Context context) {
+        PackageInfo kafkaPackageInfo = context.getProgramFile()
+                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
+        StructInfo consumerRecordStructInfo = kafkaPackageInfo
+                .getStructInfo(Constants.CONSUMER_PARTITION_INFO_STRUCT_NAME);
+        BStructType structType = consumerRecordStructInfo.getType();
+        BStruct bStruct = new BStruct(structType);
+        return bStruct;
     }
 
 }

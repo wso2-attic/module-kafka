@@ -41,7 +41,7 @@ public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
     native action close () (error);
 
-    native action getTopicPartitions () (PartitionInfo[], error);
+    native action getTopicPartitions (string topic) (PartitionInfo[], error);
 
 }
 
@@ -79,7 +79,7 @@ public connector KafkaConsumerConnector (KafkaConsumerConf conf) {
 
     native action seek(TopicPartition partition, int offset) (error);
 
-    native action getTopicPartitions () (PartitionInfo[], error);
+    native action getTopicPartitions (string topic) (PartitionInfo[], error);
 
     native action unsubscribe() (error);
 
