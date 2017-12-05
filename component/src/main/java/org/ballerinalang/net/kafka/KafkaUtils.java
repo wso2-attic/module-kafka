@@ -18,16 +18,22 @@
 
 package org.ballerinalang.net.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.ballerinalang.connector.api.AnnAttrValue;
 import org.ballerinalang.connector.api.Annotation;
 import org.ballerinalang.connector.api.ConnectorUtils;
 import org.ballerinalang.connector.api.ParamDetail;
 import org.ballerinalang.connector.api.Resource;
+import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
@@ -91,10 +97,11 @@ public class KafkaUtils {
         return bValues;
     }
 
-    public static Properties processKafkaConfig(Annotation kafkaConfig) {
+    public static Properties processKafkaConsumerConfig(Annotation kafkaConfig) {
 
         Properties configParams = new Properties();
 
+        //TODO add all the consumer config params
         addStringParamIfPresent(Constants.ALIAS_BOOTSTRAP_SERVERS, kafkaConfig, configParams);
         addStringParamIfPresent(Constants.ALIAS_GROUP_ID, kafkaConfig, configParams);
         addStringArrayParamIfPresent(Constants.ALIAS_TOPICS, kafkaConfig, configParams);
@@ -106,13 +113,31 @@ public class KafkaUtils {
 
         processPropertiesArray(kafkaConfig, configParams);
         updateMappedParameters(configParams);
-        processDefaultProperties(configParams);
+        processDefaultConsumerProperties(configParams);
         return configParams;
     }
 
-    private static void processDefaultProperties(Properties configParams) {
-        configParams.put(Constants.PARAM_KEY_DESERIALIZER, Constants.DEFAULT_KEY_DESERIALIZER);
-        configParams.put(Constants.PARAM_VALUE_DESERIALIZER, Constants.DEFAULT_VALUE_DESERIALIZER);
+    public static Properties processKafkaProducerConfig(BMap bMap) {
+
+        Properties configParams = new Properties();
+         //TODO add all the producer config params
+        addStringParamIfPresent(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.TRANSACTIONAL_ID_CONFIG, bMap, configParams);
+
+        addBooleanParamIfPresent(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, bMap, configParams);
+
+        processDefaultProducerProperties(configParams);
+        return configParams;
+    }
+
+    public static void processDefaultConsumerProperties(Properties configParams) {
+        configParams.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, Constants.DEFAULT_KEY_DESERIALIZER);
+        configParams.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, Constants.DEFAULT_VALUE_DESERIALIZER);
+    }
+
+    public static void processDefaultProducerProperties(Properties configParams) {
+        configParams.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, Constants.DEFAULT_KEY_SERIALIZER);
+        configParams.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, Constants.DEFAULT_VALUE_SERIALIZER);
     }
 
     private static void processPropertiesArray(Annotation jmsConfig, Properties configParams) {
@@ -179,6 +204,27 @@ public class KafkaUtils {
         AnnAttrValue value = jmsConfig.getAnnAttrValue(paramName);
         if (value != null) {
             configParams.put(paramName, value.getBooleanValue());
+        }
+    }
+
+    private static void addStringParamIfPresent(String paramName, BMap bMap, Properties configParams) {
+        BValue value = bMap.get(paramName);
+        if (value != null && value instanceof BString) {
+            configParams.put(paramName, ((BString) value).value());
+        }
+    }
+
+    private static void addIntParamIfPresent(String paramName, BMap bMap, Properties configParams) {
+        BValue value = bMap.get(paramName);
+        if (value != null && value instanceof BInteger) {
+            configParams.put(paramName, ((BInteger) value).value().intValue());
+        }
+    }
+
+    private static void addBooleanParamIfPresent(String paramName, BMap bMap, Properties configParams) {
+        BValue value = bMap.get(paramName);
+        if (value != null && value instanceof BBoolean) {
+            configParams.put(paramName, ((BBoolean) value).value().booleanValue());
         }
     }
 
