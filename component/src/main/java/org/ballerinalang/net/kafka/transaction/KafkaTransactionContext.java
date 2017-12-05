@@ -19,6 +19,7 @@
 package org.ballerinalang.net.kafka.transaction;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.BallerinaTransactionContext;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
     public void commit() {
         try {
             this.kafkaProducer.commitTransaction();
-        } catch (Exception ex) {
+        } catch (KafkaException ex) {
             throw new BallerinaException("transaction commit failed:" + ex.getMessage());
 
         }
@@ -52,7 +53,7 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
     public void rollback() {
         try {
             this.kafkaProducer.abortTransaction();
-        } catch (Exception ex) {
+        } catch (KafkaException ex) {
             throw new BallerinaException("transaction rollback failed:" + ex.getMessage());
         }
     }
