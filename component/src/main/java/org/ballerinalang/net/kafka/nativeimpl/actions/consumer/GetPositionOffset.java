@@ -52,6 +52,7 @@ public class GetPositionOffset extends AbstractNativeAction {
         //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
         //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
         //  String destination = getStringArgument(context, 0);
+        
 
 
         ClientConnectorFuture future = new ClientConnectorFuture();

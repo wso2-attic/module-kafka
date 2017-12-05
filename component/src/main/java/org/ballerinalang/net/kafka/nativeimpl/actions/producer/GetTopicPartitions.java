@@ -16,10 +16,15 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
@@ -47,10 +52,16 @@ public class GetTopicPartitions extends AbstractNativeAction {
     @Override
     public ConnectorFuture execute(Context context) {
 
-        //  Extract argument values
-        //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
-        //  String destination = getStringArgument(context, 0);
+        BConnector producerConnector = (BConnector) getRefArgument(context, 0);
+
+        BMap producerMap = (BMap) producerConnector.getRefField(1);
+        BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
+
+        KafkaProducer<byte[], byte[]> kafkaProducer =
+                (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+
+
+
 
 
         ClientConnectorFuture future = new ClientConnectorFuture();

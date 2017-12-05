@@ -61,15 +61,15 @@ public class KafkaBalServerConnector implements BallerinaServerConnector {
             throw new BallerinaException("Error kafka 'configuration' annotation missing in " + service.getName());
         }
 
-        Properties configParams = KafkaUtils.processKafkaConfig(kafkaConfig);
+        Properties configParams = KafkaUtils.processKafkaConsumerConfig(kafkaConfig);
 
         String serviceId = service.getName();
 
-
         try {
             //TODO : validate resources
-            KafkaListener jmsListener = new KafkaListenerImpl(service.getResources()[0]);
-            KafkaServerConnector serverConnector = new KafkaServerConnectorImpl(serviceId, configParams, jmsListener);
+            KafkaListener kafkaListener = new KafkaListenerImpl(service.getResources()[0]);
+            KafkaServerConnector serverConnector = new KafkaServerConnectorImpl(serviceId,
+                    configParams, kafkaListener);
 
             connectorMap.put(serviceId, serverConnector);
             serverConnector.start();

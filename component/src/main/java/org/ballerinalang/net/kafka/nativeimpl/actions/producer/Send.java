@@ -59,10 +59,9 @@ public class Send extends AbstractNativeAction {
     public ConnectorFuture execute(Context context) {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
-        //BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
 
-        BStruct consumerConf = ((BStruct) producerConnector.getRefField(0));
-        BMap<String, BString> producerBalConfig = (BMap<String, BString>) consumerConf.getRefField(0);
+        BStruct producerConf = ((BStruct) producerConnector.getRefField(0));
+        BMap<String, BString> producerBalConfig = (BMap<String, BString>) producerConf.getRefField(0);
 
         BMap producerMap = (BMap) producerConnector.getRefField(1);
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
