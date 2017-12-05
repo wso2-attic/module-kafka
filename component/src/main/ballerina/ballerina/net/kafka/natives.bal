@@ -35,13 +35,15 @@ public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
     map producer = {};
 
-    native action send (ProducerRecord record) (error);
+    native action send (ProducerRecord record) ();
 
     native action flush () (error);
 
     native action close () (error);
 
     native action getTopicPartitions (string topic) (PartitionInfo[], error);
+
+    native action sendOffsetsTransaction(Offset[] offsets, string groupID) ();
 
 }
 
@@ -59,6 +61,11 @@ public struct ConsumerRecord {
    string topic;
 }
 
+public struct Offset {
+  TopicPartition partition;
+  int offset;
+}
+
 public connector KafkaConsumerConnector (KafkaConsumerConf conf) {
 
     map consumer = {};
@@ -73,11 +80,11 @@ public connector KafkaConsumerConnector (KafkaConsumerConf conf) {
 
     native action poll(int timeoutValue) (ConsumerRecord[], error);
 
-    native action commit() (error);
+    native action commit() ();
 
-    native action commitOffset(TopicPartition partition, int offset) (error);
+    native action commitOffset(Offset[] offsets) ();
 
-    native action seek(TopicPartition partition, int offset) (error);
+    native action seek(Offset offset) (error);
 
     native action getTopicPartitions (string topic) (PartitionInfo[], error);
 
