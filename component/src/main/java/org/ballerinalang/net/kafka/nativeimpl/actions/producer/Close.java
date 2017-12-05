@@ -23,6 +23,8 @@ import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
@@ -50,8 +52,12 @@ public class Close extends AbstractNativeAction {
     public ConnectorFuture execute(Context context) {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
-        BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
-        KafkaProducer kafkaProducer = (KafkaProducer) consumerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+
+        BMap producerMap = (BMap) producerConnector.getRefField(1);
+        BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
+
+        KafkaProducer<byte[], byte[]> kafkaProducer =
+                (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
 
         try {
             kafkaProducer.close();
