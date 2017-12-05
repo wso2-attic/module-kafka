@@ -18,6 +18,8 @@
 
 package org.ballerinalang.net.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,28 +53,24 @@ public class Constants {
     public static final String ALIAS_ENABLE_AUTO_COMMIT = "autoCommit";
     public static final String ALIAS_DECOUPLE_PROCESSING = "decoupleProcessing";
 
-    public static final String PARAM_BOOTSTRAP_SERVERS = "bootstrap.servers";
-    public static final String PARAM_GROUP_ID = "group.id";
-    public static final String PARAM_ENABLE_AUTO_COMMIT = "enable.auto.commit";
-
-    public static final String PARAM_KEY_DESERIALIZER = "key.deserializer";
-    public static final String PARAM_VALUE_DESERIALIZER = "value.deserializer";
-
-    public static final String PARAM_TRANSACTION_ID = "transactional.id";
-
     public static final String DEFAULT_KEY_DESERIALIZER
             = "org.apache.kafka.common.serialization.ByteArrayDeserializer";
     public static final String DEFAULT_VALUE_DESERIALIZER
             = "org.apache.kafka.common.serialization.ByteArrayDeserializer";
+    public static final String PARAM_TRANSACTION_ID = "transactional.id";
 
+    public static final String DEFAULT_KEY_SERIALIZER
+            = "org.apache.kafka.common.serialization.ByteArraySerializer";
+    public static final String DEFAULT_VALUE_SERIALIZER
+            = "org.apache.kafka.common.serialization.ByteArraySerializer";
 
     private static Map<String, String> mappingParameters;
 
     static {
         mappingParameters = new HashMap<>();
-        mappingParameters.put(ALIAS_BOOTSTRAP_SERVERS, PARAM_BOOTSTRAP_SERVERS);
-        mappingParameters.put(ALIAS_GROUP_ID, PARAM_GROUP_ID);
-        mappingParameters.put(ALIAS_ENABLE_AUTO_COMMIT, PARAM_ENABLE_AUTO_COMMIT);
+        mappingParameters.put(ALIAS_BOOTSTRAP_SERVERS, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG);
+        mappingParameters.put(ALIAS_GROUP_ID, ConsumerConfig.GROUP_ID_CONFIG);
+        mappingParameters.put(ALIAS_ENABLE_AUTO_COMMIT, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG);
     }
 
     public static final Map<String, String> MAPPING_PARAMETERS = Collections.unmodifiableMap(mappingParameters);
