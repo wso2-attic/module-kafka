@@ -37,9 +37,8 @@ import org.slf4j.LoggerFactory;
         args = {
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR),
-                @Argument(name = "partition", type = TypeKind.STRUCT, structType = "TopicPartition",
-                        structPackage = "ballerina.net.kafka"),
-                @Argument(name = "offset", type = TypeKind.INT)
+                @Argument(name = "partition", type = TypeKind.STRUCT, structType = "Offset",
+                        structPackage = "ballerina.net.kafka")
         },
         returnType = { @ReturnType(type = TypeKind.STRUCT)})
 public class CommitOffset extends AbstractNativeAction {
