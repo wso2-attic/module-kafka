@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.ballerinalang.net.kafka.nativeimpl.actions.consumer;
+package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
-import org.ballerinalang.connector.api.AbstractNativeAction;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
@@ -30,10 +29,12 @@ import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
-import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
+import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.ReturnType;
+import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
@@ -47,22 +48,25 @@ import java.util.List;
 /**
  * {@code }
  */
-@BallerinaAction(packageName = "ballerina.net.kafka",
-        actionName = "poll",
-        connectorName = Constants.CONSUMER_CONNECTOR_NAME,
+@BallerinaFunction(packageName = "ballerina.net.kafka",
+        functionName = "poll",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.CONNECTOR),
+                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        structPackage = "ballerina.net.kafka"),
                 @Argument(name = "timeout", type = TypeKind.INT)
         },
         returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
                 structPackage = "ballerina.net.kafka", structType = "ConsumerRecord"),
-                @ReturnType(type = TypeKind.STRUCT)})
-public class Poll extends AbstractNativeAction {
+                @ReturnType(type = TypeKind.STRUCT)},
+        isPublic = true)
+public class Poll extends AbstractNativeFunction {
     private static final Logger log = LoggerFactory.getLogger(Poll.class);
 
     @Override
-    public ConnectorFuture execute(Context context) {
+    public BValue[] execute(Context context) {
 
         BConnector consumerConnector = (BConnector) getRefArgument(context, 0);
         //BStruct consumerStruct = ((BStruct) consumerConnector.getRefField(1));
@@ -96,18 +100,12 @@ public class Poll extends AbstractNativeAction {
                     recordStruct.setStringField(0, record.topic());
                     recordsList.add(recordStruct);
                 });
-                context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                        new BRefValueArray(recordsList.toArray(new BRefType[0]), createRecordStruct(context).getType());
-
             }
-        } catch (Exception e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[1] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+            return getBValues(new BRefValueArray(recordsList.toArray(new BRefType[0]),
+                    createRecordStruct(context).getType()));
+        } catch (KafkaException e) {
+            return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-
-        ClientConnectorFuture future = new ClientConnectorFuture();
-        future.notifySuccess();
-        return future;
     }
 
     private BStruct createRecordStruct(Context context) {

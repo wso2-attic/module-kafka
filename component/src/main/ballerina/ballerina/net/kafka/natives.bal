@@ -4,13 +4,10 @@ public struct KafkaProducer {
 }
 
 public struct KafkaConsumer {
+   map properties;
 }
 
 public struct KafkaProducerConf {
-    map properties;
-}
-
-public struct KafkaConsumerConf {
     map properties;
 }
 
@@ -29,7 +26,6 @@ public struct PartitionInfo {
    int  replicas;
    int  isr;
 }
-
 
 public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
@@ -66,34 +62,31 @@ public struct Offset {
   int offset;
 }
 
-public connector KafkaConsumerConnector (KafkaConsumerConf conf) {
+public native function <KafkaConsumer consumer> connect();
 
-    map consumer = {};
+public native function <KafkaConsumer consumer> subscribe(string[] topics) (error);
 
-    native action subscribe(string[] topics) (error);
+public native function <KafkaConsumer consumer> assign(TopicPartition[] partitions) (error);
 
-    native action assign(TopicPartition[] partitions) (error);
+public native function <KafkaConsumer consumer> getPositionOffset(TopicPartition partition) (int, error);
 
-    native action getPositionOffset(TopicPartition partition) (int, error);
+public native function <KafkaConsumer consumer> getCommittedOffset(TopicPartition partition) (int, error);
 
-    native action getCommittedOffset(TopicPartition partition) (int, error);
+public native function <KafkaConsumer consumer> poll(int timeoutValue) (ConsumerRecord[], error);
 
-    native action poll(int timeoutValue) (ConsumerRecord[], error);
+public native function <KafkaConsumer consumer> commit();
 
-    native action commit() ();
+public native function <KafkaConsumer consumer> commitOffset(Offset[] offsets);
 
-    native action commitOffset(Offset[] offsets) ();
+public native function <KafkaConsumer consumer> seek(Offset offset) (error);
 
-    native action seek(Offset offset) (error);
+public native function <KafkaConsumer consumer> getTopicPartitions (string topic) (PartitionInfo[], error);
 
-    native action getTopicPartitions (string topic) (PartitionInfo[], error);
+public native function <KafkaConsumer consumer> unsubscribe() (error);
 
-    native action unsubscribe() (error);
-
-    native action close() (error);
-
-}
+public native function <KafkaConsumer consumer> close() (error);
 
 public native function serialize (string s) (blob);
 
 public native function deserialize (blob b) (string);
+

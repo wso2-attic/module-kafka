@@ -110,9 +110,22 @@ public class KafkaUtils {
         addIntParamIfPresent(Constants.ALIAS_POLLING_TIMEOUT, kafkaConfig, configParams);
 
         addBooleanParamIfPresent(Constants.ALIAS_DECOUPLE_PROCESSING, kafkaConfig, configParams);
+        addBooleanParamIfPresent(Constants.ALIAS_ENABLE_AUTO_COMMIT, kafkaConfig, configParams);
 
         processPropertiesArray(kafkaConfig, configParams);
         updateMappedParameters(configParams);
+        processDefaultConsumerProperties(configParams);
+        return configParams;
+    }
+
+    public static Properties processKafkaConsumerConfig(BMap bMap) {
+
+        Properties configParams = new Properties();
+        //TODO add all the consumer config params
+        addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.GROUP_ID_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, bMap, configParams);
+
         processDefaultConsumerProperties(configParams);
         return configParams;
     }

@@ -16,22 +16,24 @@
  * under the License.
  */
 
-package org.ballerinalang.net.kafka.nativeimpl.actions.consumer;
+package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.AbstractNativeAction;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
-import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
+import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
+import org.ballerinalang.natives.annotations.ReturnType;
+import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
 import org.slf4j.Logger;
@@ -40,36 +42,31 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 /**
- * {@code Init}.
- *
- * @since 0.9
+ * {@code }
  */
-@BallerinaAction(packageName = "ballerina.net.kafka",
-        actionName = "<init>",
-        connectorName = Constants.CONSUMER_CONNECTOR_NAME,
+@BallerinaFunction(packageName = "ballerina.net.kafka",
+        functionName = "connect",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.CONNECTOR)
-        })
-public class Init extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(Init.class);
+                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        structPackage = "ballerina.net.kafka")
+        },
+        returnType = {@ReturnType(type = TypeKind.NONE)},
+        isPublic = true)
+public class Connect extends AbstractNativeFunction {
+    private static final Logger log = LoggerFactory.getLogger(Connect.class);
 
     @Override
-    public ConnectorFuture execute(Context context) {
+    public BValue[] execute(Context context) {
         // Consumer initialization
 
         BConnector consumerConnector = (BConnector) getRefArgument(context, 0);
         BStruct consumerConf = ((BStruct) consumerConnector.getRefField(0));
         BMap<String, BString> consumerBalConfig = (BMap<String, BString>) consumerConf.getRefField(0);
 
-        Properties consumerProperties = new Properties();
-        for (String key : consumerBalConfig.keySet()) {
-            consumerProperties.put(key, consumerBalConfig.get(key).stringValue());
-        }
-
-        // TODO: Move setting default properties
-        consumerProperties.put("key.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
-        consumerProperties.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerBalConfig);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
 //        BStruct consumerStruct = ((BStruct) consumerConnector.getRefField(1));
@@ -80,14 +77,7 @@ public class Init extends AbstractNativeAction {
         consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
         consumerMap.put(new BString(Constants.NATIVE_CONSUMER), consumerStruct);
 
-        ClientConnectorFuture future = new ClientConnectorFuture();
-        future.notifySuccess();
-        return future;
-    }
-
-    @Override
-    public boolean isNonBlockingAction() {
-        return false;
+        return VOID_RETURN;
     }
 
     private BStruct createConsumerStruct(Context context) {

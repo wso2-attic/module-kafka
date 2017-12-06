@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package org.ballerinalang.net.kafka.nativeimpl.actions.consumer;
+package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.AbstractNativeAction;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
+import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.natives.annotations.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,20 +31,24 @@ import org.slf4j.LoggerFactory;
 /**
  * {@code }
  */
-@BallerinaAction(packageName = "ballerina.net.kafka",
-        actionName = "assign",
-        connectorName = Constants.CONSUMER_CONNECTOR_NAME,
+@BallerinaFunction(packageName = "ballerina.net.kafka",
+        functionName = "getCommittedOffset",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.CONNECTOR),
-                @Argument(name = "topics", type = TypeKind.ARRAY, elementType = TypeKind.STRING)
+                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        structPackage = "ballerina.net.kafka"),
+                @Argument(name = "partition", type = TypeKind.STRUCT, structType = "TopicPartition",
+                        structPackage = "ballerina.net.kafka")
         },
-        returnType = { @ReturnType(type = TypeKind.STRUCT)})
-public class Assign extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(Assign.class);
+        returnType = {@ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.STRUCT)},
+        isPublic = true)
+public class GetCommittedOffset extends AbstractNativeFunction {
+    private static final Logger log = LoggerFactory.getLogger(GetCommittedOffset.class);
 
     @Override
-    public ConnectorFuture execute(Context context) {
+    public BValue[] execute(Context context) {
 
         //  Extract argument values
         //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
@@ -53,10 +56,9 @@ public class Assign extends AbstractNativeAction {
         //  String destination = getStringArgument(context, 0);
 
 
-        ClientConnectorFuture future = new ClientConnectorFuture();
-        future.notifySuccess();
-        return future;
+        return VOID_RETURN;
     }
 
 }
+
 
