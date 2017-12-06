@@ -17,6 +17,7 @@
 package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.model.types.TypeKind;
@@ -62,7 +63,7 @@ public class Unsubscribe extends AbstractNativeFunction {
 
         try {
             kafkaConsumer.unsubscribe();
-        } catch (Exception e) {
+        } catch (KafkaException e) {
             context.getControlStackNew().getCurrentFrame().returnValues[0] =
                     BLangVMErrors.createError(context, 0, e.getMessage());
         }

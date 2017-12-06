@@ -16,14 +16,19 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.natives.annotations.Receiver;
+import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +44,7 @@ import org.slf4j.LoggerFactory;
                         type = TypeKind.STRUCT, structType = "KafkaConsumer",
                         structPackage = "ballerina.net.kafka")
         },
-        returnType = {@ReturnType(type = TypeKind.STRUCT)},
+        returnType = {@ReturnType(type = TypeKind.NONE)},
         isPublic = true
 )
 public class Commit extends AbstractNativeFunction {
@@ -47,12 +52,18 @@ public class Commit extends AbstractNativeFunction {
 
     @Override
     public BValue[] execute(Context context) {
+        BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
+                .getNativeData(Constants.NATIVE_CONSUMER);
+        if (kafkaConsumer == null) {
+            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
+        }
 
-        //  Extract argument values
-        //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
-        //  String destination = getStringArgument(context, 0);
-
+        try {
+            kafkaConsumer.commitSync();
+        } catch (KafkaException e) {
+            throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
+        }
 
         return VOID_RETURN;
     }
