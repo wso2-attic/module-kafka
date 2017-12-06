@@ -19,10 +19,10 @@
 package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.model.types.BStructType;
+import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
@@ -34,8 +34,6 @@ import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.KafkaUtils;
-import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,31 +60,19 @@ public class Connect extends AbstractNativeFunction {
     public BValue[] execute(Context context) {
         // Consumer initialization
 
-        BConnector consumerConnector = (BConnector) getRefArgument(context, 0);
-        BStruct consumerConf = ((BStruct) consumerConnector.getRefField(0));
-        BMap<String, BString> consumerBalConfig = (BMap<String, BString>) consumerConf.getRefField(0);
+        BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
+        BMap<String, BString> consumerBalConfig = (BMap<String, BString>) consumerStruct.getRefField(0);
 
         Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerBalConfig);
 
-        KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
-//        BStruct consumerStruct = ((BStruct) consumerConnector.getRefField(1));
-//        consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
-
-        BMap consumerMap = (BMap) consumerConnector.getRefField(1);
-        BStruct consumerStruct =  createConsumerStruct(context);
-        consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
-        consumerMap.put(new BString(Constants.NATIVE_CONSUMER), consumerStruct);
+        try {
+            KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
+            consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
+        } catch (KafkaException e){
+            return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+        }
 
         return VOID_RETURN;
-    }
-
-    private BStruct createConsumerStruct(Context context) {
-        PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
-        StructInfo consumerRecordStructInfo = kafkaPackageInfo.getStructInfo(Constants.CONSUMER_STRUCT_NAME);
-        BStructType structType = consumerRecordStructInfo.getType();
-        BStruct bStruct = new BStruct(structType);
-        return bStruct;
     }
 
 }
