@@ -18,6 +18,7 @@ package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
@@ -92,10 +93,10 @@ public class SendOffsetsTransaction extends AbstractNativeAction {
 
         try {
             kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
-        } catch (Exception e) {
+        } catch (KafkaException e) {
 //            context.getControlStackNew().getCurrentFrame().returnValues[0] =
 //                    BLangVMErrors.createError(context, 0, e.getMessage());
-            throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
+            throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
         }
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();

@@ -16,16 +16,27 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.natives.annotations.Receiver;
+import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@code }
@@ -41,13 +52,37 @@ import org.slf4j.LoggerFactory;
                 @Argument(name = "partition", type = TypeKind.STRUCT, structType = "Offset",
                         structPackage = "ballerina.net.kafka")
         },
-        returnType = { @ReturnType(type = TypeKind.STRUCT)},
+        returnType = { @ReturnType(type = TypeKind.NONE)},
         isPublic = true)
 public class CommitOffset extends AbstractNativeFunction {
     private static final Logger log = LoggerFactory.getLogger(CommitOffset.class);
 
     @Override
     public BValue[] execute(Context context) {
+        BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
+                .getNativeData(Constants.NATIVE_CONSUMER);
+        if (kafkaConsumer == null) {
+            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
+        }
+
+        BRefValueArray offsets = ((BRefValueArray) getRefArgument(context, 1));
+        Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
+
+        for (int counter = 0; counter < offsets.size(); counter++) {
+            BStruct offset = (BStruct) offsets.get(counter);
+            BStruct partition = (BStruct) offset.getRefField(0);
+            int offsetValue = new Long(offset.getIntField(0)).intValue();
+            String topic = partition.getStringField(0);
+            int partitionValue = new Long(partition.getIntField(0)).intValue();
+            partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
+        }
+
+        try {
+            kafkaConsumer.commitSync(partitionToMetadataMap);
+        } catch (KafkaException e) {
+            throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
+        }
 
         return VOID_RETURN;
     }
