@@ -59,7 +59,6 @@ public class Connect extends AbstractNativeFunction {
     @Override
     public BValue[] execute(Context context) {
         // Consumer initialization
-
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         BMap<String, BString> consumerBalConfig = (BMap<String, BString>) consumerStruct.getRefField(0);
 

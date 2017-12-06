@@ -24,11 +24,8 @@ import org.ballerinalang.bre.bvm.BLangVMErrors;
 
 import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
-import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
@@ -39,6 +36,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,14 +65,14 @@ public class GetTopicPartitions extends AbstractNativeFunction {
     @Override
     public BValue[] execute(Context context) {
 
-        BConnector consumerConnector = (BConnector) getRefArgument(context, 0);
+        BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         String topic = getStringArgument(context, 0);
-
-        BMap consumerMap = (BMap) consumerConnector.getRefField(1);
-        BStruct consumerStruct = (BStruct) consumerMap.get(new BString(Constants.NATIVE_CONSUMER));
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(Constants.NATIVE_CONSUMER);
+        if (kafkaConsumer == null) {
+            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
+        }
 
         try {
             List<PartitionInfo> partitionInfos = kafkaConsumer.partitionsFor(topic);
