@@ -16,16 +16,19 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.ConnectorFuture;
+import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.natives.annotations.Receiver;
+import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +53,19 @@ public class Unsubscribe extends AbstractNativeFunction {
     @Override
     public BValue[] execute(Context context) {
 
-        //  Extract argument values
-        //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
-        //  String destination = getStringArgument(context, 0);
+        BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
+                .getNativeData(Constants.NATIVE_CONSUMER);
+        if (kafkaConsumer == null) {
+            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
+        }
 
+        try {
+            kafkaConsumer.unsubscribe();
+        } catch (Exception e) {
+            context.getControlStackNew().getCurrentFrame().returnValues[0] =
+                    BLangVMErrors.createError(context, 0, e.getMessage());
+        }
         return VOID_RETURN;
     }
 
