@@ -20,6 +20,7 @@ package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
@@ -33,6 +34,7 @@ import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,13 +69,16 @@ public class Init extends AbstractNativeAction {
         //TODO ADD Kafka Exception
         //TODO change sample
 
-        KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
-        //BStruct consumerStruct = ((BStruct) producerConnector.getRefField(1));
-        //consumerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
-        BMap producerMap = (BMap) producerConnector.getRefField(1);
-        BStruct producerStruct =  createProducerStruct(context);
-        producerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
-        producerMap.put(new BString(Constants.NATIVE_PRODUCER), producerStruct);
+        try {
+            KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
+
+            BMap producerMap = (BMap) producerConnector.getRefField(1);
+            BStruct producerStruct = createProducerStruct(context);
+            producerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
+            producerMap.put(new BString(Constants.NATIVE_PRODUCER), producerStruct);
+        } catch (KafkaException e) {
+            throw new BallerinaException("Failed to initialize the producer " + e.getMessage(), e, context);
+        }
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;

@@ -94,8 +94,6 @@ public class SendOffsetsTransaction extends AbstractNativeAction {
         try {
             kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
         } catch (KafkaException e) {
-//            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-//                    BLangVMErrors.createError(context, 0, e.getMessage());
             throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
         }
         ClientConnectorFuture future = new ClientConnectorFuture();

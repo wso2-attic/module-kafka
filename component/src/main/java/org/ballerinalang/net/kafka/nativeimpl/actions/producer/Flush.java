@@ -18,6 +18,7 @@
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.connector.api.AbstractNativeAction;
@@ -32,6 +33,7 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,7 @@ import org.slf4j.LoggerFactory;
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR)
         },
-        returnType = {@ReturnType(type = TypeKind.STRUCT)})
+        returnType = {@ReturnType(type = TypeKind.NONE)})
 public class Flush extends AbstractNativeAction {
     private static final Logger log = LoggerFactory.getLogger(Flush.class);
 
@@ -62,9 +64,8 @@ public class Flush extends AbstractNativeAction {
 
         try {
             kafkaProducer.flush();
-        } catch (Exception e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+        } catch (KafkaException e) {
+            throw new BallerinaException("Failed to flush the producer " + e.getMessage(), e, context);
         }
 
         ClientConnectorFuture future = new ClientConnectorFuture();

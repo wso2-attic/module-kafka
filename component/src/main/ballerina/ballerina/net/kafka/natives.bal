@@ -31,13 +31,13 @@ public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
     map producer = {};
 
-    native action send (ProducerRecord record) ();
+    native action send (ProducerRecord record);
 
-    native action flush () (error);
+    native action flush ();
 
-    native action close () (error);
+    native action close ();
 
-    native action getTopicPartitions (string topic) (PartitionInfo[], error);
+    native action getTopicPartitions (string topic) (PartitionInfo[]);
 
     native action sendOffsetsTransaction(Offset[] offsets, string groupID) ();
 

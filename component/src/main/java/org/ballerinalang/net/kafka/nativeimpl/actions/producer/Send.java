@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
                 @Argument(name = "record", type = TypeKind.STRUCT, structType = "ProducerRecord",
                         structPackage = "ballerina.net.kafka")
         },
-        returnType = {@ReturnType(type = TypeKind.STRUCT)})
+        returnType = {@ReturnType(type = TypeKind.NONE)})
 public class Send extends AbstractNativeAction {
     private static final Logger log = LoggerFactory.getLogger(Send.class);
 
@@ -101,8 +101,6 @@ public class Send extends AbstractNativeAction {
             }
             kafkaProducer.send(kafkaRecord).get();
         } catch (Exception e) {
-//            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-//                    BLangVMErrors.createError(context, 0, e.getMessage());
             throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
 

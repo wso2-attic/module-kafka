@@ -17,6 +17,7 @@
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.PartitionInfo;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
@@ -36,6 +37,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +55,8 @@ import java.util.List;
                         type = TypeKind.CONNECTOR),
                 @Argument(name = "topic", type = TypeKind.STRING)
         },
-        returnType = { @ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT, structType = "PartitionInfo",
-                structPackage = "ballerina.net.kafka"),
-                @ReturnType(type = TypeKind.STRUCT)})
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT, structType = "PartitionInfo",
+                structPackage = "ballerina.net.kafka")})
 public class GetTopicPartitions extends AbstractNativeAction {
     private static final Logger log = LoggerFactory.getLogger(GetTopicPartitions.class);
 
@@ -68,12 +69,14 @@ public class GetTopicPartitions extends AbstractNativeAction {
         BMap producerMap = (BMap) producerConnector.getRefField(1);
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
 
-        KafkaProducer<byte[], byte[]> kafkaProducer =
-                (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
-        List<PartitionInfo> partitionInfos = kafkaProducer.partitionsFor(topic);
-        List<BStruct> infoList = new ArrayList<>();
-        if (!partitionInfos.isEmpty()) {
-            partitionInfos.forEach(partitionInfo -> {
+        try {
+
+            KafkaProducer<byte[], byte[]> kafkaProducer =
+                    (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+            List<PartitionInfo> partitionInfos = kafkaProducer.partitionsFor(topic);
+            List<BStruct> infoList = new ArrayList<>();
+            if (!partitionInfos.isEmpty()) {
+                partitionInfos.forEach(partitionInfo -> {
 //                public struct PartitionInfo {
 //                    string  topic;
 //                    int partition;
@@ -81,17 +84,20 @@ public class GetTopicPartitions extends AbstractNativeAction {
 //                    int  replicas;
 //                    int  isr;
 //                }
-                BStruct infoStruct = createRecordStruct(context);
-                infoStruct.setStringField(0, partitionInfo.topic());
-                infoStruct.setIntField(0, partitionInfo.partition());
-                infoStruct.setIntField(1, partitionInfo.leader().id());
-                infoStruct.setIntField(2, partitionInfo.replicas().length);
-                infoStruct.setIntField(3, partitionInfo.inSyncReplicas().length);
-                infoList.add(infoStruct);
-            });
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    new BRefValueArray(infoList.toArray(new BRefType[0]), createRecordStruct(context).getType());
+                    BStruct infoStruct = createRecordStruct(context);
+                    infoStruct.setStringField(0, partitionInfo.topic());
+                    infoStruct.setIntField(0, partitionInfo.partition());
+                    infoStruct.setIntField(1, partitionInfo.leader().id());
+                    infoStruct.setIntField(2, partitionInfo.replicas().length);
+                    infoStruct.setIntField(3, partitionInfo.inSyncReplicas().length);
+                    infoList.add(infoStruct);
+                });
+                context.getControlStackNew().getCurrentFrame().returnValues[0] =
+                        new BRefValueArray(infoList.toArray(new BRefType[0]), createRecordStruct(context).getType());
 
+            }
+        } catch (KafkaException e) {
+            throw new BallerinaException("Failed to fetch partitions from the producer " + e.getMessage(), e, context);
         }
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
