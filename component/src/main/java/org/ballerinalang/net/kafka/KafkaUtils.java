@@ -83,7 +83,7 @@ public class KafkaUtils {
         });
 
         BStruct consumerStruct = ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
-                Constants.CONSUMER_RECORD_STRUCT_NAME);
+                Constants.CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
 
 

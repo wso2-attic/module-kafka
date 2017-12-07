@@ -70,7 +70,7 @@ public native function <KafkaConsumer consumer> assign(TopicPartition[] partitio
 
 public native function <KafkaConsumer consumer> getPositionOffset(TopicPartition partition) (int, error);
 
-public native function <KafkaConsumer consumer> getCommittedOffset(TopicPartition partition) (int, error);
+public native function <KafkaConsumer consumer> getCommittedOffset(TopicPartition partition) (Offset, error);
 
 public native function <KafkaConsumer consumer> poll(int timeoutValue) (ConsumerRecord[], error);
 

@@ -39,6 +39,9 @@ public class Constants {
     public static final String NATIVE_CONSUMER = "KafkaConsumer";
     public static final String NATIVE_PRODUCER = "KafkaProducer";
     public static final String KAFKA_NATIVE_PACKAGE = "ballerina.net.kafka";
+    public static final String TOPIC_PARTITION_STRUCT_NAME = "TopicPartition";
+    public static final String OFFSET_STRUCT_NAME = "Offset";
+
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
     public static final String CONSUMER_PARTITION_INFO_STRUCT_NAME = "PartitionInfo";
     public static final String CONSUMER_STRUCT_NAME = "KafkaConsumer";
