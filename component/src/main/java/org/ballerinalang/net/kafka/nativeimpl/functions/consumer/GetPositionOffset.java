@@ -16,14 +16,23 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
+import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.natives.annotations.Receiver;
+import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,13 +59,24 @@ public class GetPositionOffset extends AbstractNativeFunction {
     @Override
     public BValue[] execute(Context context) {
 
-        //  Extract argument values
-        //  BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        //  BStruct messageStruct = ((BStruct) getRefArgument(context, 1));
-        //  String destination = getStringArgument(context, 0);
-        
+        BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
+                .getNativeData(Constants.NATIVE_CONSUMER);
+        if (kafkaConsumer == null) {
+            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
+        }
 
-        return VOID_RETURN;
+        BStruct partition = (BStruct) getRefArgument(context, 1);
+        String topic = partition.getStringField(0);
+        int partitionValue = new Long(partition.getIntField(0)).intValue();
+
+        try {
+            long position =
+                    kafkaConsumer.position(new TopicPartition(topic, partitionValue));
+            return getBValues(new BInteger(position));
+        } catch (KafkaException e) {
+            return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+        }
     }
 
 }

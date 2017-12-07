@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
                         structPackage = "ballerina.net.kafka")
         },
         returnType = {@ReturnType(type = TypeKind.STRUCT,
-                structPackage = "ballerina.net.kafka", structType = "ConsumerRecord"),
+                structPackage = "ballerina.net.kafka", structType = "Offset"),
                 @ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class GetCommittedOffset extends AbstractNativeFunction {
