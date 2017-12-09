@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * {@code }
  */
-public class DefaultKafkaConsumerFactory<K, V> implements ConsumerFactory<K, V> {
+public class KafkaConsumerFactory<K, V> implements ConsumerFactory<K, V> {
 
 	private final Map<String, Object> configs;
 
@@ -37,13 +37,13 @@ public class DefaultKafkaConsumerFactory<K, V> implements ConsumerFactory<K, V> 
 
 	private Deserializer<V> valueDeserializer;
 
-	public DefaultKafkaConsumerFactory(Map<String, Object> configs) {
+	public KafkaConsumerFactory(Map<String, Object> configs) {
 		this(configs, null, null);
 	}
 
-	public DefaultKafkaConsumerFactory(Map<String, Object> configs,
-			Deserializer<K> keyDeserializer,
-			Deserializer<V> valueDeserializer) {
+	public KafkaConsumerFactory(Map<String, Object> configs,
+								Deserializer<K> keyDeserializer,
+								Deserializer<V> valueDeserializer) {
 		this.configs = new HashMap<>(configs);
 		this.keyDeserializer = keyDeserializer;
 		this.valueDeserializer = valueDeserializer;
