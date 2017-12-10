@@ -14,17 +14,16 @@ Using Ballerina native functions.
 import ballerina.net.kafka;
 
 function main (string[] args) {
-    endpoint<kafka:KafkaConsumerConnector> kafkaEP {
-        create kafka:KafkaConsumerConnector (getConnectorConfig());
-    }
+    kafka:KafkaConsumer con  = getConsumer();
+    con.connect();
 
     string[] topics = [];
     topics[0] = "test";
-    var e = kafkaEP.subscribe(topics);
+    var e = con.subscribe(topics);
     while(true) {
         kafka:ConsumerRecord[] records;
         error err;
-        records, err = kafkaEP.poll(1000);
+        records, err = con.poll(1000);
         if (records != null) {
            int counter = 0;
            while (counter < lengthof records ) {
@@ -37,11 +36,11 @@ function main (string[] args) {
     }
 }
 
-function getConnectorConfig () (kafka:KafkaConsumerConf) {
-    kafka:KafkaConsumerConf conf = {};
+function getConsumer () (kafka:KafkaConsumer) {
+    kafka:KafkaConsumer con = {};
     map m = {"bootstrap.servers":"localhost:9092, localhost:9093","group.id": "abc"};
-    conf.properties = m;
-    return conf;
+    con.properties = m;
+    return con;
 }
 ````
 Using Ballerina Services.
@@ -72,6 +71,37 @@ service<kafka> kafkaService {
              counter = counter + 1;
        }
     }
+}
+````
+
+enable.auto.commit = false case.
+
+```ballerina
+import ballerina.net.kafka;
+
+@kafka:configuration {
+    bootstrapServers: "localhost:9092, localhost:9093",
+    groupId: "ab",
+    topics: ["test"],
+    pollingTimeout: 1000,
+    decoupleProcessing: false,
+    autoCommit: false
+}
+service<kafka> kafkaService {
+    resource onMessage (kafka:ConsumerRecord[] records, kafka:KafkaConsumer consumer) {
+       int counter = 0;
+       while (counter < lengthof records ) {
+             processRecord(records[counter]);
+             counter = counter + 1;
+       }
+       consumer.commit();
+    }
+}
+
+function processRecord(kafka:ConsumerRecord record) {
+    blob byteMsg = record.value;
+    string msg = kafka:deserialize(byteMsg);
+    println("Topic: " + record.topic + " Received Message: " + msg);
 }
 ````
 
@@ -135,6 +165,8 @@ function getConnectorConfig () (kafka:KafkaProducerConf) {
 
 Kafka Producer Transactions
 
+1. Pure producer transaction
+
 ```ballerina
 import ballerina.net.kafka;
 
@@ -160,8 +192,8 @@ function kafkaProduce(kafka:ProducerRecord record1, kafka:ProducerRecord record2
         create kafka:KafkaProducerConnector (getConnectorConfig());
     }
     transaction {
-       var e1 = kafkaEP.send(record1);
-       var e2 = kafkaEP.send(record2);
+       kafkaEP.send(record1);
+       kafkaEP.send(record2);
     }
 }
 
@@ -173,5 +205,80 @@ function getConnectorConfig () (kafka:KafkaProducerConf) {
 }
 ````
 
+2. consume-transform-produce pattern
+
+```ballerina
+import ballerina.net.kafka;
+
+@kafka:configuration {
+    bootstrapServers: "localhost:9092, localhost:9093",
+    groupId: "ab",
+    topics: ["input"],
+    pollingTimeout: 1000,
+    decoupleProcessing: false,
+    autoCommit: false
+}
+service<kafka> kafkaService {
+    resource onMessage (kafka:ConsumerRecord[] records, kafka:KafkaConsumer consumer) {
+       int counter = 0;
+       while (counter < lengthof records ) {
+             processRecord(records[counter]);
+             counter = counter + 1;
+       }
+
+       kafka:TopicPartition tp = {};
+       tp.topic = "input";
+       tp.partition = 0;
+       int p;
+       p, _ = consumer.getPositionOffset(tp);
+
+       string msg1 = "Hello World";
+       blob byteMsg1 = kafka:serialize(msg1);
+       kafka:ProducerRecord record1 = {};
+       record1.value = byteMsg1;
+       record1.topic = "output";
+
+       string msg2 = "Hello World 2";
+       blob byteMsg2 = kafka:serialize(msg2);
+       kafka:ProducerRecord record2 = {};
+       record2.value = byteMsg2;
+       record2.topic = "output";
+
+       kafka:Offset[] offsets = [];
+       kafka:Offset consumedOffset = {};
+       consumedOffset.partition = tp;
+       consumedOffset.offset = p;
+       offsets[0] = consumedOffset;
+
+       kafkaProduce(record1, record2, offsets);
+
+    }
+}
+
+function processRecord(kafka:ConsumerRecord record) {
+    blob byteMsg = record.value;
+    string msg = kafka:deserialize(byteMsg);
+    println("Topic: " + record.topic + " Received Message: " + msg);
+}
+
+
+function kafkaProduce(kafka:ProducerRecord record1, kafka:ProducerRecord record2, kafka:Offset[] offsets) {
+    endpoint<kafka:KafkaProducerConnector> kafkaEP {
+        create kafka:KafkaProducerConnector (getConnectorConfig());
+    }
+    transaction {
+       kafkaEP.send(record1);
+       kafkaEP.send(record2);
+       kafkaEP.sendOffsetsTransaction(offsets, "ab");
+    }
+}
+
+function getConnectorConfig () (kafka:KafkaProducerConf) {
+    kafka:KafkaProducerConf conf = {};
+    map m = {"bootstrap.servers":"localhost:9092, localhost:9093", "transactional.id":"test-transactional-id"};
+    conf.properties = m;
+    return conf;
+}
+````
 
 For more Kafka Connector Ballerina configurations please refer to the samples directory.
