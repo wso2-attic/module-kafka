@@ -18,13 +18,9 @@ package org.ballerinalang.net.kafka.nativeimpl.functions.consumer;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
-import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
-import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
@@ -33,39 +29,35 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
-import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * {@code }
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
-        functionName = "getAssignment",
+        functionName = "subscribeToPattern",
         receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
                 structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
                         type = TypeKind.STRUCT, structType = "KafkaConsumer",
-                        structPackage = "ballerina.net.kafka")
+                        structPackage = "ballerina.net.kafka"),
+                @Argument(name = "regex", type = TypeKind.STRING)
         },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT, structType = "TopicPartition",
-                structPackage = "ballerina.net.kafka"),
-                @ReturnType(type = TypeKind.STRUCT)},
+        returnType = {@ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
-public class GetAssignment extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(GetTopicPartitions.class);
+public class SubscribeToPattern extends AbstractNativeFunction {
+    private static final Logger log = LoggerFactory.getLogger(Subscribe.class);
 
     @Override
     public BValue[] execute(Context context) {
 
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
+        String topicRegex = getStringArgument(context, 0);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(Constants.NATIVE_CONSUMER);
@@ -74,38 +66,13 @@ public class GetAssignment extends AbstractNativeFunction {
         }
 
         try {
-            Set<TopicPartition> assignments = kafkaConsumer.assignment();
-
-
-            List<BStruct> assignmentList = new ArrayList<>();
-            if (!assignments.isEmpty()) {
-                assignments.forEach(assignment -> {
-//                    public struct TopicPartition {
-//                        string topic;
-//                        int partition;
-//                    }
-
-                    BStruct infoStruct = createPartitionStruct(context);
-                    infoStruct.setStringField(0, assignment.topic());
-                    infoStruct.setIntField(0, assignment.partition());
-                    assignmentList.add(infoStruct);
-                });
-            }
-            return getBValues(new BRefValueArray(assignmentList.toArray(new BRefType[0]),
-                    createPartitionStruct(context).getType()));
+            kafkaConsumer.subscribe(Pattern.compile(topicRegex));
         } catch (KafkaException e) {
-            return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+            return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-    }
 
-    private BStruct createPartitionStruct(Context context) {
-        PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
-        StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(Constants.TOPIC_PARTITION_STRUCT_NAME);
-        BStructType structType = consumerRecordStructInfo.getType();
-        BStruct bStruct = new BStruct(structType);
-        return bStruct;
+        return VOID_RETURN;
     }
 
 }
+

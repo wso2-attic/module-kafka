@@ -64,6 +64,8 @@ public struct Offset {
 
 public native function <KafkaConsumer consumer> connect() (error);
 
+public native function <KafkaConsumer consumer> subscribeToPattern(string regex) (error);
+
 public native function <KafkaConsumer consumer> subscribe(string[] topics) (error);
 
 public native function <KafkaConsumer consumer> assign(TopicPartition[] partitions) (error);
