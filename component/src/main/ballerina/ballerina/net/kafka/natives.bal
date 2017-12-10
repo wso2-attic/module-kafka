@@ -68,6 +68,10 @@ public native function <KafkaConsumer consumer> subscribeToPattern(string regex)
 
 public native function <KafkaConsumer consumer> subscribe(string[] topics) (error);
 
+public native function <KafkaConsumer consumer> subscribeWithPartitionRebalance(string[] topics,
+  function() onPartitionsRevoked,
+  function() onPartitionsAssigned) (error);
+
 public native function <KafkaConsumer consumer> assign(TopicPartition[] partitions) (error);
 
 public native function <KafkaConsumer consumer> getPositionOffset(TopicPartition partition) (int, error);
