@@ -39,7 +39,7 @@ public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
     native action getTopicPartitions (string topic) (PartitionInfo[]);
 
-    native action sendOffsetsTransaction(Offset[] offsets, string groupID) ();
+    native action sendOffsetsTransaction(Offset[] offsets, string groupID);
 
 }
 
@@ -62,13 +62,17 @@ public struct Offset {
   int offset;
 }
 
-public native function <KafkaConsumer consumer> connect();
+public native function <KafkaConsumer consumer> connect() (error);
 
 public native function <KafkaConsumer consumer> subscribe(string[] topics) (error);
 
 public native function <KafkaConsumer consumer> assign(TopicPartition[] partitions) (error);
 
 public native function <KafkaConsumer consumer> getPositionOffset(TopicPartition partition) (int, error);
+
+public native function <KafkaConsumer consumer> getAssignment() (TopicPartition[], error);
+
+public native function <KafkaConsumer consumer> getSubscription() (string[], error);
 
 public native function <KafkaConsumer consumer> getCommittedOffset(TopicPartition partition) (Offset, error);
 
@@ -80,11 +84,21 @@ public native function <KafkaConsumer consumer> commitOffset(Offset[] offsets);
 
 public native function <KafkaConsumer consumer> seek(Offset offset) (error);
 
+public native function <KafkaConsumer consumer> seekToBeginning(TopicPartition[] partitions) (error);
+
+public native function <KafkaConsumer consumer> seekToEnd(TopicPartition[] partitions) (error);
+
 public native function <KafkaConsumer consumer> getTopicPartitions (string topic) (PartitionInfo[], error);
 
 public native function <KafkaConsumer consumer> unsubscribe() (error);
 
 public native function <KafkaConsumer consumer> close() (error);
+
+public native function <KafkaConsumer consumer> pause(TopicPartition[] partitions) (error);
+
+public native function <KafkaConsumer consumer> resume(TopicPartition[] partitions) (error);
+
+public native function <KafkaConsumer consumer> getPausedPartitions() (TopicPartition[], error);
 
 public native function serialize (string s) (blob);
 
