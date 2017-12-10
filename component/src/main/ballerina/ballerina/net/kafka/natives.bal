@@ -102,6 +102,10 @@ public native function <KafkaConsumer consumer> resume(TopicPartition[] partitio
 
 public native function <KafkaConsumer consumer> getPausedPartitions() (TopicPartition[], error);
 
+public native function <KafkaConsumer consumer> getBeginningOffsets(TopicPartition[] partitions) (Offset[], error);
+
+public native function <KafkaConsumer consumer> getEndOffsets(TopicPartition[] partitions) (Offset[], error);
+
 public native function serialize (string s) (blob);
 
 public native function deserialize (blob b) (string);
