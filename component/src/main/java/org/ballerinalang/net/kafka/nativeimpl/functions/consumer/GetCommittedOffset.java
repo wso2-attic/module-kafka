@@ -79,7 +79,11 @@ public class GetCommittedOffset extends AbstractNativeFunction {
                     kafkaConsumer.committed(new TopicPartition(topic, partitionValue));
             BStruct offset = createOffsetStruct(context);
             offset.setRefField(0, (BStruct) partition.copy());
-            offset.setIntField(0, offsetAndMetadata.offset());
+            if (offsetAndMetadata == null) {
+                offset.setIntField(0, 0);
+            } else {
+                offset.setIntField(0, offsetAndMetadata.offset());
+            }
             return getBValues(offset);
         } catch (KafkaException e) {
             return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));

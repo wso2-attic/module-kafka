@@ -49,8 +49,8 @@ import java.util.Map;
                 @Argument(name = "c",
                         type = TypeKind.STRUCT, structType = "KafkaConsumer",
                         structPackage = "ballerina.net.kafka"),
-                @Argument(name = "partition", type = TypeKind.STRUCT, structType = "Offset",
-                        structPackage = "ballerina.net.kafka")
+                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+                        structType = "Offset", structPackage = "ballerina.net.kafka")
         },
         returnType = { @ReturnType(type = TypeKind.NONE)},
         isPublic = true)
