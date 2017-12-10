@@ -8,7 +8,7 @@ Steps to configure,
 
 Ballerina as a Kafka Consumer
 
-Using Ballerina native functions.
+***Using Ballerina native functions.
 
 ```ballerina
 import ballerina.net.kafka;
@@ -43,7 +43,7 @@ function getConsumer () (kafka:KafkaConsumer) {
     return con;
 }
 ````
-Using Ballerina Services.
+***Using Ballerina Services.
 
 1. Message consuming is coupled with message processing. ( decoupleProcessing: false)
 
@@ -205,7 +205,7 @@ function getConnectorConfig () (kafka:KafkaProducerConf) {
 }
 ````
 
-2. consume-transform-produce pattern
+2. Consume-transform-produce pattern
 
 ```ballerina
 import ballerina.net.kafka;
