@@ -161,7 +161,7 @@ function getConnectorConfig () (kafka:KafkaProducerConf) {
 
 Kafka Producer Transactions
 
-1. Pure producer transaction
+1. Pure produce transaction
 
 ```ballerina
 import ballerina.net.kafka;
@@ -246,7 +246,7 @@ service<kafka> kafkaService {
        consumedOffset.offset = p;
        offsets[0] = consumedOffset;
 
-       kafkaProduce(record1, record2, offsets);
+       kafkaProduceWithTransaction(record1, record2, offsets);
 
     }
 }
@@ -258,7 +258,7 @@ function processRecord(kafka:ConsumerRecord record) {
 }
 
 
-function kafkaProduce(kafka:ProducerRecord record1, kafka:ProducerRecord record2, kafka:Offset[] offsets) {
+function kafkaProduceWithTransaction(kafka:ProducerRecord record1, kafka:ProducerRecord record2, kafka:Offset[] offsets) {
     endpoint<kafka:KafkaProducerConnector> kafkaEP {
         create kafka:KafkaProducerConnector (getConnectorConfig());
     }
