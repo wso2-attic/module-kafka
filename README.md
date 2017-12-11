@@ -119,17 +119,13 @@ import ballerina.net.kafka;
     groupId: "abc",
     topics: ["test"],
     pollingTimeout: 1000,
-    decoupleProcessing: false
+    decoupleProcessing: true
 }
 service<kafka> kafkaService {
-    resource onMessage (kafka:ConsumerRecord[] records, kafka:KafkaConsumer consumer) {
-       int counter = 0;
-       while (counter < lengthof records ) {
-             blob byteMsg = records[counter].value;
-             string msg = kafka:deserialize(byteMsg);
-             println("Topic: " + records[counter].topic + " Received Message: " + msg);
-             counter = counter + 1;
-       }
+    resource onMessage (kafka:ConsumerRecord[] record) {
+        blob byteMsg = record.value;
+        string msg = kafka:deserialize(byteMsg);
+        println("Topic: " + record.topic + " Received Message: " + msg);
     }
 }
 ````
