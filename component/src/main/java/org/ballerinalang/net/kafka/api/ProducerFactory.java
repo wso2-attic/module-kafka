@@ -18,6 +18,8 @@ package org.ballerinalang.net.kafka.api;
 
 import org.apache.kafka.clients.producer.Producer;
 
+import java.util.Properties;
+
 /**
  * {@code }
  */
@@ -28,5 +30,7 @@ public interface ProducerFactory<K, V> {
 	default boolean transactionCapable() {
 		return false;
 	}
+
+	Properties getConfigurationProperties();
 
 }

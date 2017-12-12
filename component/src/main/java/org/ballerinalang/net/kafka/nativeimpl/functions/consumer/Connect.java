@@ -51,7 +51,7 @@ import java.util.Properties;
                         type = TypeKind.STRUCT, structType = "KafkaConsumer",
                         structPackage = "ballerina.net.kafka")
         },
-        returnType = {@ReturnType(type = TypeKind.NONE)},
+        returnType = {@ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class Connect extends AbstractNativeFunction {
     private static final Logger log = LoggerFactory.getLogger(Connect.class);

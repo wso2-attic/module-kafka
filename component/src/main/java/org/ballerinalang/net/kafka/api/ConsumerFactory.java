@@ -19,23 +19,17 @@ package org.ballerinalang.net.kafka.api;
 import org.apache.kafka.clients.consumer.Consumer;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * {@code }
  */
 public interface ConsumerFactory<K, V> {
 
-	Consumer<K, V> createConsumer();
+	Consumer<K, V> createSingletonConsumer();
 
-	Consumer<K, V> createConsumer(String clientIdSuffix);
+	Consumer<K, V> createGroupConsumer();
 
-	Consumer<K, V> createConsumer(String groupId, String clientIdSuffix);
-
-	boolean isAutoCommit();
-
-	default Map<String, Object> getConfigurationProperties() {
-		throw new UnsupportedOperationException("'getConfigurationProperties()' is not supported");
-	}
-
+	Properties getConfigurationProperties();
 
 }

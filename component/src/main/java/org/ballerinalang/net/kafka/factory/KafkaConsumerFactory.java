@@ -25,98 +25,45 @@ import org.ballerinalang.net.kafka.api.ConsumerFactory;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * {@code }
  */
 public class KafkaConsumerFactory<K, V> implements ConsumerFactory<K, V> {
 
-	private final Map<String, Object> configs;
+	private final Properties configs;
+	private volatile Consumer<K, V> consumer;
 
-	private Deserializer<K> keyDeserializer;
-
-	private Deserializer<V> valueDeserializer;
-
-	public KafkaConsumerFactory(Map<String, Object> configs) {
-		this(configs, null, null);
-	}
-
-	public KafkaConsumerFactory(Map<String, Object> configs,
-								Deserializer<K> keyDeserializer,
-								Deserializer<V> valueDeserializer) {
-		this.configs = new HashMap<>(configs);
-		this.keyDeserializer = keyDeserializer;
-		this.valueDeserializer = valueDeserializer;
-	}
-
-	public void setKeyDeserializer(Deserializer<K> keyDeserializer) {
-		this.keyDeserializer = keyDeserializer;
-	}
-
-	public void setValueDeserializer(Deserializer<V> valueDeserializer) {
-		this.valueDeserializer = valueDeserializer;
+	public KafkaConsumerFactory(Properties configs) {
+		this.configs = configs;
 	}
 
 	@Override
-	public Map<String, Object> getConfigurationProperties() {
-		return Collections.unmodifiableMap(this.configs);
-	}
-
-	public Deserializer<K> getKeyDeserializer() {
-		return this.keyDeserializer;
-	}
-
-	public Deserializer<V> getValueDeserializer() {
-		return this.valueDeserializer;
+	public Properties getConfigurationProperties() {
+		return configs;
 	}
 
 	@Override
-	public Consumer<K, V> createConsumer() {
-		return createKafkaConsumer();
-	}
-
-	@Override
-	public Consumer<K, V> createConsumer(String clientIdSuffix) {
-		return createKafkaConsumer(null, clientIdSuffix);
-	}
-
-	@Override
-	public Consumer<K, V> createConsumer(String groupId, String clientIdSuffix) {
-		return createKafkaConsumer(groupId, clientIdSuffix);
-	}
-
-	protected KafkaConsumer<K, V> createKafkaConsumer() {
-		return createKafkaConsumer(this.configs);
-	}
-
-	protected KafkaConsumer<K, V> createKafkaConsumer(String groupId, String clientIdSuffix) {
-		boolean shouldModifyClientId = this.configs.containsKey(ConsumerConfig.CLIENT_ID_CONFIG)
-				&& clientIdSuffix != null;
-		if (groupId == null && !shouldModifyClientId) {
-			return createKafkaConsumer();
-		}
-		else {
-			Map<String, Object> modifiedConfigs = new HashMap<>(this.configs);
-			if (groupId != null) {
-				modifiedConfigs.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+	public Consumer<K, V> createSingletonConsumer() {
+		if (this.consumer == null) {
+			synchronized (this) {
+				if (this.consumer == null) {
+					this.consumer = createKafkaConsumer(configs);
+				}
 			}
-			if (shouldModifyClientId) {
-				modifiedConfigs.put(ConsumerConfig.CLIENT_ID_CONFIG,
-					modifiedConfigs.get(ConsumerConfig.CLIENT_ID_CONFIG) + clientIdSuffix);
-			}
-			return createKafkaConsumer(modifiedConfigs);
 		}
-	}
-
-	protected KafkaConsumer<K, V> createKafkaConsumer(Map<String, Object> configs) {
-		return new KafkaConsumer<K, V>(configs, this.keyDeserializer, this.valueDeserializer);
+		return this.consumer;
 	}
 
 	@Override
-	public boolean isAutoCommit() {
-		Object auto = this.configs.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG);
-		return auto instanceof Boolean ? (Boolean) auto
-				: auto instanceof String ? Boolean.valueOf((String) auto) : true;
+	public Consumer<K, V> createGroupConsumer() {
+		return createKafkaConsumer(configs);
+	}
+
+
+	protected KafkaConsumer<K, V> createKafkaConsumer(Properties configs) {
+		return new KafkaConsumer<K, V>(configs);
 	}
 
 }

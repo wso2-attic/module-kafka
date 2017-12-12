@@ -59,7 +59,6 @@ public class GetSubscription extends AbstractNativeFunction {
     public BValue[] execute(Context context) {
 
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
-        String topic = getStringArgument(context, 0);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(Constants.NATIVE_CONSUMER);

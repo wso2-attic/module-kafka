@@ -53,7 +53,8 @@ import java.util.List;
         args = {
                 @Argument(name = "c",
                         type = TypeKind.STRUCT, structType = "KafkaConsumer",
-                        structPackage = "ballerina.net.kafka")
+                        structPackage = "ballerina.net.kafka"),
+                @Argument(name = "topic", type = TypeKind.STRING)
         },
         returnType = { @ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT, structType = "PartitionInfo",
                 structPackage = "ballerina.net.kafka"),

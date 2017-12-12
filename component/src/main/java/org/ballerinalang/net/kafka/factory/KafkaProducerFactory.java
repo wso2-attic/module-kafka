@@ -29,13 +29,11 @@ import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.errors.ProducerFencedException;
-import org.apache.kafka.common.serialization.Serializer;
 import org.ballerinalang.net.kafka.api.ProducerFactory;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,120 +45,56 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class KafkaProducerFactory<K, V> implements ProducerFactory<K, V> {
 
-	private static final int DEFAULT_PHYSICAL_CLOSE_TIMEOUT = 30;
+	private static final Log log = LogFactory.getLog(KafkaProducerFactory.class);
 
-	private static final Log logger = LogFactory.getLog(KafkaProducerFactory.class);
-
-	private final Map<String, Object> configs;
-
-	private final AtomicInteger transactionIdSuffix = new AtomicInteger();
+	private final Properties configs;
 
 	private final BlockingQueue<CloseSafeProducer<K, V>> cache = new LinkedBlockingQueue<>();
 
 	private volatile CloseSafeProducer<K, V> producer;
 
-	private Serializer<K> keySerializer;
+	private String transactionId;
 
-	private Serializer<V> valueSerializer;
+	private final AtomicInteger transactionIdSuffix = new AtomicInteger();
 
-	private int physicalCloseTimeout = DEFAULT_PHYSICAL_CLOSE_TIMEOUT;
+	public KafkaProducerFactory(Properties configs) {
+		this.configs = configs;
+		if (configs.getProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG) != null) {
 
-	private String transactionIdPrefix;
-
-	private volatile boolean running;
-
-	public KafkaProducerFactory(Map<String, Object> configs) {
-		this(configs, null, null);
+		}
 	}
 
-	public KafkaProducerFactory(Map<String, Object> configs, Serializer<K> keySerializer,
-								Serializer<V> valueSerializer) {
-		this.configs = new HashMap<>(configs);
-		this.keySerializer = keySerializer;
-		this.valueSerializer = valueSerializer;
-	}
-
-	public void setKeySerializer(Serializer<K> keySerializer) {
-		this.keySerializer = keySerializer;
-	}
-
-	public void setValueSerializer(Serializer<V> valueSerializer) {
-		this.valueSerializer = valueSerializer;
-	}
-
-	/**
-	 * The time to wait when physically closing the producer (when {@link #stop()} or {@link #destroy()} is invoked).
-	 * Specified in seconds; default {@value #DEFAULT_PHYSICAL_CLOSE_TIMEOUT}.
-	 * @param physicalCloseTimeout the timeout in seconds.
-	 * @since 1.0.7
-	 */
-	public void setPhysicalCloseTimeout(int physicalCloseTimeout) {
-		this.physicalCloseTimeout = physicalCloseTimeout;
-	}
-
-	/**
-	 * Set the transactional.id prefix.
-	 * @param transactionIdPrefix the prefix.
-	 * @since 1.3
-	 */
-	public void setTransactionIdPrefix(String transactionIdPrefix) {
-		this.transactionIdPrefix = transactionIdPrefix;
-	}
-
-	/**
-	 * Return an unmodifiable reference to the configuration map for this factory.
-	 * Useful for cloning to make a similar factory.
-	 * @return the configs.
-	 * @since 1.3
-	 */
-	public Map<String, Object> getConfigurationProperties() {
-		return Collections.unmodifiableMap(this.configs);
+	@Override
+	public Properties getConfigurationProperties() {
+		return configs;
 	}
 
 	@Override
 	public boolean transactionCapable() {
-		return this.transactionIdPrefix != null;
+		return this.transactionId != null;
 	}
 
-	public void destroy() throws Exception { //NOSONAR
+	public void destroy() throws Exception {
 		CloseSafeProducer<K, V> producer = this.producer;
 		this.producer = null;
 		if (producer != null) {
-			producer.delegate.close(this.physicalCloseTimeout, TimeUnit.SECONDS);
+			producer.delegate.close();
 		}
 		producer = this.cache.poll();
 		while (producer != null) {
 			try {
-				producer.delegate.close(this.physicalCloseTimeout, TimeUnit.SECONDS);
+				producer.delegate.close();
 			}
 			catch (Exception e) {
-				logger.error("Exception while closing producer", e);
+				log.error("Exception while closing producer", e);
 			}
 			producer = this.cache.poll();
 		}
 	}
 
-	public void start() {
-		this.running = true;
-	}
-
-
-	public void stop() {
-		try {
-			destroy();
-		}
-		catch (Exception e) {
-			logger.error("Exception while closing producer", e);
-		}
-	}
-
-	public boolean isRunning() {
-		return this.running;
-	}
-
 	@Override
 	public Producer<K, V> createProducer() {
-		if (this.transactionIdPrefix != null) {
+		if (this.transactionId != null) {
 			return createTransactionalProducer();
 		}
 		if (this.producer == null) {
@@ -174,16 +108,15 @@ public class KafkaProducerFactory<K, V> implements ProducerFactory<K, V> {
 	}
 
 	protected Producer<K, V> createKafkaProducer() {
-		return new KafkaProducer<K, V>(this.configs, this.keySerializer, this.valueSerializer);
+		return new KafkaProducer<K, V>(this.configs);
 	}
 
 	protected Producer<K, V> createTransactionalProducer() {
 		Producer<K, V> producer = this.cache.poll();
 		if (producer == null) {
-			Map<String, Object> configs = new HashMap<>(this.configs);
 			configs.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG,
-					this.transactionIdPrefix + this.transactionIdSuffix.getAndIncrement());
-			producer = new KafkaProducer<K, V>(configs, this.keySerializer, this.valueSerializer);
+					this.transactionId + this.transactionIdSuffix.getAndIncrement());
+			producer = new KafkaProducer<K, V>(configs);
 			producer.initTransactions();
 			return new CloseSafeProducer<K, V>(producer, this.cache);
 		}
@@ -238,23 +171,22 @@ public class KafkaProducerFactory<K, V> implements ProducerFactory<K, V> {
 		}
 
 		@Override
-		public void beginTransaction() throws ProducerFencedException {
+		public void beginTransaction() {
 			this.delegate.beginTransaction();
 		}
 
 		@Override
-		public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, String consumerGroupId)
-				throws ProducerFencedException {
+		public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, String consumerGroupId) {
 			this.delegate.sendOffsetsToTransaction(offsets, consumerGroupId);
 		}
 
 		@Override
-		public void commitTransaction() throws ProducerFencedException {
+		public void commitTransaction() {
 			this.delegate.commitTransaction();
 		}
 
 		@Override
-		public void abortTransaction() throws ProducerFencedException {
+		public void abortTransaction() {
 			this.delegate.abortTransaction();
 		}
 
