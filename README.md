@@ -277,4 +277,52 @@ function getConnectorConfig () (kafka:KafkaProducerConf) {
 }
 ````
 
+Kafka Partition Rebalance Listeners
+
+```ballerina
+import ballerina.net.kafka;
+
+function main (string[] args) {
+    kafka:KafkaConsumer con  = getConsumer();
+    var ce = con.connect();
+
+    string[] topics = [];
+    topics[0] = "wso2";
+    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onAssigned = printOne;
+    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onRevocked = printTwo;
+
+    var se = con.subscribeWithPartitionRebalance(topics, onAssigned, onRevocked);
+    while(true) {
+        kafka:ConsumerRecord[] records;
+        error err;
+        records, err = con.poll(1000);
+        if (records != null) {
+           int counter = 0;
+           while (counter < lengthof records ) {
+               blob byteMsg = records[counter].value;
+               string msg = kafka:deserialize(byteMsg);
+               println(msg);
+               counter = counter + 1;
+           }
+        }
+    }
+}
+
+function getConsumer () (kafka:KafkaConsumer) {
+    kafka:KafkaConsumer con = {};
+    map m = {"bootstrap.servers":"localhost:9092, localhost:9093","group.id": "abc"};
+    con.properties = m;
+    return con;
+}
+
+
+function printOne(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
+    println("one");
+}
+
+function printTwo(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
+     println("two");
+}
+````
+
 For more Kafka Connector Ballerina configurations please refer to the samples directory.
