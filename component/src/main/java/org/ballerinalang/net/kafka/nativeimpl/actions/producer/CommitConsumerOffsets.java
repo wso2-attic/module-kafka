@@ -45,7 +45,7 @@ import java.util.Map;
  * {@code }
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
-        actionName = "sendOffsetsTransaction",
+        actionName = "commitConsumerOffsets",
         connectorName = Constants.PRODUCER_CONNECTOR_NAME,
         args = {
                 @Argument(name = "c",
@@ -56,8 +56,8 @@ import java.util.Map;
                 @Argument(name = "groupID", type = TypeKind.STRING)
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})
-public class SendOffsetsTransaction extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(SendOffsetsTransaction.class);
+public class CommitConsumerOffsets extends AbstractNativeAction {
+    private static final Logger log = LoggerFactory.getLogger(CommitConsumerOffsets.class);
 
     @Override
     public ConnectorFuture execute(Context context) {

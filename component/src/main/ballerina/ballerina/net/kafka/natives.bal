@@ -5,23 +5,23 @@ public struct KafkaProducer {
 }
 
 @Description { value:"Struct which represents Kafka consumer"}
-@Param { value:"map: Consumer properties as key value pairs" }
+@Field { value:"map: Consumer properties as key value pairs" }
 public struct KafkaConsumer {
    map properties;
 }
 
 @Description { value:"Struct which represents Kafka producer configuration"}
-@Param { value:"map: Consumer properties as key value pairs" }
+@Field { value:"map: Consumer properties as key value pairs" }
 public struct KafkaProducerConf {
     map properties;
 }
 
 @Description { value:"Struct which represents Kafka producer record"}
-@Param { value:"key: Record key byte array" }
-@Param { value:"value: Record value byte array" }
-@Param { value:"topic: Topic record to be sent" }
-@Param { value:"partition: Topic partition record to be sent" }
-@Param { value:"timestamp: Timestamp to be considered over broker side" }
+@Field { value:"key: Record key byte array" }
+@Field { value:"value: Record value byte array" }
+@Field { value:"topic: Topic record to be sent" }
+@Field { value:"partition: Topic partition record to be sent" }
+@Field { value:"timestamp: Timestamp to be considered over broker side" }
 public struct ProducerRecord {
    blob key;
    blob value;
@@ -31,11 +31,11 @@ public struct ProducerRecord {
 }
 
 @Description { value:"Struct which represents Kafka Topic partition"}
-@Param { value:"topic: Topic which partition is related" }
-@Param { value:"partition: Index of the parttion" }
-@Param { value:"leader: Leader index which partition is assigned" }
-@Param { value:"replicas: Initial number of replicas assigned per partition" }
-@Param { value:"isr: In sync replicas from initial replicas" }
+@Field { value:"topic: Topic which partition is related" }
+@Field { value:"partition: Index of the parttion" }
+@Field { value:"leader: Leader index which partition is assigned" }
+@Field { value:"replicas: Initial number of replicas assigned per partition" }
+@Field { value:"isr: In sync replicas from initial replicas" }
 public struct PartitionInfo {
    string  topic;
    int partition;
@@ -50,9 +50,14 @@ public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
     map producer = {};
 
-    @Description { value:"Send action which produce records to Kafka server"}
+    @Description { value:"Simple Send action which produce records to Kafka server"}
+    @Param { value:"value: value of Kafka ProducerRecord to be sent." }
+    @Param { value:"topic: topic of Kafka ProducerRecord to be sent." }
+    native action send (blob value, string topic);
+
+    @Description { value:"Advanced Send action which produce records to Kafka server"}
     @Param { value:"record: ProducerRecord to be sent." }
-    native action send (ProducerRecord record);
+    native action sendAdvanced (ProducerRecord record);
 
     @Description { value:"Flush action which flush batch of records"}
     native action flush ();
@@ -65,28 +70,32 @@ public connector KafkaProducerConnector (KafkaProducerConf conf) {
     @Return { value:"PartitionInfo[]: Partition information for given topic" }
     native action getTopicPartitions (string topic) (PartitionInfo[]);
 
-    @Description { value:"SendOffsetsTransaction action which commits consumer offsets in given transaction"}
+    @Description { value:"CommitConsumer action which commits consumer consumed offsets to offset topic"}
+    @Param { value:"consumer: Consumer which needs offsets to be committed" }
+    native action commitConsumer (KafkaConsumer consumer);
+
+    @Description { value:"CommitConsumerOffsets action which commits consumer offsets in given transaction"}
     @Param { value:"offsets: Consumer offsets to commit for given transaction" }
     @Param { value:"groupID: Consumer group id" }
-    native action sendOffsetsTransaction(Offset[] offsets, string groupID);
+    native action commitConsumerOffsets (Offset[] offsets, string groupID);
 
 }
 
 @Description { value:"Struct which represents Topic partition"}
-@Param { value:"topic: Topic which partition is related" }
-@Param { value:"partition: Index for the partition" }
+@Field { value:"topic: Topic which partition is related" }
+@Field { value:"partition: Index for the partition" }
 public struct TopicPartition {
   string topic;
   int partition;
 }
 
 @Description { value:"Struct which represents Consumer Record which returned from pol cycle"}
-@Param { value:"key: Record key byte array" }
-@Param { value:"value: Record value byte array" }
-@Param { value:"offset: Offset of the Record positioned in partition" }
-@Param { value:"partition: Topic partition record to be sent" }
-@Param { value:"timestamp: Timestamp to be considered over broker side" }
-@Param { value:"topic: Topic record to be sent" }
+@Field { value:"key: Record key byte array" }
+@Field { value:"value: Record value byte array" }
+@Field { value:"offset: Offset of the Record positioned in partition" }
+@Field { value:"partition: Topic partition record to be sent" }
+@Field { value:"timestamp: Timestamp to be considered over broker side" }
+@Field { value:"topic: Topic record to be sent" }
 public struct ConsumerRecord {
    blob key;
    blob value;
@@ -97,8 +106,8 @@ public struct ConsumerRecord {
 }
 
 @Description { value:"Struct which represents Topic partition position in which consumed record is stored"}
-@Param { value:"partition: TopicPartition which record is related" }
-@Param { value:"offset: offset in which record is stored in partition" }
+@Field { value:"partition: TopicPartition which record is related" }
+@Field { value:"offset: offset in which record is stored in partition" }
 public struct Offset {
   TopicPartition partition;
   int offset;
@@ -167,7 +176,7 @@ public native function <KafkaConsumer consumer> commit();
 @Param { value:"offsets: Offsets to be commited" }
 public native function <KafkaConsumer consumer> commitOffset(Offset[] offsets);
 
-@Description { value:"Seek consumer for given offset in a topic partition}
+@Description { value:"Seek consumer for given offset in a topic partition" }
 @Param { value:"offset: Given offset to seek" }
 @Return { value:"error: Error will be returned if seeking of position is failed" }
 public native function <KafkaConsumer consumer> seek(Offset offset) (error);
@@ -228,7 +237,7 @@ public native function <KafkaConsumer consumer> getEndOffsets(TopicPartition[] p
 @Return { value:"blob: serialized string value" }
 public native function serialize (string s) (blob);
 
-@Description { value:"Convert byte array to string"}
+@Description { value:"Convert byte array to string" }
 @Param { value:"b: byte array to be de-serialized" }
 @Return { value:"string: de-serialized string value" }
 public native function deserialize (blob b) (string);

@@ -40,19 +40,19 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@code } blob value, string topic
+ * {@code }
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
-        actionName = "send",
+        actionName = "sendAdvanced",
         connectorName = Constants.PRODUCER_CONNECTOR_NAME,
         args = {
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR),
-                @Argument(name = "value", type = TypeKind.BLOB),
-                @Argument(name = "topic", type = TypeKind.STRING)
+                @Argument(name = "record", type = TypeKind.STRUCT, structType = "ProducerRecord",
+                        structPackage = "ballerina.net.kafka")
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})
-public class Send extends AbstractNativeAction {
+public class SendAdvanced extends AbstractNativeAction {
     private static final Logger log = LoggerFactory.getLogger(SendAdvanced.class);
 
     @Override
@@ -67,9 +67,7 @@ public class Send extends AbstractNativeAction {
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
 
         KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
-        //BStruct producerRecord = ((BStruct) getRefArgument(context, 1));
-        String topic = getStringArgument(context, 0);
-        byte[] value = getBlobArgument(context, 0);
+        BStruct producerRecord = ((BStruct) getRefArgument(context, 1));
 
 
 //        public struct ProducerRecord {
@@ -81,12 +79,12 @@ public class Send extends AbstractNativeAction {
 //        }
 
         //TODO: validate params
-//        byte[] key = producerRecord.getBlobField(0);
-//        byte[] value = producerRecord.getBlobField(1);
-//        String topic = producerRecord.getStringField(0);
+        byte[] key = producerRecord.getBlobField(0);
+        byte[] value = producerRecord.getBlobField(1);
+        String topic = producerRecord.getStringField(0);
 
 
-        ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, value);
+        ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, key, value);
 
         try {
             if (producerBalConfig.get(Constants.PARAM_TRANSACTION_ID) != null
