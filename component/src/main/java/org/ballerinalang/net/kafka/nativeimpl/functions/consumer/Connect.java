@@ -30,8 +30,8 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.natives.annotations.Receiver;
+import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.KafkaUtils;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class Connect extends AbstractNativeFunction {
         try {
             KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
             consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
-        } catch (KafkaException e){
+        } catch (KafkaException e) {
             return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 

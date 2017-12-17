@@ -20,5 +20,11 @@ under the License.
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="ballerina-natives-test-suite">
+    <test name="ballerina-native-functions-unit-tests" parallel="false">
+        <packages>
+            <package name="org.ballerinalang.net.kafka.nativeimpl.consumer"/>
+            <package name="org.ballerinalang.net.kafka.nativeimpl.producer"/>
+        </packages>
+    </test>
 
 </suite>

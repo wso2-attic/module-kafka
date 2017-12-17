@@ -35,10 +35,9 @@ public class KafkaMessageHandler {
         this.kafkaListener = kafkaListener;
     }
 
-    public void handle(ConsumerRecords<byte[], byte[]> consumerRecords) {
-        consumerRecords.forEach(record -> {
-            kafkaListener.onRecordReceived(record);
-        });
+    public void handle(ConsumerRecords<byte[], byte[]> consumerRecords,
+                       KafkaConsumer<byte[], byte[]> kafkaConsumer) {
+        kafkaListener.onRecordsReceived(consumerRecords, kafkaConsumer);
     }
 
     public void handle(ConsumerRecords<byte[], byte[]> consumerRecords,

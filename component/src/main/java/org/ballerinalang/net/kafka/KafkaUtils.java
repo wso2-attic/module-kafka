@@ -19,7 +19,6 @@
 package org.ballerinalang.net.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -49,23 +48,6 @@ import java.util.Properties;
  */
 public class KafkaUtils {
 
-    public static BValue[] getSignatureParameters(Resource resource, ConsumerRecord<byte[], byte[]> record) {
-        BStruct recordStruct = ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
-                Constants.CONSUMER_RECORD_STRUCT_NAME);
-        recordStruct.setBlobField(0, record.key());
-        recordStruct.setBlobField(1, record.value());
-        recordStruct.setIntField(0, record.partition());
-        recordStruct.setIntField(1, record.timestamp());
-        recordStruct.setStringField(0, record.topic());
-
-        //TODO validation
-        List<ParamDetail> paramDetails = resource.getParamDetails();
-        BValue[] bValues = new BValue[paramDetails.size()];
-        bValues[0] = recordStruct;
-
-        return bValues;
-    }
-
     public static BValue[] getSignatureParameters(Resource resource,
                                                   ConsumerRecords<byte[], byte[]> records,
                                                   KafkaConsumer<byte[], byte[]> kafkaConsumer) {
@@ -90,10 +72,25 @@ public class KafkaUtils {
         //TODO validation
         List<ParamDetail> paramDetails = resource.getParamDetails();
         BValue[] bValues = new BValue[paramDetails.size()];
-        bValues[0] = new BRefValueArray(recordsList.toArray(new BRefType[0]),
-                ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
-                        Constants.CONSUMER_RECORD_STRUCT_NAME).getType());
-        bValues[1] = consumerStruct;
+        if (paramDetails.size() == 4) {
+
+
+        } else if (paramDetails.size() == 3) {
+            bValues[0] = consumerStruct;
+            bValues[1] = new BRefValueArray(recordsList.toArray(new BRefType[0]),
+                    ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
+                            Constants.CONSUMER_RECORD_STRUCT_NAME).getType());
+
+
+        } else if (paramDetails.size() == 2) {
+            bValues[0] = consumerStruct;
+            bValues[1] = new BRefValueArray(recordsList.toArray(new BRefType[0]),
+                    ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
+                            Constants.CONSUMER_RECORD_STRUCT_NAME).getType());
+        } else if (paramDetails.size() == 1) {
+            bValues[0] = consumerStruct;
+        }
+
         return bValues;
     }
 
@@ -125,6 +122,7 @@ public class KafkaUtils {
         addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bMap, configParams);
         addStringParamIfPresent(ConsumerConfig.GROUP_ID_CONFIG, bMap, configParams);
         addStringParamIfPresent(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, bMap, configParams);
 
         processDefaultConsumerProperties(configParams);
         return configParams;

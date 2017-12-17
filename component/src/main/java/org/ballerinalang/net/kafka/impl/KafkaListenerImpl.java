@@ -17,7 +17,6 @@
 package org.ballerinalang.net.kafka.impl;
 
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.connector.api.ConnectorFuture;
@@ -39,8 +38,9 @@ public class KafkaListenerImpl implements KafkaListener {
     }
 
     @Override
-    public void onRecordReceived(ConsumerRecord<byte[], byte[]> record) {
-        Executor.submit(resource, null, KafkaUtils.getSignatureParameters(resource, record));
+    public void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
+                                  KafkaConsumer<byte[], byte[]> kafkaConsumer) {
+        Executor.submit(resource, null, KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer));
     }
 
     @Override

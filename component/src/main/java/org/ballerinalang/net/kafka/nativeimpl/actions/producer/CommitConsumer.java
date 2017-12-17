@@ -28,7 +28,6 @@ import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;

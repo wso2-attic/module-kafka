@@ -30,8 +30,8 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.natives.annotations.Receiver;
+import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
@@ -76,15 +76,6 @@ public class Poll extends AbstractNativeFunction {
 
         long timeout = getIntArgument(context, 0);
         List<BStruct> recordsList = new ArrayList<>();
-
-//        public struct ConsumerRecord {
-//            blob key;
-//            blob value;
-//            int offset;
-//            int  partition;
-//            int timestamp;
-//            string topic;
-//        }
 
         try {
             ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(timeout);

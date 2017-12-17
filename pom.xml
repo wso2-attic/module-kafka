@@ -114,6 +114,12 @@
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-core</artifactId>
                 <version>${ballerina.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -155,6 +161,39 @@
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.api.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.debezium</groupId>
+                <artifactId>debezium-core</artifactId>
+                <version>${debezium.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.debezium</groupId>
+                <artifactId>debezium-core</artifactId>
+                <version>${debezium.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka_${version.kafka.scala}</artifactId>
+                <version>${apache.kafka.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.scala-lang</groupId>
+                        <artifactId>scala-library</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -252,8 +291,11 @@
     </build>
 
     <properties>
+        <scala.version>2.11.0</scala.version>
+        <version.kafka.scala>2.11</version.kafka.scala>
+        <debezium.version>0.7.0</debezium.version>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.95.0</ballerina.version>
+        <ballerina.version>0.95.1</ballerina.version>
         <apache.kafka.version>1.0.0</apache.kafka.version>
         <org.testng.version>6.11</org.testng.version>
         <apache.commons-pool2.version>2.4.2</apache.commons-pool2.version>

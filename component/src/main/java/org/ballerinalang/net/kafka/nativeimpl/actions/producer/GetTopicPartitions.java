@@ -26,10 +26,10 @@ import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
@@ -55,7 +55,7 @@ import java.util.List;
                         type = TypeKind.CONNECTOR),
                 @Argument(name = "topic", type = TypeKind.STRING)
         },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT, structType = "PartitionInfo",
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT, structType = "TopicPartition",
                 structPackage = "ballerina.net.kafka")})
 public class GetTopicPartitions extends AbstractNativeAction {
     private static final Logger log = LoggerFactory.getLogger(GetTopicPartitions.class);
@@ -77,19 +77,13 @@ public class GetTopicPartitions extends AbstractNativeAction {
             List<BStruct> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {
-//                public struct PartitionInfo {
-//                    string  topic;
-//                    int partition;
-//                    int leader;
-//                    int  replicas;
-//                    int  isr;
-//                }
+//                    public struct TopicPartition {
+//                        string topic;
+//                        int partition;
+//                    }
                     BStruct infoStruct = createRecordStruct(context);
                     infoStruct.setStringField(0, partitionInfo.topic());
                     infoStruct.setIntField(0, partitionInfo.partition());
-                    infoStruct.setIntField(1, partitionInfo.leader().id());
-                    infoStruct.setIntField(2, partitionInfo.replicas().length);
-                    infoStruct.setIntField(3, partitionInfo.inSyncReplicas().length);
                     infoList.add(infoStruct);
                 });
                 context.getControlStackNew().getCurrentFrame().returnValues[0] =
@@ -108,7 +102,7 @@ public class GetTopicPartitions extends AbstractNativeAction {
         PackageInfo kafkaPackageInfo = context.getProgramFile()
                 .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
         StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(Constants.CONSUMER_PARTITION_INFO_STRUCT_NAME);
+                .getStructInfo(Constants.TOPIC_PARTITION_STRUCT_NAME);
         BStructType structType = consumerRecordStructInfo.getType();
         BStruct bStruct = new BStruct(structType);
         return bStruct;

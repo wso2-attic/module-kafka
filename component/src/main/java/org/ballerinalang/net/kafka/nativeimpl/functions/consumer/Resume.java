@@ -37,6 +37,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
+/**
+ * {@code }
+ */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "resume",
         receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",

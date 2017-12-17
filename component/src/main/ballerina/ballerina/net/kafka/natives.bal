@@ -30,20 +30,6 @@ public struct ProducerRecord {
    int timestamp;
 }
 
-@Description { value:"Struct which represents Kafka Topic partition"}
-@Field { value:"topic: Topic which partition is related" }
-@Field { value:"partition: Index of the parttion" }
-@Field { value:"leader: Leader index which partition is assigned" }
-@Field { value:"replicas: Initial number of replicas assigned per partition" }
-@Field { value:"isr: In sync replicas from initial replicas" }
-public struct PartitionInfo {
-   string  topic;
-   int partition;
-   int leader;
-   int  replicas;
-   int  isr;
-}
-
 @Description { value:"Producer Client Connector for execute producing kafka records to the broker"}
 @Param { value:"conf: Producer configuration" }
 public connector KafkaProducerConnector (KafkaProducerConf conf) {
@@ -67,8 +53,8 @@ public connector KafkaProducerConnector (KafkaProducerConf conf) {
 
     @Description { value:"GetTopicPartitions action which returns given topic partition information"}
     @Param { value:"topic: Topic which partition information is given" }
-    @Return { value:"PartitionInfo[]: Partition information for given topic" }
-    native action getTopicPartitions (string topic) (PartitionInfo[]);
+    @Return { value:"TopicPartition[]: Partition for given topic" }
+    native action getTopicPartitions (string topic) (TopicPartition[]);
 
     @Description { value:"CommitConsumer action which commits consumer consumed offsets to offset topic"}
     @Param { value:"consumer: Consumer which needs offsets to be committed" }
@@ -193,9 +179,9 @@ public native function <KafkaConsumer consumer> seekToEnd(TopicPartition[] parti
 
 @Description { value:"Retrieve the set of partitions which topic belongs"}
 @Param { value:"topic: Given topic for partition information is needed" }
-@Return { value:"PartitionInfo[]: Partition information array for given topic" }
+@Return { value:"TopicPartition[]: Partition array for given topic" }
 @Return { value:"error: Error will be returned if retrieval of partition information is failed" }
-public native function <KafkaConsumer consumer> getTopicPartitions (string topic) (PartitionInfo[], error);
+public native function <KafkaConsumer consumer> getTopicPartitions (string topic) (TopicPartition[], error);
 
 @Description { value:"Un-subscribe consumer from all external broaker topic subscription"}
 @Return { value:"error: Error will be returned if unsubscription from topics is failed" }

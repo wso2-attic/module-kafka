@@ -16,7 +16,6 @@
 
 package org.ballerinalang.net.kafka.api;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.net.kafka.future.KafkaPollCycleFutureListener;
@@ -26,7 +25,8 @@ import org.ballerinalang.net.kafka.future.KafkaPollCycleFutureListener;
  */
 public interface KafkaListener {
 
-    void onRecordReceived(ConsumerRecord<byte[], byte[]> record);
+    void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
+                           KafkaConsumer<byte[], byte[]> kafkaConsumer);
 
     void onRecordsReceived(ConsumerRecords<byte[], byte[]> record,
                            KafkaConsumer<byte[], byte[]> kafkaConsumer,

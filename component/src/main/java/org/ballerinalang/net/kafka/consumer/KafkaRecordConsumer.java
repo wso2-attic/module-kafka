@@ -67,7 +67,7 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
                 ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(this.polliungTimeout);
                 if (!recordsRetrieved.isEmpty()) {
                     if (decoupleProcessing) {
-                        kafkaMessageHandler.handle(recordsRetrieved);
+                        kafkaMessageHandler.handle(recordsRetrieved,  kafkaConsumer);
                     } else {
                         Semaphore flowControl = new Semaphore(0);
                         KafkaPollCycleFutureListener pollCycleListener =

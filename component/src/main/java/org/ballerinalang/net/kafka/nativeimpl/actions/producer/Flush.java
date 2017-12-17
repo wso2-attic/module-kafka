@@ -20,7 +20,6 @@ package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.model.types.TypeKind;

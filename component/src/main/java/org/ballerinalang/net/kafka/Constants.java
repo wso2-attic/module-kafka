@@ -43,7 +43,6 @@ public class Constants {
     public static final String OFFSET_STRUCT_NAME = "Offset";
 
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
-    public static final String CONSUMER_PARTITION_INFO_STRUCT_NAME = "PartitionInfo";
     public static final String CONSUMER_STRUCT_NAME = "KafkaConsumer";
     public static final String PRODUCER_STRUCT_NAME = "KafkaProducer";
     public static final String ANNOTATION_KAFKA_CONFIGURATION = "configuration";
