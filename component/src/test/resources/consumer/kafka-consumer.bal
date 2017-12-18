@@ -37,7 +37,7 @@ function funcKafkaPoll(kafka:KafkaConsumer con) (int) {
 
 function getConsumer () (kafka:KafkaConsumer) {
     kafka:KafkaConsumer con = {};
-    map m = {"bootstrap.servers":"localhost:9094","group.id": "abcl", "auto.offset.reset": "earliest"};
+    map m = {"bootstrap.servers":"localhost:9094","group.id": "abcd", "auto.offset.reset": "earliest"};
     con.properties = m;
     return con;
 }

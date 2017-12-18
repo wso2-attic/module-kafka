@@ -61,7 +61,8 @@ public class CommitConsumerOffsets extends AbstractNativeAction {
 
     @Override
     public ConnectorFuture execute(Context context) {
-
+        //TODO check transaction context
+        //TODO distributed transaction
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
         BMap producerMap = (BMap) producerConnector.getRefField(1);

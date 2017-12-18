@@ -73,7 +73,7 @@ public class GetPositionOffset extends AbstractNativeFunction {
             long position =
                     kafkaConsumer.position(new TopicPartition(topic, partitionValue));
             return getBValues(new BInteger(position));
-        } catch (KafkaException e) {
+        } catch (IllegalArgumentException | KafkaException e) {
             return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
         }
     }

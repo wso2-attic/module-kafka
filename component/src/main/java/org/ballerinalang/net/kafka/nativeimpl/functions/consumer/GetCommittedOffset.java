@@ -79,7 +79,7 @@ public class GetCommittedOffset extends AbstractNativeFunction {
             BStruct offset = createOffsetStruct(context);
             offset.setRefField(0, (BStruct) partition.copy());
             if (offsetAndMetadata == null) {
-                offset.setIntField(0, 0);
+                return VOID_RETURN;
             } else {
                 offset.setIntField(0, offsetAndMetadata.offset());
             }
