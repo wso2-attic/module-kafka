@@ -53,8 +53,8 @@ public class NetKafkaProducerTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(description = "")
-    public void testKafkaConsume() {
+    @Test(description = "Test Basic produce")
+    public void testKafkaProduce() {
         BValue[] inputBValues = {};
         BRunUtil.invoke(result, "funcTestKafkaProduce", inputBValues);
 

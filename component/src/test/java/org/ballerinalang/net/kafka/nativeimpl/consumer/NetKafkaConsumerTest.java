@@ -57,7 +57,7 @@ public class NetKafkaConsumerTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(description = "Test Basic consumer pooling with subscription and assignment retrieval")
+    @Test(description = "Test Basic consumer polling with subscription and assignment retrieval")
     public void testKafkaConsume() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {

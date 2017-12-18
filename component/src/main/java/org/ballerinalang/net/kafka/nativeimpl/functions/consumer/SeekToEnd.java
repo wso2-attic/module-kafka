@@ -69,7 +69,7 @@ public class SeekToEnd extends AbstractNativeFunction {
         BRefValueArray partitions = ((BRefValueArray) getRefArgument(context, 1));
         ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
 
-        for (int counter = 0; counter < partitionList.size(); counter++) {
+        for (int counter = 0; counter < partitions.size(); counter++) {
             BStruct partition = (BStruct) partitions.get(counter);
             String topic = partition.getStringField(0);
             int partitionValue = new Long(partition.getIntField(0)).intValue();
@@ -78,7 +78,7 @@ public class SeekToEnd extends AbstractNativeFunction {
 
         try {
             kafkaConsumer.seekToEnd(partitionList);
-        } catch (KafkaException e) {
+        } catch (IllegalStateException | KafkaException e) {
             context.getControlStackNew().getCurrentFrame().returnValues[0] =
                     BLangVMErrors.createError(context, 0, e.getMessage());
         }

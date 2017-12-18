@@ -71,7 +71,7 @@ public class Seek extends AbstractNativeFunction {
 
         try {
             kafkaConsumer.seek(new TopicPartition(topic, partitionValue), offsetValue);
-        } catch (KafkaException e) {
+        } catch (IllegalStateException | KafkaException e) {
             context.getControlStackNew().getCurrentFrame().returnValues[0] =
                     BLangVMErrors.createError(context, 0, e.getMessage());
         }
