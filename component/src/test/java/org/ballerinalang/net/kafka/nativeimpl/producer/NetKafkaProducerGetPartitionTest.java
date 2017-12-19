@@ -23,6 +23,8 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
+import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -32,45 +34,45 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Test cases for ballerina.net.kafka producer connector.
+ * Test cases for ballerina.net.kafka producer connector/partition retrieval.
  */
-public class NetKafkaProducerTest {
+public class NetKafkaProducerGetPartitionTest {
     private CompileResult result;
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("producer/kafka-producer.bal");
+        result = BCompileUtil.compile("producer/kafka-producer-partition-retrieval.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
         kafkaCluster.createTopic("test", 2, 1);
+        kafkaCluster.createTopic("test_2", 5, 1);
     }
 
-    @Test(description = "Test Basic produce")
-    public void testKafkaProduce() {
-        BValue[] inputBValues = {};
-        BRunUtil.invoke(result, "funcTestKafkaProduce", inputBValues);
+    @Test(description = "Test producer topic partition retrieval")
+    public void testKafkaTopicPartitionRetrieval() {
+        BValue[] inputBValues = {new BString("test")};
+        BValue[] returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BRefValueArray);
+        Assert.assertEquals(((BRefValueArray) returnBValues[0]).size(), 2);
 
-        final CountDownLatch completion = new CountDownLatch(1);
-        final AtomicLong messagesRead = new AtomicLong(0);
+        inputBValues = new BValue[]{new BString("test_2")};
+        returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BRefValueArray);
+        Assert.assertEquals(((BRefValueArray) returnBValues[0]).size(), 5);
 
-        kafkaCluster.useTo().consumeStrings("test", 2, 10, TimeUnit.SECONDS, completion::countDown, (key, value) -> {
-            messagesRead.incrementAndGet();
-            return true;
-        });
-        try {
-            completion.await();
-        } catch (Exception ex) {
-            //Ignore
-        }
-        Assert.assertEquals(messagesRead.get(), 2);
+        //negative test for the case where topic has not been created programmatically
+        inputBValues = new BValue[]{new BString("test_negative")};
+        returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BRefValueArray);
+        Assert.assertEquals(((BRefValueArray) returnBValues[0]).size(), 1);
     }
 
     @AfterClass
