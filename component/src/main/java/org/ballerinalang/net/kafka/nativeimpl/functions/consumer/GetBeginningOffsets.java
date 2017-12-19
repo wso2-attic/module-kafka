@@ -76,7 +76,7 @@ public class GetBeginningOffsets extends AbstractNativeFunction {
         BRefValueArray partitions = ((BRefValueArray) getRefArgument(context, 1));
         ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
 
-        for (int counter = 0; counter < partitionList.size(); counter++) {
+        for (int counter = 0; counter < partitions.size(); counter++) {
             BStruct partition = (BStruct) partitions.get(counter);
             String topic = partition.getStringField(0);
             int partitionValue = new Long(partition.getIntField(0)).intValue();
@@ -94,6 +94,7 @@ public class GetBeginningOffsets extends AbstractNativeFunction {
                     partitionStruct.setIntField(0, offset.getKey().partition());
                     offsetStruct.setRefField(0, partitionStruct);
                     offsetStruct.setIntField(0, offset.getValue());
+                    infoList.add(offsetStruct);
                 });
                 return getBValues(new BRefValueArray(infoList.toArray(new BRefType[0]),
                         createOffsetStruct(context).getType()));

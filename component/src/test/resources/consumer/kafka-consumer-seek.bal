@@ -44,10 +44,23 @@ function funcKafkaSeekToEnd(kafka:KafkaConsumer con, kafka:TopicPartition[] part
    e = con.seekToEnd(partitions);
 }
 
+function funcKafkaBeginOffsets(kafka:KafkaConsumer con, kafka:TopicPartition[] partitions) (kafka:Offset[]) {
+   kafka:Offset[] offsets;
+   error e;
+   offsets, e = con.getBeginningOffsets(partitions);
+   return offsets;
+}
+
+function funcKafkaEndOffsets(kafka:KafkaConsumer con, kafka:TopicPartition[] partitions) (kafka:Offset[]) {
+   kafka:Offset[] offsets;
+   error e;
+   offsets, e = con.getEndOffsets(partitions);
+   return offsets;
+}
+
 function getConsumer () (kafka:KafkaConsumer) {
     kafka:KafkaConsumer con = {};
     map m = {"bootstrap.servers":"localhost:9094","group.id": "abcd", "auto.offset.reset": "earliest"};
     con.properties = m;
     return con;
 }
-
