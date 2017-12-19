@@ -30,7 +30,8 @@ public interface KafkaListener {
 
     void onRecordsReceived(ConsumerRecords<byte[], byte[]> record,
                            KafkaConsumer<byte[], byte[]> kafkaConsumer,
-                           KafkaPollCycleFutureListener listener);
+                           KafkaPollCycleFutureListener listener,
+                           String groupID);
 
     void onErrorReceived(Throwable throwable);
 

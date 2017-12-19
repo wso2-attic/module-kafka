@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:getPositionOffset returns current position for give topic partition.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getPositionOffset",

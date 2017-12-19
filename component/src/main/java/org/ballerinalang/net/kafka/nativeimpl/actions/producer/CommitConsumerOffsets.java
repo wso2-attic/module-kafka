@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * {@code }
+ * Native action ballerina.net.kafka:commitConsumerOffsets which commits the consumer fir given offsets in transaction.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "commitConsumerOffsets",
@@ -74,15 +74,6 @@ public class CommitConsumerOffsets extends AbstractNativeAction {
         String groupID = getStringArgument(context, 0);
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
 
-//        public struct Offset {
-//            TopicPartition partition;
-//            int offset;
-//        }
-//        public struct TopicPartition {
-//            string topic;
-//            int partition;
-//        }
-
         for (int counter = 0; counter < offsets.size(); counter++) {
             BStruct offset = (BStruct) offsets.get(counter);
             BStruct partition = (BStruct) offset.getRefField(0);
@@ -94,7 +85,7 @@ public class CommitConsumerOffsets extends AbstractNativeAction {
 
         try {
             kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
-        } catch (KafkaException e) {
+        } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
         }
         ClientConnectorFuture future = new ClientConnectorFuture();

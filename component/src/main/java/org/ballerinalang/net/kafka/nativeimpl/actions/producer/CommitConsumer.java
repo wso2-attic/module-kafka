@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * {@code }
+ * Native action ballerina.net.kafka:commitConsumer which commits the consumer offsets in transaction.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "commitConsumer",
@@ -70,8 +70,6 @@ public class CommitConsumer extends AbstractNativeAction {
 
         KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct
                 .getNativeData(Constants.NATIVE_PRODUCER);
-        //BRefValueArray offsets = ((BRefValueArray) getRefArgument(context, 1));
-        //String groupID = getStringArgument(context, 0);
 
         BStruct consumerStruct = (BStruct) getRefArgument(context, 1);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
@@ -83,25 +81,14 @@ public class CommitConsumer extends AbstractNativeAction {
         topicPartitions.forEach(tp -> {
             long pos = kafkaConsumer.position(tp);
             partitionToMetadataMap.put(new TopicPartition(tp.topic(), tp.partition()), new OffsetAndMetadata(pos));
-
         });
 
         BMap<String, BString> consumerBalConfig = (BMap<String, BString>) consumerStruct.getRefField(0);
         String groupID = consumerBalConfig.get(ConsumerConfig.GROUP_ID_CONFIG).stringValue();
 
-
-//        public struct Offset {
-//            TopicPartition partition;
-//            int offset;
-//        }
-//        public struct TopicPartition {
-//            string topic;
-//            int partition;
-//        }
-
         try {
             kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
-        } catch (KafkaException e) {
+        } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
         }
         ClientConnectorFuture future = new ClientConnectorFuture();

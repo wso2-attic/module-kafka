@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:connect which connects consumer to remote cluster.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "connect",
@@ -68,7 +68,7 @@ public class Connect extends AbstractNativeFunction {
             KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
             consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
         } catch (KafkaException e) {
-            return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+            return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 
         return VOID_RETURN;

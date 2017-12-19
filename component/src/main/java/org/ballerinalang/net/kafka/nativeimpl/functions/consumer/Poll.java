@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:poll poll the broker to retrieve messages within given timeout.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "poll",
@@ -81,7 +81,6 @@ public class Poll extends AbstractNativeFunction {
             ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(timeout);
             if (!recordsRetrieved.isEmpty()) {
                 recordsRetrieved.forEach(record -> {
-                    //record.
                     BStruct recordStruct = createRecordStruct(context);
                     recordStruct.setBlobField(0, record.key());
                     recordStruct.setBlobField(1, record.value());
@@ -93,7 +92,8 @@ public class Poll extends AbstractNativeFunction {
             }
             return getBValues(new BRefValueArray(recordsList.toArray(new BRefType[0]),
                     createRecordStruct(context).getType()));
-        } catch (KafkaException e) {
+        } catch (IllegalStateException |
+                IllegalArgumentException | KafkaException e) {
             return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
         }
     }

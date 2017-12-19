@@ -44,9 +44,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 /**
- * {@code Init}.
- *
- * @since 0.9
+ * Native action ballerina.net.kafka:<init> hidden action which initializes a producer instance for connector.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
                  actionName = "<init>",
@@ -60,7 +58,6 @@ public class Init extends AbstractNativeAction {
 
     @Override
     public ConnectorFuture execute(Context context) {
-        // Producer initialization
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
         BStruct producerConf = ((BStruct) producerConnector.getRefField(0));

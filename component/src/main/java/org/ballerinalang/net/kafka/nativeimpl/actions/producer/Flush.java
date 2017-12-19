@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code }
+ * Native action ballerina.net.kafka:flush producer records from record accumulator.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "flush",

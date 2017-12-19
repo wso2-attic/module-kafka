@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:getTopicPartitions returns partition array for given topic.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getTopicPartitions",
@@ -77,15 +77,9 @@ public class GetTopicPartitions extends AbstractNativeFunction {
 
         try {
             List<PartitionInfo> partitionInfos = kafkaConsumer.partitionsFor(topic);
-
-
             List<BStruct> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {
-//                    public struct TopicPartition {
-//                        string topic;
-//                        int partition;
-//                    }
                     BStruct infoStruct = createRecordStruct(context);
                     infoStruct.setStringField(0, partitionInfo.topic());
                     infoStruct.setIntField(0, partitionInfo.partition());

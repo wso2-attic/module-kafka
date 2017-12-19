@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:getAssignment which returns given partition assignment for consumer.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getAssignment",
@@ -75,16 +75,9 @@ public class GetAssignment extends AbstractNativeFunction {
 
         try {
             Set<TopicPartition> assignments = kafkaConsumer.assignment();
-
-
             List<BStruct> assignmentList = new ArrayList<>();
             if (!assignments.isEmpty()) {
                 assignments.forEach(assignment -> {
-//                    public struct TopicPartition {
-//                        string topic;
-//                        int partition;
-//                    }
-
                     BStruct infoStruct = createPartitionStruct(context);
                     infoStruct.setStringField(0, assignment.topic());
                     infoStruct.setIntField(0, assignment.partition());

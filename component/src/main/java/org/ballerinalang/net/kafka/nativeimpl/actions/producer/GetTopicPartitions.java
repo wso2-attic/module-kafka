@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code }
+ * Native action ballerina.net.kafka:getTopicPartitions retrieves partitions for given Topic via remote call.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "getTopicPartitions",
@@ -77,10 +77,6 @@ public class GetTopicPartitions extends AbstractNativeAction {
             List<BStruct> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {
-//                    public struct TopicPartition {
-//                        string topic;
-//                        int partition;
-//                    }
                     BStruct infoStruct = createRecordStruct(context);
                     infoStruct.setStringField(0, partitionInfo.topic());
                     infoStruct.setIntField(0, partitionInfo.partition());

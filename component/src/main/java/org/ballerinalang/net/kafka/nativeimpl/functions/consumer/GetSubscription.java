@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Set;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:getSubscription returns topic array which consumer is subscribed to.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getSubscription",
@@ -67,7 +67,6 @@ public class GetSubscription extends AbstractNativeFunction {
 
         try {
             Set<String> subscriptions = kafkaConsumer.subscription();
-
             BStringArray subscriptionArray = new BStringArray();
             if (!subscriptions.isEmpty()) {
                 int i = 0;

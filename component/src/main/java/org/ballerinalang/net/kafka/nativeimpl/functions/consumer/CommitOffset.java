@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:commitOffset which commits given offsets of consumer to offset topic.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "commitOffset",
@@ -69,18 +69,21 @@ public class CommitOffset extends AbstractNativeFunction {
         BRefValueArray offsets = ((BRefValueArray) getRefArgument(context, 1));
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
 
-        for (int counter = 0; counter < offsets.size(); counter++) {
-            BStruct offset = (BStruct) offsets.get(counter);
-            BStruct partition = (BStruct) offset.getRefField(0);
-            int offsetValue = new Long(offset.getIntField(0)).intValue();
-            String topic = partition.getStringField(0);
-            int partitionValue = new Long(partition.getIntField(0)).intValue();
-            partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
+        if (offsets != null) {
+            for (int counter = 0; counter < offsets.size(); counter++) {
+                BStruct offset = (BStruct) offsets.get(counter);
+                BStruct partition = (BStruct) offset.getRefField(0);
+                int offsetValue = new Long(offset.getIntField(0)).intValue();
+                String topic = partition.getStringField(0);
+                int partitionValue = new Long(partition.getIntField(0)).intValue();
+                partitionToMetadataMap.put(new TopicPartition(topic, partitionValue),
+                        new OffsetAndMetadata(offsetValue));
+            }
         }
 
         try {
             kafkaConsumer.commitSync(partitionToMetadataMap);
-        } catch (KafkaException e) {
+        } catch (IllegalArgumentException | KafkaException e) {
             throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
         }
 

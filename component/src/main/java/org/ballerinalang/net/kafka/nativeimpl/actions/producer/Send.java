@@ -18,6 +18,7 @@ package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.BallerinaTransactionContext;
 import org.ballerinalang.bre.BallerinaTransactionManager;
 import org.ballerinalang.bre.Context;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@code } blob value, string topic
+ * Native action ballerina.net.kafka:send simple send which produces blob value to given string topic.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "send",
@@ -67,24 +68,11 @@ public class Send extends AbstractNativeAction {
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
 
         KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
-        //BStruct producerRecord = ((BStruct) getRefArgument(context, 1));
+
         String topic = getStringArgument(context, 0);
         byte[] value = getBlobArgument(context, 0);
 
-
-//        public struct ProducerRecord {
-//            blob key;
-//            blob value;
-//            string topic;
-//            int  partition;
-//            int timestamp;
-//        }
-
         //TODO: validate params
-//        byte[] key = producerRecord.getBlobField(0);
-//        byte[] value = producerRecord.getBlobField(1);
-//        String topic = producerRecord.getStringField(0);
-
 
         ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, value);
 
@@ -102,7 +90,7 @@ public class Send extends AbstractNativeAction {
                 }
             }
             kafkaProducer.send(kafkaRecord);
-        } catch (Exception e) {
+        } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
 

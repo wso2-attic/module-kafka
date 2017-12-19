@@ -52,7 +52,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:subscribeWithPartitionRebalance subscribes to given topic array
+ * with given function pointers to on revoked / on assigned events.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "subscribeWithPartitionRebalance",
@@ -111,7 +112,8 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
 
         try {
             kafkaConsumer.subscribe(topics, listener);
-        } catch (KafkaException e) {
+        } catch (IllegalArgumentException |
+                IllegalStateException | KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 
@@ -162,11 +164,6 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
             List<BStruct> assignmentList = new ArrayList<>();
             if (!partitions.isEmpty()) {
                 partitions.forEach(assignment -> {
-//                    public struct TopicPartition {
-//                        string topic;
-//                        int partition;
-//                    }
-
                     BStruct infoStruct = createPartitionStruct(context);
                     infoStruct.setStringField(0, assignment.topic());
                     infoStruct.setIntField(0, assignment.partition());

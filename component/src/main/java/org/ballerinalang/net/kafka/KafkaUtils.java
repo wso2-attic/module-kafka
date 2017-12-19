@@ -98,16 +98,48 @@ public class KafkaUtils {
 
         Properties configParams = new Properties();
 
-        //TODO add all the consumer config params
-        addStringParamIfPresent(Constants.ALIAS_BOOTSTRAP_SERVERS, kafkaConfig, configParams);
-        addStringParamIfPresent(Constants.ALIAS_GROUP_ID, kafkaConfig, configParams);
         addStringArrayParamIfPresent(Constants.ALIAS_TOPICS, kafkaConfig, configParams);
-
         addIntParamIfPresent(Constants.ALIAS_CONCURRENT_CONSUMERS, kafkaConfig, configParams);
         addIntParamIfPresent(Constants.ALIAS_POLLING_TIMEOUT, kafkaConfig, configParams);
-
         addBooleanParamIfPresent(Constants.ALIAS_DECOUPLE_PROCESSING, kafkaConfig, configParams);
-        addBooleanParamIfPresent(Constants.ALIAS_ENABLE_AUTO_COMMIT, kafkaConfig, configParams);
+
+        addStringParamIfPresent(Constants.ALIAS_BOOTSTRAP_SERVERS_CONFIG, kafkaConfig, configParams);
+        addStringParamIfPresent(Constants.ALIAS_GROUP_ID_CONFIG, kafkaConfig, configParams);
+        addBooleanParamIfPresent(Constants.ALIAS_ENABLE_AUTO_COMMIT_CONFIG, kafkaConfig, configParams);
+
+        addStringParamIfPresent(Constants.ALIAS_AUTO_OFFSET_RESET_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_SESSION_TIMEOUT_MS_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_HEARTBEAT_INTERVAL_MS_CONFIG, kafkaConfig, configParams);
+        addStringParamIfPresent(Constants.ALIAS_PARTITION_ASSIGNMENT_STRATEGY_CONFIG, kafkaConfig, configParams);
+
+        addIntParamIfPresent(Constants.ALIAS_METADATA_MAX_AGE_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_AUTO_COMMIT_INTERVAL_MS_CONFIG, kafkaConfig, configParams);
+        addStringParamIfPresent(Constants.ALIAS_CLIENT_ID_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_MAX_PARTITION_FETCH_BYTES_CONFIG, kafkaConfig, configParams);
+
+        addIntParamIfPresent(Constants.ALIAS_SEND_BUFFER_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_RECEIVE_BUFFER_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_FETCH_MIN_BYTES_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_FETCH_MAX_BYTES_CONFIG, kafkaConfig, configParams);
+
+        addIntParamIfPresent(Constants.ALIAS_FETCH_MAX_WAIT_MS_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_RECONNECT_BACKOFF_MS_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_RETRY_BACKOFF_MS_CONFIG, kafkaConfig, configParams);
+        addBooleanParamIfPresent(Constants.ALIAS_CHECK_CRCS_CONFIG, kafkaConfig, configParams);
+
+        addIntParamIfPresent(Constants.ALIAS_METRICS_SAMPLE_WINDOW_MS_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_METRICS_NUM_SAMPLES_CONFIG, kafkaConfig, configParams);
+        addStringParamIfPresent(Constants.ALIAS_METRICS_RECORDING_LEVEL_CONFIG, kafkaConfig, configParams);
+        addStringParamIfPresent(Constants.ALIAS_METRIC_REPORTER_CLASSES_CONFIG, kafkaConfig, configParams);
+
+        addIntParamIfPresent(Constants.ALIAS_REQUEST_TIMEOUT_MS_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_CONNECTIONS_MAX_IDLE_MS_CONFIG, kafkaConfig, configParams);
+        addStringParamIfPresent(Constants.ALIAS_INTERCEPTOR_CLASSES_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_MAX_POLL_RECORDS_CONFIG, kafkaConfig, configParams);
+
+        addIntParamIfPresent(Constants.ALIAS_MAX_POLL_INTERVAL_MS_CONFIG, kafkaConfig, configParams);
+        addBooleanParamIfPresent(Constants.ALIAS_EXCLUDE_INTERNAL_TOPICS_CONFIG, kafkaConfig, configParams);
+        addStringParamIfPresent(Constants.ALIAS_ISOLATION_LEVEL_CONFIG, kafkaConfig, configParams);
 
         processPropertiesArray(kafkaConfig, configParams);
         updateMappedParameters(configParams);
@@ -118,11 +150,37 @@ public class KafkaUtils {
     public static Properties processKafkaConsumerConfig(BMap bMap) {
 
         Properties configParams = new Properties();
-        //TODO add all the consumer config params
+
         addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bMap, configParams);
         addStringParamIfPresent(ConsumerConfig.GROUP_ID_CONFIG, bMap, configParams);
-        addStringParamIfPresent(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, bMap, configParams);
+        addBooleanParamIfPresent(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, bMap, configParams);
         addStringParamIfPresent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.METADATA_MAX_AGE_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.CLIENT_ID_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.SEND_BUFFER_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.RECEIVE_BUFFER_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, bMap, configParams);
+        addBooleanParamIfPresent(ConsumerConfig.CHECK_CRCS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.METRICS_SAMPLE_WINDOW_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.METRICS_NUM_SAMPLES_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.METRICS_RECORDING_LEVEL_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.METRIC_REPORTER_CLASSES_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, bMap, configParams);
+        addBooleanParamIfPresent(ConsumerConfig.EXCLUDE_INTERNAL_TOPICS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ConsumerConfig.ISOLATION_LEVEL_CONFIG, bMap, configParams);
 
         processDefaultConsumerProperties(configParams);
         return configParams;
@@ -131,11 +189,35 @@ public class KafkaUtils {
     public static Properties processKafkaProducerConfig(BMap bMap) {
 
         Properties configParams = new Properties();
-         //TODO add all the producer config params
+
         addStringParamIfPresent(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bMap, configParams);
         addStringParamIfPresent(ProducerConfig.TRANSACTIONAL_ID_CONFIG, bMap, configParams);
-
         addBooleanParamIfPresent(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.BUFFER_MEMORY_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.RETRIES_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.ACKS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.COMPRESSION_TYPE_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.BATCH_SIZE_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.LINGER_MS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.CLIENT_ID_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.SEND_BUFFER_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.RECEIVE_BUFFER_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.RECONNECT_BACKOFF_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.MAX_BLOCK_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.METADATA_MAX_AGE_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.METRICS_SAMPLE_WINDOW_MS_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.METRICS_NUM_SAMPLES_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.METRICS_RECORDING_LEVEL_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.METRIC_REPORTER_CLASSES_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.PARTITIONER_CLASS_CONFIG, bMap, configParams);
+        addStringParamIfPresent(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, bMap, configParams);
+        addIntParamIfPresent(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, bMap, configParams);
 
         processDefaultProducerProperties(configParams);
         return configParams;

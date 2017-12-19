@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@code }
+ * Native action ballerina.net.kafka:sendAdvanced send with advanced options for time stamp and key partitioning etc.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "sendAdvanced",
@@ -69,15 +69,7 @@ public class SendAdvanced extends AbstractNativeAction {
         KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
         BStruct producerRecord = ((BStruct) getRefArgument(context, 1));
 
-
-//        public struct ProducerRecord {
-//            blob key;
-//            blob value;
-//            string topic;
-//            int  partition;
-//            int timestamp;
-//        }
-
+        //TODO add default values to the record
         //TODO: validate params
         byte[] key = producerRecord.getBlobField(0);
         byte[] value = producerRecord.getBlobField(1);

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:unsubscribe un - subscribes consumer from current subscription.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "unsubscribe",
@@ -64,8 +64,7 @@ public class Unsubscribe extends AbstractNativeFunction {
         try {
             kafkaConsumer.unsubscribe();
         } catch (KafkaException e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+            return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
         return VOID_RETURN;
     }

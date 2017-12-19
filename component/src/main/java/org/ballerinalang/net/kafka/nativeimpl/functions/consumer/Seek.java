@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:seek seeks given consumer to given offset reside in partition.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "seek",
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
                 @Argument(name = "c",
                         type = TypeKind.STRUCT, structType = "KafkaConsumer",
                         structPackage = "ballerina.net.kafka"),
-                @Argument(name = "partition", type = TypeKind.STRUCT, structType = "Offset",
+                @Argument(name = "offset", type = TypeKind.STRUCT, structType = "Offset",
                         structPackage = "ballerina.net.kafka")
         },
         returnType = { @ReturnType(type = TypeKind.STRUCT)},
@@ -68,12 +68,11 @@ public class Seek extends AbstractNativeFunction {
         String topic = partition.getStringField(0);
         int partitionValue = new Long(partition.getIntField(0)).intValue();
 
-
         try {
             kafkaConsumer.seek(new TopicPartition(topic, partitionValue), offsetValue);
-        } catch (IllegalStateException | KafkaException e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+        } catch (IllegalStateException |
+                IllegalArgumentException | KafkaException e) {
+            return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 
         return VOID_RETURN;

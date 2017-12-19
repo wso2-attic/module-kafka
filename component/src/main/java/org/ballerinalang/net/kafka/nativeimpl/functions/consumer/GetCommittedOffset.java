@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:getCommittedOffset which returns committed offset for given partition.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getCommittedOffset",

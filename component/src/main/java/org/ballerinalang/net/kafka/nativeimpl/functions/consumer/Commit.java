@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:commit which commits a given consumer offsets to offset topic.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "commit",

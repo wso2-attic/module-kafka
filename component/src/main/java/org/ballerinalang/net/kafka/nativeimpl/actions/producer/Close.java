@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code }
+ * Native action ballerina.net.kafka:close closes producer instance.
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "close",

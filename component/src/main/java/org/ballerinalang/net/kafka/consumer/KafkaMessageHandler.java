@@ -42,8 +42,9 @@ public class KafkaMessageHandler {
 
     public void handle(ConsumerRecords<byte[], byte[]> consumerRecords,
                        KafkaConsumer<byte[], byte[]> kafkaConsumer,
-                       KafkaPollCycleFutureListener listener) {
-        kafkaListener.onRecordsReceived(consumerRecords, kafkaConsumer, listener);
+                       KafkaPollCycleFutureListener listener,
+                       String groupID) {
+        kafkaListener.onRecordsReceived(consumerRecords, kafkaConsumer, listener, groupID);
     }
 
 }

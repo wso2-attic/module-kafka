@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:getBeginningOffsets which returns beginning offsets for given partition array.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getBeginningOffsets",
@@ -85,7 +85,7 @@ public class GetBeginningOffsets extends AbstractNativeFunction {
 
         try {
             Map<TopicPartition, Long> offsetMap = kafkaConsumer.beginningOffsets(partitionList);
-            List<BStruct> infoList = new ArrayList<>();
+            List<BStruct> offsetList = new ArrayList<>();
             if (!offsetMap.entrySet().isEmpty()) {
                 offsetMap.entrySet().forEach(offset -> {
                     BStruct offsetStruct = createOffsetStruct(context);
@@ -94,17 +94,14 @@ public class GetBeginningOffsets extends AbstractNativeFunction {
                     partitionStruct.setIntField(0, offset.getKey().partition());
                     offsetStruct.setRefField(0, partitionStruct);
                     offsetStruct.setIntField(0, offset.getValue());
-                    infoList.add(offsetStruct);
+                    offsetList.add(offsetStruct);
                 });
-                return getBValues(new BRefValueArray(infoList.toArray(new BRefType[0]),
-                        createOffsetStruct(context).getType()));
             }
+            return getBValues(new BRefValueArray(offsetList.toArray(new BRefType[0]),
+                    createOffsetStruct(context).getType()));
         } catch (KafkaException e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+            return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-
-        return VOID_RETURN;
     }
 
     private BStruct createOffsetStruct(Context context) {

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Pattern;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:subscribeToPattern subscribes consumer to given topic pattern.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "subscribeToPattern",
@@ -67,7 +67,8 @@ public class SubscribeToPattern extends AbstractNativeFunction {
 
         try {
             kafkaConsumer.subscribe(Pattern.compile(topicRegex));
-        } catch (KafkaException e) {
+        } catch (IllegalArgumentException |
+                IllegalStateException | KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 

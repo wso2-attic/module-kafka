@@ -46,7 +46,8 @@ public class KafkaListenerImpl implements KafkaListener {
     @Override
     public void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
                                   KafkaConsumer<byte[], byte[]> kafkaConsumer,
-                                  KafkaPollCycleFutureListener listener) {
+                                  KafkaPollCycleFutureListener listener,
+                                  String groupID) {
         ConnectorFuture future = Executor.submit(resource, null,
                 KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer));
         future.setConnectorFutureListener(listener);

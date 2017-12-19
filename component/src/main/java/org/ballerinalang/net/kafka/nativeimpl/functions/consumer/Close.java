@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:close which closes a given consumer.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "close",
@@ -63,8 +63,7 @@ public class Close extends AbstractNativeFunction {
         try {
             kafkaConsumer.close();
         } catch (KafkaException e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+            return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 
         return VOID_RETURN;

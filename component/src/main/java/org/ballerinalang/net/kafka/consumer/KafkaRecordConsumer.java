@@ -19,6 +19,7 @@
 
 package org.ballerinalang.net.kafka.consumer;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
@@ -44,6 +45,7 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
     private int polliungTimeout = 1000;
     private KafkaMessageHandler kafkaMessageHandler;
     private boolean decoupleProcessing = true;
+    private String groupID;
 
     private AtomicBoolean running = new AtomicBoolean(true);
 
@@ -58,6 +60,7 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
         if (configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING) != null) {
             this.decoupleProcessing = (Boolean) configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING);
         }
+        this.groupID = (String) configParams.get(ConsumerConfig.GROUP_ID_CONFIG);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
                         Semaphore flowControl = new Semaphore(0);
                         KafkaPollCycleFutureListener pollCycleListener =
                                 new KafkaPollCycleFutureListener(flowControl);
-                        kafkaMessageHandler.handle(recordsRetrieved, kafkaConsumer, pollCycleListener);
+                        kafkaMessageHandler.handle(recordsRetrieved, kafkaConsumer, pollCycleListener, groupID);
                         flowControl.acquire();
                     }
                 }

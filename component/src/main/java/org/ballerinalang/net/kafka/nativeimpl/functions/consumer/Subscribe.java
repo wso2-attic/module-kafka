@@ -38,7 +38,7 @@ import java.util.ArrayList;
 
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:subscribe subscribes consumer to given set of topic array.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "subscribe",
@@ -73,7 +73,8 @@ public class Subscribe extends AbstractNativeFunction {
 
         try {
             kafkaConsumer.subscribe(topics);
-        } catch (KafkaException e) {
+        } catch (IllegalArgumentException |
+                IllegalStateException | KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 

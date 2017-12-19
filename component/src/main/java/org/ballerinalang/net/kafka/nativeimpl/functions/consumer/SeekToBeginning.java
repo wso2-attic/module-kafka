@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 /**
- * {@code }
+ * Native function ballerina.net.kafka:seekToBeginning seeks given partitions to the beginning offset.
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "seekToBeginning",
@@ -68,18 +68,20 @@ public class SeekToBeginning extends AbstractNativeFunction {
         BRefValueArray partitions = ((BRefValueArray) getRefArgument(context, 1));
         ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
 
-        for (int counter = 0; counter < partitions.size(); counter++) {
-            BStruct partition = (BStruct) partitions.get(counter);
-            String topic = partition.getStringField(0);
-            int partitionValue = new Long(partition.getIntField(0)).intValue();
-            partitionList.add(new TopicPartition(topic, partitionValue));
+        if (partitions != null) {
+            for (int counter = 0; counter < partitions.size(); counter++) {
+                BStruct partition = (BStruct) partitions.get(counter);
+                String topic = partition.getStringField(0);
+                int partitionValue = new Long(partition.getIntField(0)).intValue();
+                partitionList.add(new TopicPartition(topic, partitionValue));
+            }
         }
 
         try {
             kafkaConsumer.seekToBeginning(partitionList);
-        } catch (IllegalStateException | KafkaException e) {
-            context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                    BLangVMErrors.createError(context, 0, e.getMessage());
+        } catch (IllegalStateException | IllegalArgumentException |
+                KafkaException e) {
+            return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
 
         return VOID_RETURN;

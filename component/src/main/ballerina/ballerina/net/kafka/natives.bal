@@ -26,8 +26,8 @@ public struct ProducerRecord {
    blob key;
    blob value;
    string topic;
-   int  partition;
-   int timestamp;
+   int  partition = -1;
+   int timestamp = -1;
 }
 
 @Description { value:"Producer Client Connector for execute producing kafka records to the broker"}
