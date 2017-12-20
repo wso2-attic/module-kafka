@@ -32,8 +32,7 @@ public class Constants {
     private Constants() {
     }
 
-    public static final String PRODUCER_CONNECTOR_NAME = "KafkaProducerConnector";
-    public static final String CONSUMER_CONNECTOR_NAME = "KafkaConsumerConnector";
+    public static final String PRODUCER_CONNECTOR_NAME = "KafkaProducerClient";
     public static final String NATIVE_CONSUMER = "KafkaConsumer";
     public static final String NATIVE_PRODUCER = "KafkaProducer";
     public static final String KAFKA_NATIVE_PACKAGE = "ballerina.net.kafka";
@@ -52,7 +51,6 @@ public class Constants {
     public static final String ALIAS_TOPICS = "topics";
     public static final String ALIAS_POLLING_TIMEOUT = "pollingTimeout";
     public static final String ALIAS_ENABLE_AUTO_COMMIT_CONFIG = "autoCommit";
-    public static final String ALIAS_DECOUPLE_PROCESSING = "decoupleProcessing";
 
     public static final String ALIAS_AUTO_OFFSET_RESET_CONFIG = "offsetReset";
     public static final String ALIAS_SESSION_TIMEOUT_MS_CONFIG = "sessionTimeout";

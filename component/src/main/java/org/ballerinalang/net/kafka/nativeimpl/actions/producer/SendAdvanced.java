@@ -18,6 +18,7 @@ package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.BallerinaTransactionContext;
 import org.ballerinalang.bre.BallerinaTransactionManager;
 import org.ballerinalang.bre.Context;
@@ -69,14 +70,30 @@ public class SendAdvanced extends AbstractNativeAction {
         KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
         BStruct producerRecord = ((BStruct) getRefArgument(context, 1));
 
-        //TODO add default values to the record
-        //TODO: validate params
         byte[] key = producerRecord.getBlobField(0);
         byte[] value = producerRecord.getBlobField(1);
         String topic = producerRecord.getStringField(0);
+        Long partition = producerRecord.getIntField(0);
+        Long timestamp = producerRecord.getIntField(1);
 
+        // default value is set, so we can safely assume it s null
+        if (partition == -1) {
+            partition = null;
+        }
 
-        ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, key, value);
+        // default value is set, so we can safely assume it s null
+        if (timestamp == -1) {
+            timestamp = null;
+        }
+
+        ProducerRecord<byte[], byte[]> kafkaRecord;
+        if (partition != null) {
+            kafkaRecord =
+                    new ProducerRecord<byte[], byte[]>(topic, new Long(partition).intValue(), timestamp, key, value);
+        } else {
+            kafkaRecord =
+                    new ProducerRecord<byte[], byte[]>(topic, null, timestamp, key, value);
+        }
 
         try {
             if (producerBalConfig.get(Constants.PARAM_TRANSACTION_ID) != null
@@ -92,7 +109,7 @@ public class SendAdvanced extends AbstractNativeAction {
                 }
             }
             kafkaProducer.send(kafkaRecord);
-        } catch (Exception e) {
+        } catch (IllegalStateException | IllegalArgumentException | KafkaException e) {
             throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
 

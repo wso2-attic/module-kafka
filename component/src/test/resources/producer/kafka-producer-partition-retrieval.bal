@@ -5,17 +5,17 @@ function funcTestPartitionInfoRetrieval(string topic) (kafka:TopicPartition[]) {
 }
 
 function getPartitionInfo(string topic) (kafka:TopicPartition[]) {
-    endpoint<kafka:KafkaProducerConnector> kafkaEP {
-        create kafka:KafkaProducerConnector (getConnectorConfig());
+    endpoint<kafka:KafkaProducerClient> kafkaEP {
+        create kafka:KafkaProducerClient (getConnectorConfig());
     }
     kafka:TopicPartition[] partitions = kafkaEP.getTopicPartitions(topic);
     kafkaEP.close();
     return partitions;
 }
 
-function getConnectorConfig () (kafka:KafkaProducerConf) {
-    kafka:KafkaProducerConf conf = {};
+function getConnectorConfig () (kafka:KafkaProducer) {
+    kafka:KafkaProducer prod = {};
     map m = {"bootstrap.servers":"localhost:9094"};
-    conf.properties = m;
-    return conf;
+    prod.properties = m;
+    return prod;
 }

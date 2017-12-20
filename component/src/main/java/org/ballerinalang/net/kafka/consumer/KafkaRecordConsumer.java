@@ -57,8 +57,8 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
         }
         this.kafkaConsumer.subscribe(topics);
         this.kafkaMessageHandler = new KafkaMessageHandler(kafkaListener);
-        if (configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING) != null) {
-            this.decoupleProcessing = (Boolean) configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING);
+        if (configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG) != null) {
+            this.decoupleProcessing = (Boolean) configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG);
         }
         this.groupID = (String) configParams.get(ConsumerConfig.GROUP_ID_CONFIG);
     }

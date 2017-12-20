@@ -72,8 +72,6 @@ public class Send extends AbstractNativeAction {
         String topic = getStringArgument(context, 0);
         byte[] value = getBlobArgument(context, 0);
 
-        //TODO: validate params
-
         ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord<byte[], byte[]>(topic, value);
 
         try {
@@ -90,7 +88,7 @@ public class Send extends AbstractNativeAction {
                 }
             }
             kafkaProducer.send(kafkaRecord);
-        } catch (IllegalStateException | KafkaException e) {
+        } catch (IllegalStateException | IllegalArgumentException | KafkaException e) {
             throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
 

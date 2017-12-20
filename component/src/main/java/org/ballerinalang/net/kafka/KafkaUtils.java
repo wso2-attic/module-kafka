@@ -101,7 +101,6 @@ public class KafkaUtils {
         addStringArrayParamIfPresent(Constants.ALIAS_TOPICS, kafkaConfig, configParams);
         addIntParamIfPresent(Constants.ALIAS_CONCURRENT_CONSUMERS, kafkaConfig, configParams);
         addIntParamIfPresent(Constants.ALIAS_POLLING_TIMEOUT, kafkaConfig, configParams);
-        addBooleanParamIfPresent(Constants.ALIAS_DECOUPLE_PROCESSING, kafkaConfig, configParams);
 
         addStringParamIfPresent(Constants.ALIAS_BOOTSTRAP_SERVERS_CONFIG, kafkaConfig, configParams);
         addStringParamIfPresent(Constants.ALIAS_GROUP_ID_CONFIG, kafkaConfig, configParams);

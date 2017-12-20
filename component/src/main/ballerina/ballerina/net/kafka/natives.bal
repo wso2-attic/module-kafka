@@ -1,19 +1,15 @@
 package ballerina.net.kafka;
 
 @Description { value:"Struct which represents Kafka producer"}
+@Field { value:"map: Producer properties as key value pairs" }
 public struct KafkaProducer {
+   map properties;
 }
 
 @Description { value:"Struct which represents Kafka consumer"}
 @Field { value:"map: Consumer properties as key value pairs" }
 public struct KafkaConsumer {
    map properties;
-}
-
-@Description { value:"Struct which represents Kafka producer configuration"}
-@Field { value:"map: Consumer properties as key value pairs" }
-public struct KafkaProducerConf {
-    map properties;
 }
 
 @Description { value:"Struct which represents Kafka producer record"}
@@ -32,9 +28,9 @@ public struct ProducerRecord {
 
 @Description { value:"Producer Client Connector for execute producing kafka records to the broker"}
 @Param { value:"conf: Producer configuration" }
-public connector KafkaProducerConnector (KafkaProducerConf conf) {
+public connector KafkaProducerClient (KafkaProducer producer) {
 
-    map producer = {};
+    map producerHolder = {};
 
     @Description { value:"Simple Send action which produce records to Kafka server"}
     @Param { value:"value: value of Kafka ProducerRecord to be sent." }
@@ -217,14 +213,4 @@ public native function <KafkaConsumer consumer> getBeginningOffsets(TopicPartiti
 @Return { value:"Offset[]: Last offsets for partitions" }
 @Return { value:"error: Error will be returned if offset retrieval is failed" }
 public native function <KafkaConsumer consumer> getEndOffsets(TopicPartition[] partitions) (Offset[], error);
-
-@Description { value:"Convert string to a byte array"}
-@Param { value:"s: string value to be serialize" }
-@Return { value:"blob: serialized string value" }
-public native function serialize (string s) (blob);
-
-@Description { value:"Convert byte array to string" }
-@Param { value:"b: byte array to be de-serialized" }
-@Return { value:"string: de-serialized string value" }
-public native function deserialize (blob b) (string);
 

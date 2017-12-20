@@ -2,13 +2,13 @@ import ballerina.net.kafka;
 
 function funcTestKafkaProduce() {
     string msg = "Hello World";
-    blob byteMsg = kafka:serialize(msg);
+    blob byteMsg = msg.toBlob("UTF-8");
     kafka:ProducerRecord record = {};
     record.value = byteMsg;
     record.topic = "test";
     kafkaProduce(record);
     msg = "Hello World 2";
-    byteMsg = kafka:serialize(msg);
+    byteMsg = msg.toBlob("UTF-8");
     kafka:ProducerRecord recordNext = {};
     recordNext.value = byteMsg;
     recordNext.topic = "test";
@@ -16,17 +16,17 @@ function funcTestKafkaProduce() {
 }
 
 function kafkaProduce(kafka:ProducerRecord record) {
-    endpoint<kafka:KafkaProducerConnector> kafkaEP {
-        create kafka:KafkaProducerConnector (getConnectorConfig());
+    endpoint<kafka:KafkaProducerClient> kafkaEP {
+        create kafka:KafkaProducerClient (getConnectorConfig());
     }
     kafkaEP.sendAdvanced(record);
     kafkaEP.flush();
     kafkaEP.close();
 }
 
-function getConnectorConfig () (kafka:KafkaProducerConf) {
-    kafka:KafkaProducerConf conf = {};
+function getConnectorConfig () (kafka:KafkaProducer) {
+    kafka:KafkaProducer prod = {};
     map m = {"bootstrap.servers":"localhost:9094"};
-    conf.properties = m;
-    return conf;
+    prod.properties = m;
+    return prod;
 }
