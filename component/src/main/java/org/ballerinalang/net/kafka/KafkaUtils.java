@@ -50,7 +50,8 @@ public class KafkaUtils {
 
     public static BValue[] getSignatureParameters(Resource resource,
                                                   ConsumerRecords<byte[], byte[]> records,
-                                                  KafkaConsumer<byte[], byte[]> kafkaConsumer) {
+                                                  KafkaConsumer<byte[], byte[]> kafkaConsumer,
+                                                  String groupId) {
         List<BStruct> recordsList = new ArrayList<>();
         records.forEach(record -> {
             //record.
@@ -67,7 +68,11 @@ public class KafkaUtils {
         BStruct consumerStruct = ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
                 Constants.CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
-
+        if (groupId != null) {
+            BMap<String, BString> consumerBalConfig = new BMap();
+            consumerBalConfig.put(ConsumerConfig.GROUP_ID_CONFIG, new BString(groupId));
+            consumerStruct.setRefField(0, consumerBalConfig);
+        }
 
         //TODO validation
         List<ParamDetail> paramDetails = resource.getParamDetails();

@@ -40,7 +40,7 @@ public class KafkaListenerImpl implements KafkaListener {
     @Override
     public void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
                                   KafkaConsumer<byte[], byte[]> kafkaConsumer) {
-        Executor.submit(resource, null, KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer));
+        Executor.submit(resource, null, KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer, null));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class KafkaListenerImpl implements KafkaListener {
                                   KafkaPollCycleFutureListener listener,
                                   String groupID) {
         ConnectorFuture future = Executor.submit(resource, null,
-                KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer));
+                KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer, groupID));
         future.setConnectorFutureListener(listener);
 
     }

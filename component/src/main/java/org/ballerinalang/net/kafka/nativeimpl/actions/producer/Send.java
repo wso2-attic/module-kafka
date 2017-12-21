@@ -83,7 +83,7 @@ public class Send extends AbstractNativeAction {
                 if (regTxContext == null) {
                     KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
                     ballerinaTxManager.registerTransactionContext(transactionID, txContext);
-                    kafkaProducer.initTransactions();
+                    //kafkaProducer.initTransactions();
                     kafkaProducer.beginTransaction();
                 }
             }

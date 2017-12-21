@@ -19,6 +19,7 @@
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
@@ -68,6 +69,9 @@ public class Init extends AbstractNativeAction {
 
         try {
             KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
+            if (producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG) != null) {
+                kafkaProducer.initTransactions();
+            }
 
             BMap producerMap = (BMap) producerConnector.getRefField(1);
             producerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
