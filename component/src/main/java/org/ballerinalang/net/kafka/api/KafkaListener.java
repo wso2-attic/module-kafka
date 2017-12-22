@@ -31,8 +31,8 @@ public interface KafkaListener {
      * @param records       Kafka records.
      * @param kafkaConsumer consumer on which poll is called upon.
      */
-    void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
-                           KafkaConsumer<byte[], byte[]> kafkaConsumer);
+    void onRecordsReceived(ConsumerRecords records,
+                           KafkaConsumer kafkaConsumer);
 
     /**
      * For each poll cycle, it will trigger invocation to this method dispatching polled kafka records.
@@ -42,8 +42,8 @@ public interface KafkaListener {
      * @param listener      which control the flow of poll cycle.
      * @param groupID       of consumer
      */
-    void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
-                           KafkaConsumer<byte[], byte[]> kafkaConsumer,
+    void onRecordsReceived(ConsumerRecords records,
+                           KafkaConsumer kafkaConsumer,
                            KafkaPollCycleFutureListener listener,
                            String groupID);
 }

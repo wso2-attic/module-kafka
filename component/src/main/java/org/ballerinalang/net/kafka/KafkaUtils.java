@@ -145,8 +145,9 @@ public class KafkaUtils {
                     Constants.CONSUMER_RECORD_STRUCT_NAME);
             recordStruct.setBlobField(0, record.key());
             recordStruct.setBlobField(1, record.value());
-            recordStruct.setIntField(0, record.partition());
-            recordStruct.setIntField(1, record.timestamp());
+            recordStruct.setIntField(0, record.offset());
+            recordStruct.setIntField(1, record.partition());
+            recordStruct.setIntField(2, record.timestamp());
             recordStruct.setStringField(0, record.topic());
             recordsList.add(recordStruct);
             TopicPartition tp = new TopicPartition(record.topic(), record.partition());

@@ -72,7 +72,7 @@ public class Init extends AbstractNativeAction {
             BMap producerMap = (BMap) producerConnector.getRefField(1);
             producerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
             producerMap.put(new BString(Constants.NATIVE_PRODUCER), producerStruct);
-        } catch (KafkaException e) {
+        } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to initialize the producer " + e.getMessage(), e, context);
         }
         ClientConnectorFuture future = new ClientConnectorFuture();

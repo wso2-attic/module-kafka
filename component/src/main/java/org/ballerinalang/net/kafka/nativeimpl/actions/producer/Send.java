@@ -87,7 +87,7 @@ public class Send extends AbstractNativeAction {
                 }
             }
             kafkaProducer.send(kafkaRecord);
-        } catch (IllegalStateException | IllegalArgumentException | KafkaException e) {
+        } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
         ClientConnectorFuture future = new ClientConnectorFuture();

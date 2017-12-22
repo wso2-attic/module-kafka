@@ -74,7 +74,8 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
             while (running.get()) {
                 ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(this.polliungTimeout);
                 if (!recordsRetrieved.isEmpty()) {
-                    // when decoupleProcessing == 'true' Kafka records set will be dispatched and proce
+                    // when decoupleProcessing == 'true' Kafka records set will be dispatched and processed in
+                    // parallel threads.
                     if (decoupleProcessing) {
                         kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer);
                     } else {
