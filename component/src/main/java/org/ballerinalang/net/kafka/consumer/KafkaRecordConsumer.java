@@ -22,6 +22,7 @@ package org.ballerinalang.net.kafka.consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.api.KafkaListener;
@@ -35,7 +36,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * {@code }
+ * {@code KafkaRecordConsumer} This class represents Runnable flow which periodically poll the remote broker and fetch
+ * Kafka records.
  */
 public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHandler {
 
@@ -43,22 +45,25 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
 
     private KafkaConsumer<byte[], byte[]> kafkaConsumer;
     private int polliungTimeout = 1000;
-    private KafkaMessageHandler kafkaMessageHandler;
     private boolean decoupleProcessing = true;
     private String groupID;
-
     private AtomicBoolean running = new AtomicBoolean(true);
+    private KafkaListener kafkaListener;
 
-    public KafkaRecordConsumer(KafkaListener kafkaListener, String serviceId, Properties configParams) {
+    public KafkaRecordConsumer(KafkaListener kafkaListener, Properties configParams) {
         this.kafkaConsumer = new KafkaConsumer<byte[], byte[]>(configParams);
         ArrayList<String> topics = (ArrayList<String>) configParams.get(Constants.ALIAS_TOPICS);
         if (configParams.get(Constants.ALIAS_POLLING_TIMEOUT) != null) {
             this.polliungTimeout = (Integer) configParams.get(Constants.ALIAS_POLLING_TIMEOUT);
         }
         this.kafkaConsumer.subscribe(topics);
-        this.kafkaMessageHandler = new KafkaMessageHandler(kafkaListener);
+        this.kafkaListener = kafkaListener;
         if (configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG) != null) {
             this.decoupleProcessing = (Boolean) configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG);
+        }
+        // this is to override default decouple processing setting if required
+        if (configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING) != null) {
+            this.decoupleProcessing = (Boolean) configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING);
         }
         this.groupID = (String) configParams.get(ConsumerConfig.GROUP_ID_CONFIG);
     }
@@ -69,24 +74,26 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
             while (running.get()) {
                 ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(this.polliungTimeout);
                 if (!recordsRetrieved.isEmpty()) {
+                    // when decoupleProcessing == 'true' Kafka records set will be dispatched and proce
                     if (decoupleProcessing) {
-                        kafkaMessageHandler.handle(recordsRetrieved,  kafkaConsumer);
+                        kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer);
                     } else {
                         Semaphore flowControl = new Semaphore(0);
                         KafkaPollCycleFutureListener pollCycleListener =
                                 new KafkaPollCycleFutureListener(flowControl);
-                        kafkaMessageHandler.handle(recordsRetrieved, kafkaConsumer, pollCycleListener, groupID);
+                        kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer, pollCycleListener, groupID);
                         flowControl.acquire();
                     }
                 }
             }
         } catch (WakeupException e) {
+            // Ignore WakeupException is thrown due to call on stopConsume() that would close the consumer instance
+            // on finally block
             if (this.running.get()) {
-                throw new RuntimeException("Error receiving messages", e);
+                throw new RuntimeException("Error polling Kafka records", e);
             }
-        } catch (Exception e) {
-            //TODO error handling
-            throw new RuntimeException("Error receiving messages", e);
+        } catch (KafkaException | InterruptedException e) {
+            throw new RuntimeException("Error polling Kafka records", e);
         } finally {
             kafkaConsumer.close();
         }
@@ -104,13 +111,11 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
 
     @Override
     public void uncaughtException(Thread thread, Throwable error) {
-        //TODO : think semaphore cases
         running.set(false);
-        logger.error("Unexpected error occurred while receiving messages", error);
+        logger.error("Unexpected error occurred while polling Kafka records", error);
     }
 
-    public void stopMessageReceiver() {
-        //TODO : think semaphore cases
+    public void stopConsume() {
         this.running.set(false);
         this.kafkaConsumer.wakeup();
     }

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import javax.transaction.xa.XAResource;
 
 /**
- * {@code }
+ * {@code KafkaTransactionContext} Transaction context for Kafka transactions.
  */
 public class KafkaTransactionContext implements BallerinaTransactionContext {
 
@@ -44,8 +44,7 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
         try {
             this.kafkaProducer.commitTransaction();
         } catch (KafkaException ex) {
-            throw new BallerinaException("transaction commit failed:" + ex.getMessage());
-
+            throw new BallerinaException("Transaction commit failed:" + ex.getMessage());
         }
     }
 
@@ -54,16 +53,18 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
         try {
             this.kafkaProducer.abortTransaction();
         } catch (KafkaException ex) {
-            throw new BallerinaException("transaction rollback failed:" + ex.getMessage());
+            throw new BallerinaException("Transaction rollback failed:" + ex.getMessage());
         }
     }
 
     @Override
     public void close() {
+        // Not required for Kafka Transactions.
     }
 
     @Override
     public void done() {
+        // Not required for Kafka Transactions.
     }
 
     @Override

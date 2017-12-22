@@ -19,7 +19,7 @@
 package org.ballerinalang.net.kafka.exception;
 
 /**
- * Exception that happens in Kafka Connector level.
+ * Represents exception that happens in Kafka Connector level.
  */
 public class KafkaConnectorException extends Exception {
 

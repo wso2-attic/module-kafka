@@ -27,14 +27,15 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Semaphore;
 
 /**
- * {@code }
+ * {@code KafkaPollCycleFutureListener} listener provides ability control poll cycle flow by notifications
+ * received from Ballerina side.
  */
 public class KafkaPollCycleFutureListener implements ConnectorFutureListener {
     private static final Logger log = LoggerFactory.getLogger(KafkaPollCycleFutureListener.class);
     private Semaphore flowControl;
 
     /**
-     * future will get notified by the kafka native methods and from the Ballerina engine when the Resource invocation
+     * Future will get notified from the Ballerina engine when the Resource invocation
      * is over or when an error occurred.
      */
     public KafkaPollCycleFutureListener(Semaphore flowControl) {

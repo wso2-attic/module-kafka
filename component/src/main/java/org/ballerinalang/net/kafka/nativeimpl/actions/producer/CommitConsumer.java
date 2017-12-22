@@ -22,6 +22,8 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
+import org.ballerinalang.bre.BallerinaTransactionContext;
+import org.ballerinalang.bre.BallerinaTransactionManager;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
@@ -35,6 +37,7 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +68,9 @@ public class CommitConsumer extends AbstractNativeAction {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
+        BStruct producerConf = ((BStruct) producerConnector.getRefField(0));
+        BMap<String, BString> producerBalConfig = (BMap<String, BString>) producerConf.getRefField(0);
+
         BMap producerMap = (BMap) producerConnector.getRefField(1);
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
 
@@ -87,6 +93,17 @@ public class CommitConsumer extends AbstractNativeAction {
         String groupID = consumerBalConfig.get(ConsumerConfig.GROUP_ID_CONFIG).stringValue();
 
         try {
+            if (producerBalConfig.get(Constants.PARAM_TRANSACTION_ID) != null
+                    && context.isInTransaction()) {
+                String transactionID = producerBalConfig.get(Constants.PARAM_TRANSACTION_ID).stringValue();
+                BallerinaTransactionManager ballerinaTxManager = context.getBallerinaTransactionManager();
+                BallerinaTransactionContext regTxContext = ballerinaTxManager.getTransactionContext(transactionID);
+                if (regTxContext == null) {
+                    KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
+                    ballerinaTxManager.registerTransactionContext(transactionID, txContext);
+                    kafkaProducer.beginTransaction();
+                }
+            }
             kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
         } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);

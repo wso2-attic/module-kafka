@@ -39,8 +39,6 @@ import java.util.Properties;
 
 /**
  * {@code KafkaBalServerConnector} This is the Kafka implementation for the {@code BallerinaServerConnector} API.
- *
- * @since 0.94
  */
 @JavaSPIService("org.ballerinalang.connector.api.BallerinaServerConnector")
 public class KafkaBalServerConnector implements BallerinaServerConnector {
@@ -56,26 +54,22 @@ public class KafkaBalServerConnector implements BallerinaServerConnector {
     public void serviceRegistered(Service service) throws BallerinaConnectorException {
         Annotation kafkaConfig = service.getAnnotation(Constants.KAFKA_NATIVE_PACKAGE,
                 Constants.ANNOTATION_KAFKA_CONFIGURATION);
-
         if (kafkaConfig == null) {
             throw new BallerinaException("Error kafka 'configuration' annotation missing in " + service.getName());
         }
 
         Properties configParams = KafkaUtils.processKafkaConsumerConfig(kafkaConfig);
-
         String serviceId = service.getName();
 
         try {
-            //TODO : validate resources
-            KafkaListener kafkaListener = new KafkaListenerImpl(service.getResources()[0]);
+            KafkaListener kafkaListener = new KafkaListenerImpl(KafkaUtils.extractKafkaResource(service));
             KafkaServerConnector serverConnector = new KafkaServerConnectorImpl(serviceId,
                     configParams, kafkaListener);
-
             connectorMap.put(serviceId, serverConnector);
             serverConnector.start();
         } catch (KafkaConnectorException e) {
-            throw new BallerinaException(
-                    "Error when starting to listen to the kafka topic while " + serviceId + " deployment", e);
+            throw new BallerinaException("Error when starting to listen to the kafka topic while "
+                    + serviceId + " deployment", e);
         }
     }
 
@@ -88,8 +82,8 @@ public class KafkaBalServerConnector implements BallerinaServerConnector {
                 serverConnector.stop();
             }
         } catch (KafkaConnectorException e) {
-            throw new BallerinaException(
-                    "Error while stopping the kafka server connector related with the service " + serviceId, e);
+            throw new BallerinaException("Error while stopping the kafka server connector related with the service "
+                    + serviceId, e);
         }
     }
 

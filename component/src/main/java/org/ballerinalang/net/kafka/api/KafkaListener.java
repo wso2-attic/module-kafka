@@ -21,18 +21,31 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.net.kafka.future.KafkaPollCycleFutureListener;
 
 /**
- * {@code }
+ * This interface defines listener which can be registered, to retrieve Kafka records returned from single poll cycle.
  */
 public interface KafkaListener {
 
+    /**
+     * For each poll cycle, it will trigger invocation to this method dispatching polled kafka records.
+     *
+     * @param records       Kafka records.
+     * @param kafkaConsumer consumer on which poll is called upon.
+     */
     void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
                            KafkaConsumer<byte[], byte[]> kafkaConsumer);
 
-    void onRecordsReceived(ConsumerRecords<byte[], byte[]> record,
+    /**
+     * For each poll cycle, it will trigger invocation to this method dispatching polled kafka records.
+     *
+     * @param records       Kafka records.
+     * @param kafkaConsumer consumer on which poll is called upon.
+     * @param listener      which control the flow of poll cycle.
+     * @param groupID       of consumer
+     */
+    void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
                            KafkaConsumer<byte[], byte[]> kafkaConsumer,
                            KafkaPollCycleFutureListener listener,
                            String groupID);
-
-    void onErrorReceived(Throwable throwable);
-
 }
+
+

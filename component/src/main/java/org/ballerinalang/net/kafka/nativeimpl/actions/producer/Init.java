@@ -63,10 +63,6 @@ public class Init extends AbstractNativeAction {
 
         Properties producerProperties = KafkaUtils.processKafkaProducerConfig(producerBalConfig);
 
-        //TODO make configurable
-        //TODO ADD Kafka Exception
-        //TODO change sample
-
         try {
             KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
             if (producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG) != null) {

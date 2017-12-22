@@ -24,8 +24,6 @@ import org.ballerinalang.spi.ExtensionPackageRepositoryProvider;
 
 /**
  * This represents the standard Ballerina built-in extension package repository provider.
- * 
- * @since 0.94
  */
 @JavaSPIService("org.ballerinalang.spi.ExtensionPackageRepositoryProvider")
 public class StandardExtensionPackageRepositoryProvider implements ExtensionPackageRepositoryProvider {

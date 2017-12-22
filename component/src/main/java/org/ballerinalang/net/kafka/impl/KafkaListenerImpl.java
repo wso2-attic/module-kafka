@@ -27,7 +27,7 @@ import org.ballerinalang.net.kafka.api.KafkaListener;
 import org.ballerinalang.net.kafka.future.KafkaPollCycleFutureListener;
 
 /**
- * {@code }
+ *  Kafka Connector listener for Ballerina.
  */
 public class KafkaListenerImpl implements KafkaListener {
 
@@ -40,7 +40,8 @@ public class KafkaListenerImpl implements KafkaListener {
     @Override
     public void onRecordsReceived(ConsumerRecords<byte[], byte[]> records,
                                   KafkaConsumer<byte[], byte[]> kafkaConsumer) {
-        Executor.submit(resource, null, KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer, null));
+        Executor.submit(resource, null, KafkaUtils.getSignatureParameters(resource, records,
+                kafkaConsumer, null));
     }
 
     @Override
@@ -53,10 +54,4 @@ public class KafkaListenerImpl implements KafkaListener {
         future.setConnectorFutureListener(listener);
 
     }
-
-    @Override
-    public void onErrorReceived(Throwable throwable) {
-
-    }
-
 }

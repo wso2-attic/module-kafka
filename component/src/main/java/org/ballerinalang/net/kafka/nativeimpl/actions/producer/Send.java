@@ -83,7 +83,6 @@ public class Send extends AbstractNativeAction {
                 if (regTxContext == null) {
                     KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
                     ballerinaTxManager.registerTransactionContext(transactionID, txContext);
-                    //kafkaProducer.initTransactions();
                     kafkaProducer.beginTransaction();
                 }
             }
@@ -91,7 +90,6 @@ public class Send extends AbstractNativeAction {
         } catch (IllegalStateException | IllegalArgumentException | KafkaException e) {
             throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
-
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;

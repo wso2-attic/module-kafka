@@ -19,8 +19,10 @@
 package org.ballerinalang.net.kafka.impl;
 
 
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.api.KafkaListener;
+import org.ballerinalang.net.kafka.api.KafkaServerConnector;
 import org.ballerinalang.net.kafka.consumer.KafkaRecordConsumer;
 import org.ballerinalang.net.kafka.exception.KafkaConnectorException;
 import org.slf4j.Logger;
@@ -31,20 +33,17 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * {@code }
+ * {@code KafkaServerConnectorImpl} This is the implementation for the {@code KafkaServerConnector} API
+ * which provides transport receiver implementation for Kafka.
  */
-public class KafkaServerConnectorImpl implements org.ballerinalang.net.kafka.api.KafkaServerConnector {
+public class KafkaServerConnectorImpl implements KafkaServerConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaServerConnectorImpl.class);
 
     private String serviceId;
-
     private KafkaListener kafkaListener;
-
     private Properties configParams;
-
     private int numOfConcurrentConsumers = 1;
-
     private List<KafkaRecordConsumer> messageConsumers;
 
 
@@ -60,18 +59,22 @@ public class KafkaServerConnectorImpl implements org.ballerinalang.net.kafka.api
 
     @Override
     public void start() throws KafkaConnectorException {
-        messageConsumers = new ArrayList<>();
-        for (int counter = 0; counter < numOfConcurrentConsumers; counter++) {
-            KafkaRecordConsumer consumer = new KafkaRecordConsumer(this.kafkaListener,
-                    this.serviceId, this.configParams);
-            consumer.consume();
+        try {
+            messageConsumers = new ArrayList<>();
+            for (int counter = 0; counter < numOfConcurrentConsumers; counter++) {
+                KafkaRecordConsumer consumer = new KafkaRecordConsumer(this.kafkaListener, this.configParams);
+                consumer.consume();
+            }
+        } catch (KafkaException e) {
+            throw new KafkaConnectorException("Error creating Kafka consumer to remote " +
+                    "broker and subscribe to annotated topics", e);
         }
     }
 
     @Override
     public boolean stop() throws KafkaConnectorException {
         for (KafkaRecordConsumer consumer : messageConsumers) {
-            consumer.stopMessageReceiver();
+            consumer.stopConsume();
         }
         return true;
     }

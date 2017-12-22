@@ -65,7 +65,6 @@ public class Close extends AbstractNativeAction {
         } catch (KafkaException e) {
             throw new BallerinaException("Failed to close the producer " + e.getMessage(), e, context);
         }
-
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;

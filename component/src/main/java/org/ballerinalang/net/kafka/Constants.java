@@ -50,6 +50,7 @@ public class Constants {
     public static final String ALIAS_CONCURRENT_CONSUMERS = "concurrentConsumers";
     public static final String ALIAS_TOPICS = "topics";
     public static final String ALIAS_POLLING_TIMEOUT = "pollingTimeout";
+    public static final String ALIAS_DECOUPLE_PROCESSING = "decoupleProcessing";
     public static final String ALIAS_ENABLE_AUTO_COMMIT_CONFIG = "autoCommit";
 
     public static final String ALIAS_AUTO_OFFSET_RESET_CONFIG = "offsetReset";

@@ -66,7 +66,6 @@ public class Flush extends AbstractNativeAction {
         } catch (KafkaException e) {
             throw new BallerinaException("Failed to flush the producer " + e.getMessage(), e, context);
         }
-
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;

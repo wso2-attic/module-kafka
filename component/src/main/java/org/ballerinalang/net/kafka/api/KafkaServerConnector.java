@@ -18,16 +18,25 @@
 
 package org.ballerinalang.net.kafka.api;
 
-
 import org.ballerinalang.net.kafka.exception.KafkaConnectorException;
 
 /**
- * Inlet of inbound messages.
+ * Inlet of Kafka inbound messages.
  */
 public interface KafkaServerConnector {
 
+    /**
+     * Start the server connector which actually starts consuming for Kafka records from a remote broker.
+     *
+     * @throws KafkaConnectorException if error occurred while starting the Kafka server connector.
+     */
     void start() throws KafkaConnectorException;
 
+    /**
+     * Stop the server connector which actually closes consumer connection with remote broker.
+     *
+     * @throws KafkaConnectorException if error occurred while stopping the Kafka server connector.
+     */
     boolean stop() throws KafkaConnectorException;
 
 }
