@@ -1,8 +1,10 @@
 import ballerina.net.kafka;
 
-@Description{value : "Service level annotation to provide Kafka consumer configuration."}
+@Description{value : "Service level annotation to provide Kafka consumer configuration. Here concurrentConsumers = 2 whereas default value 1.
+Half the partition from given topic test-topic will be assigned to each consumer."}
 @kafka:configuration {
-    bootstrapServers: "localhost:9092, localhost:9093",
+    bootstrapServers: "localhost:9092, localhost:9092",
+    concurrentConsumers: 2,
     groupId: "group-id",
     topics: ["test-topic"],
     pollingInterval: 1000
@@ -22,5 +24,5 @@ function processKafkaRecord(kafka:ConsumerRecord record) {
     blob serializedMsg = record.value;
     string msg = serializedMsg.toString("UTF-8");
     // Print the retrieved Kafka record.
-    println("Topic: " + record.topic + " Received Message: " + msg);
+    println("Topic: " + record.topic + " Partition: " + record.partition + " Received Message: " + msg);
 }

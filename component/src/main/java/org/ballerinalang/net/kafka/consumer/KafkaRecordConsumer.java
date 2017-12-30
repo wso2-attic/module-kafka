@@ -84,9 +84,9 @@ public class KafkaRecordConsumer {
         this.groupId = (String) configParams.get(ConsumerConfig.GROUP_ID_CONFIG);
     }
 
-    public void poll() {
+    private void poll() {
         try {
-            ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(this.pollingTimeout);
+            ConsumerRecords<byte[], byte[]> recordsRetrieved = this.kafkaConsumer.poll(this.pollingTimeout);
             if (logger.isDebugEnabled()) {
                 logger.debug("Kafka Consumer " + this.consumerId + " on service " + this.serviceId
                         + " has retrieved " + recordsRetrieved.count() + " records.");
@@ -95,24 +95,27 @@ public class KafkaRecordConsumer {
                 // When decoupleProcessing == 'true' Kafka records set will be dispatched and processed in
                 // Parallel threads.
                 // Otherwise dispatching and processing will have single threaded semantics.
-                if (decoupleProcessing) {
-                    kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer);
+                if (this.decoupleProcessing) {
+                    this.kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer);
                 } else {
                     Semaphore sem = new Semaphore(0);
                     KafkaPollCycleFutureListener pollCycleListener =
                             new KafkaPollCycleFutureListener(sem, serviceId);
-                    kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer, pollCycleListener, groupId);
+                    this.kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer, pollCycleListener, groupId);
                     // We suspend execution of poll cycle here before moving to the next cycle.
                     // Once we receive signal from BVM via KafkaPollCycleFutureListener this suspension is removed
                     // We will move to the next polling cycle.
                     sem.acquire();
                 }
             }
-        } catch (KafkaException | InterruptedException e) {
-            kafkaListener.onError(e);
+        } catch (KafkaException |
+                IllegalStateException |
+                IllegalArgumentException |
+                InterruptedException e) {
+            this.kafkaListener.onError(e);
             // When un-recoverable exception is thrown we stop scheduling task to the executor.
             // Later at stopConsume() on KafkaRecordConsumer we close the consumer.
-            pollTaskFuture.cancel(false);
+            this.pollTaskFuture.cancel(false);
         }
     }
 
@@ -128,7 +131,8 @@ public class KafkaRecordConsumer {
         final Runnable pollingFunction = () -> {
             poll();
         };
-        this.pollTaskFuture = this.executorService.schedule(pollingFunction, pollingInterval, TimeUnit.MILLISECONDS);
+        this.pollTaskFuture = this.executorService.scheduleAtFixedRate(pollingFunction, 0,
+                this.pollingInterval, TimeUnit.MILLISECONDS);
     }
 
     public void stopConsume() {
