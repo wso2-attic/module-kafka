@@ -5,7 +5,7 @@ import ballerina.net.kafka;
     bootstrapServers: "localhost:9092, localhost:9093",
     groupId: "group-id",
     topics: ["test-topic"],
-    pollingTimeout: 1000,
+    pollingInterval: 1000,
     autoCommit: false
 }
 service<kafka> kafkaService {

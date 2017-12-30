@@ -18,7 +18,6 @@
 
 package org.ballerinalang.net.kafka.nativeimpl;
 
-
 import org.ballerinalang.annotation.JavaSPIService;
 import org.ballerinalang.connector.api.Annotation;
 import org.ballerinalang.connector.api.BallerinaConnectorException;
@@ -51,6 +50,9 @@ public class KafkaBalServerConnector implements BallerinaServerConnector {
 
     private Map<String, KafkaServerConnector> connectorMap = new HashMap<>();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getProtocolPackages() {
         List<String> protocolPackages = new LinkedList<>();
@@ -58,6 +60,9 @@ public class KafkaBalServerConnector implements BallerinaServerConnector {
         return protocolPackages;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serviceRegistered(Service service) throws BallerinaConnectorException {
         Annotation kafkaConfig = service.getAnnotationList(Constants.KAFKA_NATIVE_PACKAGE,
@@ -98,6 +103,9 @@ public class KafkaBalServerConnector implements BallerinaServerConnector {
 //        }
 //    }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deploymentComplete() throws BallerinaConnectorException {
         // Not required for Kafka.

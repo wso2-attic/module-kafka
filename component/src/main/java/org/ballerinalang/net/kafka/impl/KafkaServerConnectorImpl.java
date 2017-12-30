@@ -53,6 +53,10 @@ public class KafkaServerConnectorImpl implements KafkaServerConnector {
         if (configParams.get(Constants.ALIAS_CONCURRENT_CONSUMERS) != null) {
             this.numOfConcurrentConsumers = (Integer) configParams.get(Constants.ALIAS_CONCURRENT_CONSUMERS);
         }
+        if (this.numOfConcurrentConsumers <= 0) {
+            throw new KafkaConnectorException("Number of Concurrent consumers should be a positive " +
+                    "integer value greater than zero.");
+        }
         this.configParams = configParams;
     }
 
