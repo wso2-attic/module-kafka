@@ -8,7 +8,7 @@ Steps to configure,
 
 ## Ballerina as a Kafka Consumer
 
-Service kafkaService is subscribed to topic 'test-topic' on remote kafka broker cluster. In this example, offsets are manually committed inside the resource
+Here service 'kafkaService' is subscribed to topic 'test-topic' on remote Kafka broker cluster. In this example, offsets are manually committed inside the resource
 by setting property autoCommit = false at service level annotation.
 
 ```ballerina
@@ -45,7 +45,7 @@ function processKafkaRecord(kafka:ConsumerRecord record) {
 
 ## Ballerina as a Kafka Producer
 
-Here Kafka record is created from serialized string, and then published to topic 'test-topic' partition '1' to remote Kafka broker cluster.
+Here Kafka record is created from serialized string, and then it is published to topic 'test-topic' partition '1' in remote Kafka broker cluster.
 
 ```ballerina
 import ballerina.net.kafka;
