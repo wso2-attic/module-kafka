@@ -29,6 +29,7 @@ import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
@@ -36,9 +37,6 @@ import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * Native action ballerina.net.kafka:sendAdvanced send with advanced options for time stamp and key partitioning etc.
@@ -54,7 +52,6 @@ import org.slf4j.LoggerFactory;
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})
 public class SendAdvanced extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(SendAdvanced.class);
 
     @Override
     public ConnectorFuture execute(Context context) {
@@ -62,7 +59,7 @@ public class SendAdvanced extends AbstractNativeAction {
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
         BStruct producerConf = ((BStruct) producerConnector.getRefField(0));
-        BMap<String, BString> producerBalConfig = (BMap<String, BString>) producerConf.getRefField(0);
+        BMap<String, BValue> producerBalConfig = (BMap<String, BValue>) producerConf.getRefField(0);
 
         BMap producerMap = (BMap) producerConnector.getRefField(1);
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
@@ -89,10 +86,10 @@ public class SendAdvanced extends AbstractNativeAction {
         ProducerRecord<byte[], byte[]> kafkaRecord;
         if (partition != null) {
             kafkaRecord =
-                    new ProducerRecord<byte[], byte[]>(topic, new Long(partition).intValue(), timestamp, key, value);
+                    new ProducerRecord(topic, new Long(partition).intValue(), timestamp, key, value);
         } else {
             kafkaRecord =
-                    new ProducerRecord<byte[], byte[]>(topic, null, timestamp, key, value);
+                    new ProducerRecord(topic, null, timestamp, key, value);
         }
 
         try {

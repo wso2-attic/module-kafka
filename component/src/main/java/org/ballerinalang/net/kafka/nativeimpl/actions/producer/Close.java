@@ -32,8 +32,6 @@ import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Native action ballerina.net.kafka:close closes producer instance.
@@ -47,7 +45,6 @@ import org.slf4j.LoggerFactory;
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})
 public class Close extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(Close.class);
 
     @Override
     public ConnectorFuture execute(Context context) {

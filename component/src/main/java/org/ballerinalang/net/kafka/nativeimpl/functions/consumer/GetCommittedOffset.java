@@ -35,8 +35,6 @@ import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Native function ballerina.net.kafka:getCommittedOffset which returns committed offset for given partition.
@@ -57,7 +55,6 @@ import org.slf4j.LoggerFactory;
                 @ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class GetCommittedOffset extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(GetCommittedOffset.class);
 
     @Override
     public BValue[] execute(Context context) {

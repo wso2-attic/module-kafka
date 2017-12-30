@@ -32,8 +32,6 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +53,6 @@ import java.util.Map;
         returnType = { @ReturnType(type = TypeKind.NONE)},
         isPublic = true)
 public class CommitOffset extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(CommitOffset.class);
 
     @Override
     public BValue[] execute(Context context) {

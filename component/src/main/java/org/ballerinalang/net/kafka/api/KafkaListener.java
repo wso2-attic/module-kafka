@@ -46,6 +46,14 @@ public interface KafkaListener {
                            KafkaConsumer kafkaConsumer,
                            KafkaPollCycleFutureListener listener,
                            String groupID);
+
+    /**
+     * If there are errors, Kafka connector will trigger this method.
+     *
+     * @param throwable contains the error details of the event.
+     */
+    void onError(Throwable throwable);
+
 }
 
 

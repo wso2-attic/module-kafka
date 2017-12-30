@@ -36,8 +36,6 @@ import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -52,7 +50,6 @@ import java.util.Properties;
                                    type = TypeKind.CONNECTOR)
                  })
 public class Init extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(Init.class);
 
     @Override
     public ConnectorFuture execute(Context context) {
@@ -64,7 +61,7 @@ public class Init extends AbstractNativeAction {
         Properties producerProperties = KafkaUtils.processKafkaProducerConfig(producerBalConfig);
 
         try {
-            KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<byte[], byte[]>(producerProperties);
+            KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<>(producerProperties);
             if (producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG) != null) {
                 kafkaProducer.initTransactions();
             }

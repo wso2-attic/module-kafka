@@ -37,8 +37,6 @@ import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +59,6 @@ import java.util.List;
                 @ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class GetTopicPartitions extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(GetTopicPartitions.class);
 
     @Override
     public BValue[] execute(Context context) {

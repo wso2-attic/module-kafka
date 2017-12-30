@@ -30,9 +30,6 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * Native function ballerina.net.kafka:unsubscribe un - subscribes consumer from current subscription.
@@ -49,7 +46,6 @@ import org.slf4j.LoggerFactory;
         returnType = {@ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class Unsubscribe extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(Unsubscribe.class);
 
     @Override
     public BValue[] execute(Context context) {

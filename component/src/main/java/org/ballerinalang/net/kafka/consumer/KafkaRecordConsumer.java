@@ -23,7 +23,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
-import org.apache.kafka.common.errors.WakeupException;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.api.KafkaListener;
 import org.ballerinalang.net.kafka.future.KafkaPollCycleFutureListener;
@@ -32,71 +31,88 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@code KafkaRecordConsumer} This class represents Runnable flow which periodically poll the remote broker and fetch
  * Kafka records.
  */
-public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHandler {
+public class KafkaRecordConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaRecordConsumer.class);
 
     private KafkaConsumer<byte[], byte[]> kafkaConsumer;
-    private int polliungTimeout = 1000;
+    private int pollingTimeout = 1000;
+    private int pollingInterval = 1000;
     private boolean decoupleProcessing = true;
-    private String groupID;
-    private AtomicBoolean running = new AtomicBoolean(true);
+    private String groupId;
     private KafkaListener kafkaListener;
+    private String serviceId;
+    private int consumerId;
+    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture pollTaskFuture;
 
-    public KafkaRecordConsumer(KafkaListener kafkaListener, Properties configParams) {
-        this.kafkaConsumer = new KafkaConsumer<byte[], byte[]>(configParams);
+    public KafkaRecordConsumer(KafkaListener kafkaListener,
+                               Properties configParams,
+                               String serviceId,
+                               int consumerId) {
+        this.serviceId = serviceId;
+        this.consumerId = consumerId;
+        // Initialize Kafka Consumer.
+        this.kafkaConsumer = new KafkaConsumer<>(configParams);
         ArrayList<String> topics = (ArrayList<String>) configParams.get(Constants.ALIAS_TOPICS);
-        if (configParams.get(Constants.ALIAS_POLLING_TIMEOUT) != null) {
-            this.polliungTimeout = (Integer) configParams.get(Constants.ALIAS_POLLING_TIMEOUT);
-        }
+        // Subscribe Kafka Consumer to given topics.
         this.kafkaConsumer.subscribe(topics);
         this.kafkaListener = kafkaListener;
+        if (configParams.get(Constants.ALIAS_POLLING_TIMEOUT) != null) {
+            this.pollingTimeout = (Integer) configParams.get(Constants.ALIAS_POLLING_TIMEOUT);
+        }
+        if (configParams.get(Constants.ALIAS_POLLING_INTERVAL) != null) {
+            this.pollingInterval = (Integer) configParams.get(Constants.ALIAS_POLLING_INTERVAL);
+        }
         if (configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG) != null) {
             this.decoupleProcessing = (Boolean) configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG);
         }
-        // this is to override default decouple processing setting if required
+        // This is to override default decouple processing setting if required.
         if (configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING) != null) {
             this.decoupleProcessing = (Boolean) configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING);
         }
-        this.groupID = (String) configParams.get(ConsumerConfig.GROUP_ID_CONFIG);
+        this.groupId = (String) configParams.get(ConsumerConfig.GROUP_ID_CONFIG);
     }
 
-    @Override
-    public void run() {
+    public void poll() {
         try {
-            while (running.get()) {
-                ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(this.polliungTimeout);
-                if (!recordsRetrieved.isEmpty()) {
-                    // when decoupleProcessing == 'true' Kafka records set will be dispatched and processed in
-                    // parallel threads.
-                    if (decoupleProcessing) {
-                        kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer);
-                    } else {
-                        Semaphore flowControl = new Semaphore(0);
-                        KafkaPollCycleFutureListener pollCycleListener =
-                                new KafkaPollCycleFutureListener(flowControl);
-                        kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer, pollCycleListener, groupID);
-                        flowControl.acquire();
-                    }
+            ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(this.pollingTimeout);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Kafka Consumer " + this.consumerId + " on service " + this.serviceId
+                        + " has retrieved " + recordsRetrieved.count() + " records.");
+            }
+            if (!recordsRetrieved.isEmpty()) {
+                // When decoupleProcessing == 'true' Kafka records set will be dispatched and processed in
+                // Parallel threads.
+                // Otherwise dispatching and processing will have single threaded semantics.
+                if (decoupleProcessing) {
+                    kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer);
+                } else {
+                    Semaphore sem = new Semaphore(0);
+                    KafkaPollCycleFutureListener pollCycleListener =
+                            new KafkaPollCycleFutureListener(sem, serviceId);
+                    kafkaListener.onRecordsReceived(recordsRetrieved, kafkaConsumer, pollCycleListener, groupId);
+                    // We suspend execution of poll cycle here before moving to the next cycle.
+                    // Once we receive signal from BVM via KafkaPollCycleFutureListener this suspension is removed
+                    // We will move to the next polling cycle.
+                    sem.acquire();
                 }
             }
-        } catch (WakeupException e) {
-            // Ignore WakeupException is thrown due to call on stopConsume() that would close the consumer instance
-            // on finally block
-            if (this.running.get()) {
-                throw new RuntimeException("Error polling Kafka records", e);
-            }
         } catch (KafkaException | InterruptedException e) {
-            throw new RuntimeException("Error polling Kafka records", e);
-        } finally {
-            kafkaConsumer.close();
+            kafkaListener.onError(e);
+            // When un-recoverable exception is thrown we stop scheduling task to the executor.
+            // Later at stopConsume() on KafkaRecordConsumer we close the consumer.
+            pollTaskFuture.cancel(false);
         }
     }
 
@@ -104,20 +120,20 @@ public class KafkaRecordConsumer implements Runnable, Thread.UncaughtExceptionHa
         startReceiverThread();
     }
 
-    private void startReceiverThread() {
-        Thread thread = new Thread(this, "KafkaConsumerThread");
-        thread.setUncaughtExceptionHandler(this);
-        thread.start();
+    public int getConsumerId() {
+        return this.consumerId;
     }
 
-    @Override
-    public void uncaughtException(Thread thread, Throwable error) {
-        running.set(false);
-        logger.error("Unexpected error occurred while polling Kafka records", error);
+    private void startReceiverThread() {
+        final Runnable pollingFunction = () -> {
+            poll();
+        };
+        this.pollTaskFuture = this.executorService.schedule(pollingFunction, pollingInterval, TimeUnit.MILLISECONDS);
     }
 
     public void stopConsume() {
-        this.running.set(false);
         this.kafkaConsumer.wakeup();
+        this.executorService.shutdown();
+        this.kafkaConsumer.close();
     }
 }

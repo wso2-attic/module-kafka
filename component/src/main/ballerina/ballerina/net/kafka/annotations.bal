@@ -5,6 +5,7 @@ public annotation configuration attach service<> {
     string groupId;
     string[] topics;
     int pollingTimeout;
+    int pollingInterval;
     int concurrentConsumers;
     boolean autoCommit;
     boolean decoupleProcessing;

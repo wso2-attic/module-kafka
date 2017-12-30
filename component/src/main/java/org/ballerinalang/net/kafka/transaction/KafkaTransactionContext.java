@@ -22,8 +22,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.BallerinaTransactionContext;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.transaction.xa.XAResource;
 
@@ -32,7 +30,6 @@ import javax.transaction.xa.XAResource;
  */
 public class KafkaTransactionContext implements BallerinaTransactionContext {
 
-    private static final Logger log = LoggerFactory.getLogger(KafkaTransactionContext.class);
     private KafkaProducer<byte[], byte[]> kafkaProducer;
 
     public KafkaTransactionContext(KafkaProducer<byte[], byte[]> kafkaProducer) {

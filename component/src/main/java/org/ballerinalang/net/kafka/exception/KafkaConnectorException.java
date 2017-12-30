@@ -23,10 +23,21 @@ package org.ballerinalang.net.kafka.exception;
  */
 public class KafkaConnectorException extends Exception {
 
+    /**
+     * Creates a Kafka Connector Exception.
+     *
+     * @param message Relevant exception message.
+     * @param e       Exception object, that has the details of the relevant exception.
+     */
     public KafkaConnectorException(String message, Throwable e) {
         super(message, e);
     }
 
+    /**
+     * Creates a Kafka Connector Exception.
+     *
+     * @param message Relevant exception message.
+     */
     public KafkaConnectorException(String message) {
         super(message);
     }

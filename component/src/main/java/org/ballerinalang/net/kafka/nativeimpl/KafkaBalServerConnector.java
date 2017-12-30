@@ -32,8 +32,12 @@ import org.ballerinalang.net.kafka.exception.KafkaConnectorException;
 import org.ballerinalang.net.kafka.impl.KafkaListenerImpl;
 import org.ballerinalang.net.kafka.impl.KafkaServerConnectorImpl;
 import org.ballerinalang.util.exceptions.BallerinaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -43,19 +47,23 @@ import java.util.Properties;
 @JavaSPIService("org.ballerinalang.connector.api.BallerinaServerConnector")
 public class KafkaBalServerConnector implements BallerinaServerConnector {
 
+    private static final Logger logger = LoggerFactory.getLogger(KafkaBalServerConnector.class);
+
     private Map<String, KafkaServerConnector> connectorMap = new HashMap<>();
 
     @Override
-    public String getProtocolPackage() {
-        return Constants.KAFKA_NATIVE_PACKAGE;
+    public List<String> getProtocolPackages() {
+        List<String> protocolPackages = new LinkedList<>();
+        protocolPackages.add(Constants.KAFKA_NATIVE_PACKAGE);
+        return protocolPackages;
     }
 
     @Override
     public void serviceRegistered(Service service) throws BallerinaConnectorException {
-        Annotation kafkaConfig = service.getAnnotation(Constants.KAFKA_NATIVE_PACKAGE,
-                Constants.ANNOTATION_KAFKA_CONFIGURATION);
+        Annotation kafkaConfig = service.getAnnotationList(Constants.KAFKA_NATIVE_PACKAGE,
+                Constants.ANNOTATION_KAFKA_CONFIGURATION).get(0);
         if (kafkaConfig == null) {
-            throw new BallerinaException("Error kafka 'configuration' annotation missing in " + service.getName());
+            throw new BallerinaException("Error Kafka 'configuration' annotation missing in " + service.getName());
         }
 
         Properties configParams = KafkaUtils.processKafkaConsumerConfig(kafkaConfig);
@@ -68,27 +76,31 @@ public class KafkaBalServerConnector implements BallerinaServerConnector {
             connectorMap.put(serviceId, serverConnector);
             serverConnector.start();
         } catch (KafkaConnectorException e) {
-            throw new BallerinaException("Error when starting to listen to the kafka topic while "
+            throw new BallerinaException("Error when starting to listen to the Kafka topic while "
                     + serviceId + " deployment", e);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("KafkaBalServerConnector registered successfully for service: " + serviceId);
         }
     }
 
-    @Override
-    public void serviceUnregistered(Service service) throws BallerinaConnectorException {
-        String serviceId = service.getName();
-        try {
-            KafkaServerConnector serverConnector = connectorMap.get(serviceId);
-            if (null != serverConnector) {
-                serverConnector.stop();
-            }
-        } catch (KafkaConnectorException e) {
-            throw new BallerinaException("Error while stopping the kafka server connector related with the service "
-                    + serviceId, e);
-        }
-    }
+//    @Override
+//    public void serviceUnregistered(Service service) throws BallerinaConnectorException {
+//        String serviceId = service.getName();
+//        try {
+//            KafkaServerConnector serverConnector = connectorMap.get(serviceId);
+//            if (null != serverConnector) {
+//                serverConnector.stop();
+//            }
+//        } catch (KafkaConnectorException e) {
+//            throw new BallerinaException("Error while stopping the Kafka server connector related with the service "
+//                    + serviceId, e);
+//        }
+//    }
 
     @Override
     public void deploymentComplete() throws BallerinaConnectorException {
-
+        // Not required for Kafka.
+        // KafkaServerConnector.start() is handled at service registration serviceRegistered(Service service)
     }
 }

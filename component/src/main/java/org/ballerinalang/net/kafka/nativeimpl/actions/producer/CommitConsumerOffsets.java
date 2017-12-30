@@ -31,6 +31,7 @@ import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
@@ -38,8 +39,6 @@ import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +59,6 @@ import java.util.Map;
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})
 public class CommitConsumerOffsets extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(CommitConsumerOffsets.class);
 
     @Override
     public ConnectorFuture execute(Context context) {
@@ -68,7 +66,7 @@ public class CommitConsumerOffsets extends AbstractNativeAction {
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
         BStruct producerConf = ((BStruct) producerConnector.getRefField(0));
-        BMap<String, BString> producerBalConfig = (BMap<String, BString>) producerConf.getRefField(0);
+        BMap<String, BValue> producerBalConfig = (BMap<String, BValue>) producerConf.getRefField(0);
 
         BMap producerMap = (BMap) producerConnector.getRefField(1);
         BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));

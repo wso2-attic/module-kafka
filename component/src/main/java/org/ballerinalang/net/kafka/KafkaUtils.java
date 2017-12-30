@@ -135,9 +135,45 @@ public class KafkaUtils {
 
     public static BValue[] getSignatureParameters(Resource resource,
                                                   ConsumerRecords<byte[], byte[]> records,
+                                                  KafkaConsumer<byte[], byte[]> kafkaConsumer) {
+        // Create records struct array.
+        List<BStruct> recordsList = new ArrayList<>();
+        records.forEach(record -> {
+            BStruct recordStruct = ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
+                    Constants.CONSUMER_RECORD_STRUCT_NAME);
+            recordStruct.setBlobField(0, record.key());
+            recordStruct.setBlobField(1, record.value());
+            recordStruct.setIntField(0, record.offset());
+            recordStruct.setIntField(1, record.partition());
+            recordStruct.setIntField(2, record.timestamp());
+            recordStruct.setStringField(0, record.topic());
+            recordsList.add(recordStruct);
+        });
+
+        // Create consumer struct.
+        BStruct consumerStruct = ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
+                Constants.CONSUMER_STRUCT_NAME);
+        consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
+
+        List<ParamDetail> paramDetails = resource.getParamDetails();
+        BValue[] bValues = new BValue[paramDetails.size()];
+        if (paramDetails.size() == 2 | paramDetails.size() == 3 | paramDetails.size() == 4) {
+            bValues[0] = consumerStruct;
+            bValues[1] = new BRefValueArray(recordsList.toArray(new BRefType[0]),
+                    ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
+                            Constants.CONSUMER_RECORD_STRUCT_NAME).getType());
+        } else if (paramDetails.size() == 1) {
+            bValues[0] = consumerStruct;
+        }
+
+        return bValues;
+    }
+
+    public static BValue[] getSignatureParameters(Resource resource,
+                                                  ConsumerRecords<byte[], byte[]> records,
                                                   KafkaConsumer<byte[], byte[]> kafkaConsumer,
                                                   String groupId) {
-        // create record struct array
+        // Create records struct array.
         List<BStruct> recordsList = new ArrayList<>();
         Map<TopicPartition, Long> partitionToUncommittedOffsetMap = new HashMap<>();
         records.forEach(record -> {
@@ -154,7 +190,7 @@ public class KafkaUtils {
             partitionToUncommittedOffsetMap.put(tp, record.offset());
         });
 
-        // create offsets struct array
+        // Create offsets struct array.
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
         for (Map.Entry<TopicPartition, Long> e : partitionToUncommittedOffsetMap.entrySet()) {
             partitionToMetadataMap.put(e.getKey(), new OffsetAndMetadata(e.getValue() + 1));
@@ -173,15 +209,15 @@ public class KafkaUtils {
             offsetList.add(offsetStruct);
         });
 
-        // create consumer struct
+        // Create consumer struct.
         BStruct consumerStruct = ConnectorUtils.createStruct(resource, Constants.KAFKA_NATIVE_PACKAGE,
                 Constants.CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
-        if (groupId != null) {
-            BMap<String, BString> consumerBalConfig = new BMap();
-            consumerBalConfig.put(ConsumerConfig.GROUP_ID_CONFIG, new BString(groupId));
-            consumerStruct.setRefField(0, consumerBalConfig);
-        }
+
+        BMap<String, BValue> consumerBalConfig = new BMap();
+        consumerBalConfig.put(ConsumerConfig.GROUP_ID_CONFIG, new BString(groupId));
+        consumerStruct.setRefField(0, consumerBalConfig);
+
 
         List<ParamDetail> paramDetails = resource.getParamDetails();
         BValue[] bValues = new BValue[paramDetails.size()];
@@ -225,6 +261,7 @@ public class KafkaUtils {
         addStringArrayParamIfPresent(Constants.ALIAS_TOPICS, kafkaConfig, configParams);
         addIntParamIfPresent(Constants.ALIAS_CONCURRENT_CONSUMERS, kafkaConfig, configParams);
         addIntParamIfPresent(Constants.ALIAS_POLLING_TIMEOUT, kafkaConfig, configParams);
+        addIntParamIfPresent(Constants.ALIAS_POLLING_INTERVAL, kafkaConfig, configParams);
         addBooleanParamIfPresent(Constants.ALIAS_DECOUPLE_PROCESSING, kafkaConfig, configParams);
 
         addStringParamIfPresent(Constants.ALIAS_BOOTSTRAP_SERVERS_CONFIG, kafkaConfig, configParams);

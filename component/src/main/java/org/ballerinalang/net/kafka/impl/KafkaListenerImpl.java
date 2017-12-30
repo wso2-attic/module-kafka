@@ -25,25 +25,34 @@ import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.net.kafka.api.KafkaListener;
 import org.ballerinalang.net.kafka.future.KafkaPollCycleFutureListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *  Kafka Connector listener for Ballerina.
  */
 public class KafkaListenerImpl implements KafkaListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(KafkaListenerImpl.class);
     private Resource resource;
 
     public KafkaListenerImpl(Resource resource) {
         this.resource = resource;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onRecordsReceived(ConsumerRecords records,
                                   KafkaConsumer kafkaConsumer) {
         Executor.submit(resource, null, KafkaUtils.getSignatureParameters(resource, records,
-                kafkaConsumer, null));
+                kafkaConsumer));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onRecordsReceived(ConsumerRecords records,
                                   KafkaConsumer kafkaConsumer,
@@ -53,5 +62,13 @@ public class KafkaListenerImpl implements KafkaListener {
                 KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer, groupID));
         future.setConnectorFutureListener(listener);
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onError(Throwable throwable) {
+        logger.error("Kafka Ballerina server connector retrieved exception: " + throwable.getMessage(), throwable);
     }
 }

@@ -44,8 +44,6 @@ import org.ballerinalang.util.codegen.StructInfo;
 import org.ballerinalang.util.codegen.cpentries.FunctionRefCPEntry;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.program.BLangFunctions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +68,6 @@ import java.util.List;
         returnType = {@ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(Subscribe.class);
 
     @Override
     public BValue[] execute(Context context) {

@@ -46,7 +46,6 @@ public class KafkaServerConnectorImpl implements KafkaServerConnector {
     private int numOfConcurrentConsumers = 1;
     private List<KafkaRecordConsumer> messageConsumers;
 
-
     public KafkaServerConnectorImpl(String serviceId, Properties configParams,
                                     KafkaListener kafkaListener) throws KafkaConnectorException {
         this.kafkaListener = kafkaListener;
@@ -57,13 +56,21 @@ public class KafkaServerConnectorImpl implements KafkaServerConnector {
         this.configParams = configParams;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() throws KafkaConnectorException {
         try {
-            messageConsumers = new ArrayList<>();
+            this.messageConsumers = new ArrayList<>();
             for (int counter = 0; counter < numOfConcurrentConsumers; counter++) {
-                KafkaRecordConsumer consumer = new KafkaRecordConsumer(this.kafkaListener, this.configParams);
+                KafkaRecordConsumer consumer = new KafkaRecordConsumer(this.kafkaListener, this.configParams,
+                        this.serviceId, counter);
+                this.messageConsumers.add(consumer);
                 consumer.consume();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Started Kafka consumer " + counter + " on service : " + serviceId + ".");
+                }
             }
         } catch (KafkaException e) {
             throw new KafkaConnectorException("Error creating Kafka consumer to remote " +
@@ -71,10 +78,32 @@ public class KafkaServerConnectorImpl implements KafkaServerConnector {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean stop() throws KafkaConnectorException {
-        for (KafkaRecordConsumer consumer : messageConsumers) {
-            consumer.stopConsume();
+        KafkaConnectorException ex = null;
+        for (KafkaRecordConsumer consumer : this.messageConsumers) {
+            try {
+                consumer.stopConsume();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Stopped Kafka consumer " + consumer.getConsumerId()
+                            + " on service : " + serviceId + ".");
+                }
+            } catch (KafkaException e) {
+                if (ex == null) {
+                    ex = new KafkaConnectorException("Error closing the Kafka consumers for service "
+                            + serviceId, e);
+                } else {
+                    ex.addSuppressed(e);
+                }
+
+            }
+        }
+        this.messageConsumers = null;
+        if (ex != null) {
+            throw ex;
         }
         return true;
     }

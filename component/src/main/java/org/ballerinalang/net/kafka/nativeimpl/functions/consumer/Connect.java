@@ -24,7 +24,6 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
@@ -34,8 +33,6 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.net.kafka.KafkaUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -54,18 +51,17 @@ import java.util.Properties;
         returnType = {@ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class Connect extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(Connect.class);
 
     @Override
     public BValue[] execute(Context context) {
         // Consumer initialization
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
-        BMap<String, BString> consumerBalConfig = (BMap<String, BString>) consumerStruct.getRefField(0);
+        BMap<String, BValue> consumerBalConfig = (BMap<String, BValue>) consumerStruct.getRefField(0);
 
         Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerBalConfig);
 
         try {
-            KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<byte[], byte[]>(consumerProperties);
+            KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<>(consumerProperties);
             consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
         } catch (KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));

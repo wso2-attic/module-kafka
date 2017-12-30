@@ -31,8 +31,6 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
@@ -52,7 +50,6 @@ import java.util.Set;
                 @ReturnType(type = TypeKind.STRUCT)},
         isPublic = true)
 public class GetSubscription extends AbstractNativeFunction {
-    private static final Logger log = LoggerFactory.getLogger(GetTopicPartitions.class);
 
     @Override
     public BValue[] execute(Context context) {

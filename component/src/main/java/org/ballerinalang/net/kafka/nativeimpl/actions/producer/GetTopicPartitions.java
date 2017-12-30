@@ -38,8 +38,6 @@ import org.ballerinalang.net.kafka.Constants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +56,6 @@ import java.util.List;
         returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT, structType = "TopicPartition",
                 structPackage = "ballerina.net.kafka")})
 public class GetTopicPartitions extends AbstractNativeAction {
-    private static final Logger log = LoggerFactory.getLogger(GetTopicPartitions.class);
 
     @Override
     public ConnectorFuture execute(Context context) {

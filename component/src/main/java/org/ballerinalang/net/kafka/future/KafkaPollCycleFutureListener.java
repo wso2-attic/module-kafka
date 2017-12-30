@@ -31,30 +31,52 @@ import java.util.concurrent.Semaphore;
  * received from Ballerina side.
  */
 public class KafkaPollCycleFutureListener implements ConnectorFutureListener {
-    private static final Logger log = LoggerFactory.getLogger(KafkaPollCycleFutureListener.class);
-    private Semaphore flowControl;
+
+    private static final Logger logger = LoggerFactory.getLogger(KafkaPollCycleFutureListener.class);
+
+    // Introduced this semaphore to control polling cycle from Ballerina Engine.
+    // Semaphore provides a source of communication once the BVM has completed the processing for one polling cycle.
+    // This listener get notified and Semaphore is released, so that Kafka connector will move to Next polling cycle.
+    private Semaphore sem;
+    private String serviceId;
 
     /**
      * Future will get notified from the Ballerina engine when the Resource invocation
      * is over or when an error occurred.
      */
-    public KafkaPollCycleFutureListener(Semaphore flowControl) {
-        this.flowControl = flowControl;
+    public KafkaPollCycleFutureListener(Semaphore flowControl, String serviceId) {
+        this.sem = flowControl;
+        this.serviceId = serviceId;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void notifySuccess() {
-        flowControl.release();
+        sem.release();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Ballerina engine has completed resource invocation successfully for service " + serviceId +
+                    ". Semaphore is released to continue next polling cycle.");
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void notifyReply(BValue... response) {
-        // not used
+        // Not required for Kafka.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void notifyFailure(BallerinaConnectorException ex) {
-        flowControl.release();
+        sem.release();
+        logger.error("Ballerina engine has completed resource invocation with exception for service " + serviceId +
+                ". Semaphore is released to continue next polling cycle.", ex);
     }
 
 }
