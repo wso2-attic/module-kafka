@@ -6,7 +6,7 @@ it will only consume non transactional or committed transactional messages"}
     bootstrapServers: "localhost:9092, localhost:9093",
     groupId: "group-id",
     topics: ["test-topic"],
-    pollingTimeout: 1000,
+    pollingInterval: 1000,
     autoCommit: false,
     isolationLevel:"read_committed"
 }

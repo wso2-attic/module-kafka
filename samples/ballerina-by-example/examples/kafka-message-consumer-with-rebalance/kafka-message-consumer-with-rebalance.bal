@@ -12,10 +12,10 @@ function main (string[] args) {
     // We subscribes the consumer to topic test-topic with partition rebalance listening, which will trigger
     //onAssigned, onRevocked functions on dynamically revocation / assignment of partitions to the consumer
     string[] topics = ["test-topic"];
-    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onAssigned = printAssignedParitions;
-    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onRevocked = printRevockedParitions;
+    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onAssigned = printAssignedPartitions;
+    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onRevoked = printRevokedPartitions;
 
-    var subErr = consumer.subscribeWithPartitionRebalance(topics, onRevocked, onAssigned);
+    var subErr = consumer.subscribeWithPartitionRebalance(topics, onRevoked, onAssigned);
 
     // Consumer poll() function will be called every time the timer goes off.
     function () returns (error) onTriggerFunction = poll;
@@ -77,10 +77,10 @@ function getConsumer () (kafka:KafkaConsumer) {
     return consumer;
 }
 
-function printAssignedParitions(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
-    println(lengthof partitions);
+function printAssignedPartitions(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
+    println("Number of partitions assigned to consumer: " + lengthof partitions);
 }
 
-function printRevockedParitions(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
-     println(lengthof partitions);
+function printRevokedPartitions(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
+    println("Number of partitions revoked from consumer: " + lengthof partitions);
 }

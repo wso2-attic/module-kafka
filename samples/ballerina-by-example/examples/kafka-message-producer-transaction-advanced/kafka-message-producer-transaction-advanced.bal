@@ -18,7 +18,7 @@ service<kafka> kafkaService {
              counter = counter + 1;
        }
 
-       string msg = "Hello World Transaction";
+       string msg = "Hello World Advanced Transaction";
        blob serializedMsg = msg.toBlob("UTF-8");
        // We create ProducerRecord which consist of advanced optional parameters.
        // Here we set valid partition number which will be used when sending the record.
@@ -41,16 +41,20 @@ function kafkaTransactionalCTP(kafka:ProducerRecord recordOne, kafka:ProducerRec
         create kafka:KafkaProducerClient (getConnectorConfig());
     }
     // Here we do several produces and consumer commit atomically.
+    boolean transactionSuccess = false;
     transaction {
         kafkaEP.sendAdvanced(recordOne);
         kafkaEP.sendAdvanced(recordTwo);
         // Commits consumer offsets as part of current transaction. These offsets will be considered consumed only if
         // the transaction is committed successfully. ( These offsets will be sent to offsets topic )
         kafkaEP.commitConsumer(consumer);
+        transactionSuccess = true;
     } failed {
-        println("Rollbacked");
-    } committed {
-        println("Committed");
+        println("Transaction failed");
+    }
+
+    if (transactionSuccess) {
+        println("Transaction committed");
     }
 }
 

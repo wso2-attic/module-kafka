@@ -44,8 +44,8 @@ public class KafkaPollCycleFutureListener implements ConnectorFutureListener {
      * Future will get notified from the Ballerina engine when the Resource invocation
      * is over or when an error occurred.
      */
-    public KafkaPollCycleFutureListener(Semaphore flowControl, String serviceId) {
-        this.sem = flowControl;
+    public KafkaPollCycleFutureListener(Semaphore sem, String serviceId) {
+        this.sem = sem;
         this.serviceId = serviceId;
     }
 
