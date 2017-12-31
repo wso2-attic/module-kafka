@@ -119,15 +119,10 @@ public class KafkaRecordConsumer {
         }
     }
 
+    /**
+     * Starts Kafka consumer polling cycles, schedules thread pool for given polling cycle.
+     */
     public void consume() {
-        startReceiverThread();
-    }
-
-    public int getConsumerId() {
-        return this.consumerId;
-    }
-
-    private void startReceiverThread() {
         final Runnable pollingFunction = () -> {
             poll();
         };
@@ -135,6 +130,18 @@ public class KafkaRecordConsumer {
                 this.pollingInterval, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Stops Kafka consumer polling cycles, shutdowns scheduled thread pool and closes the consumer instance.
+     *
+     * @return consumer id integer.
+     */
+    public int getConsumerId() {
+        return this.consumerId;
+    }
+
+    /**
+     * Stops Kafka consumer polling cycles, shutdowns scheduled thread pool and closes the consumer instance.
+     */
     public void stopConsume() {
         this.kafkaConsumer.wakeup();
         this.executorService.shutdown();
