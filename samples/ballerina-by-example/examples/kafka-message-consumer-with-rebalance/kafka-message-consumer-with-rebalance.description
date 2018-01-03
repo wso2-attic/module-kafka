@@ -1,0 +1,2 @@
+// Ballerina natively supports Kafka. Here is an example where we create a Kafka consumer with partition rebalance listening, which will trigger callback functions
+on revocation and assignment of new partitions to the consumer.
