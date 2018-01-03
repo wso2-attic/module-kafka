@@ -394,8 +394,8 @@ public class KafkaUtils {
         configParams.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, Constants.DEFAULT_VALUE_SERIALIZER);
     }
 
-    private static void processPropertiesArray(Annotation jmsConfig, Properties configParams) {
-        AnnAttrValue attributeValue = jmsConfig.getAnnAttrValue(Constants.PROPERTIES_ARRAY);
+    private static void processPropertiesArray(Annotation kafkaConfig, Properties configParams) {
+        AnnAttrValue attributeValue = kafkaConfig.getAnnAttrValue(Constants.PROPERTIES_ARRAY);
         if (attributeValue != null) {
             AnnAttrValue[] attributeValueArray = attributeValue.getAnnAttrValueArray();
             for (AnnAttrValue annAttributeValue : attributeValueArray) {
@@ -427,8 +427,9 @@ public class KafkaUtils {
         configParams.putAll(tempProps);
     }
 
-    private static void addStringArrayParamIfPresent(String paramName, Annotation jmsConfig, Properties configParams) {
-        AnnAttrValue attributeValue = jmsConfig.getAnnAttrValue(paramName);
+    private static void addStringArrayParamIfPresent(String paramName, Annotation kafkaConfig,
+                                                     Properties configParams) {
+        AnnAttrValue attributeValue = kafkaConfig.getAnnAttrValue(paramName);
         if (attributeValue != null) {
             AnnAttrValue[] attributeValueArray = attributeValue.getAnnAttrValueArray();
             ArrayList<String> topics = new ArrayList<String>();
@@ -440,22 +441,22 @@ public class KafkaUtils {
         }
     }
 
-    private static void addStringParamIfPresent(String paramName, Annotation jmsConfig, Properties configParams) {
-        AnnAttrValue value = jmsConfig.getAnnAttrValue(paramName);
+    private static void addStringParamIfPresent(String paramName, Annotation kafkaConfig, Properties configParams) {
+        AnnAttrValue value = kafkaConfig.getAnnAttrValue(paramName);
         if (value != null && value.getStringValue() != null) {
             configParams.put(paramName, value.getStringValue());
         }
     }
 
-    private static void addIntParamIfPresent(String paramName, Annotation jmsConfig, Properties configParams) {
-        AnnAttrValue value = jmsConfig.getAnnAttrValue(paramName);
+    private static void addIntParamIfPresent(String paramName, Annotation kafkaConfig, Properties configParams) {
+        AnnAttrValue value = kafkaConfig.getAnnAttrValue(paramName);
         if (value != null) {
             configParams.put(paramName, ((Long) value.getIntValue()).intValue());
         }
     }
 
-    private static void addBooleanParamIfPresent(String paramName, Annotation jmsConfig, Properties configParams) {
-        AnnAttrValue value = jmsConfig.getAnnAttrValue(paramName);
+    private static void addBooleanParamIfPresent(String paramName, Annotation kafkaConfig, Properties configParams) {
+        AnnAttrValue value = kafkaConfig.getAnnAttrValue(paramName);
         if (value != null) {
             configParams.put(paramName, value.getBooleanValue());
         }
