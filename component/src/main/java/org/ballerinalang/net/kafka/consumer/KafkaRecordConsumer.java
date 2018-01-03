@@ -144,7 +144,7 @@ public class KafkaRecordConsumer {
      */
     public void stopConsume() {
         this.kafkaConsumer.wakeup();
-        this.executorService.shutdown();
         this.kafkaConsumer.close();
+        this.executorService.shutdown();
     }
 }

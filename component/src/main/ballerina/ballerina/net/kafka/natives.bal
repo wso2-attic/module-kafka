@@ -1,5 +1,7 @@
 package ballerina.net.kafka;
 
+import ballerina.util;
+
 @Description { value:"Struct which represents Kafka producer"}
 @Field { value:"map: Producer properties as key value pairs" }
 public struct KafkaProducer {
@@ -31,6 +33,7 @@ public struct ProducerRecord {
 public connector KafkaProducerClient (KafkaProducer producer) {
 
     map producerHolder = {};
+    string connectorID = util:uuid();
 
     @Description { value:"Simple Send action which produce records to Kafka server"}
     @Param { value:"value: value of Kafka ProducerRecord to be sent." }

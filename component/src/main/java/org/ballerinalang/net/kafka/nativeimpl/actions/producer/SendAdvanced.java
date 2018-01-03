@@ -95,12 +95,12 @@ public class SendAdvanced extends AbstractNativeAction {
         try {
             if (producerBalConfig.get(Constants.PARAM_TRANSACTION_ID) != null
                     && context.isInTransaction()) {
-                String transactionID = producerBalConfig.get(Constants.PARAM_TRANSACTION_ID).stringValue();
+                String connectorKey = producerConnector.getStringField(0);
                 BallerinaTransactionManager ballerinaTxManager = context.getBallerinaTransactionManager();
-                BallerinaTransactionContext regTxContext = ballerinaTxManager.getTransactionContext(transactionID);
+                BallerinaTransactionContext regTxContext = ballerinaTxManager.getTransactionContext(connectorKey);
                 if (regTxContext == null) {
                     KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
-                    ballerinaTxManager.registerTransactionContext(transactionID, txContext);
+                    ballerinaTxManager.registerTransactionContext(connectorKey, txContext);
                     kafkaProducer.beginTransaction();
                 }
             }

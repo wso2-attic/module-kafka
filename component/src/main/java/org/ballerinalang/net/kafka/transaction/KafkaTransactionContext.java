@@ -36,6 +36,10 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
         this.kafkaProducer = kafkaProducer;
     }
 
+    /**
+     * Commits transaction for the producer.
+     * {@inheritDoc}
+     */
     @Override
     public void commit() {
         try {
@@ -45,6 +49,10 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
         }
     }
 
+    /**
+     * Aborts transaction for the producer.
+     * {@inheritDoc}
+     */
     @Override
     public void rollback() {
         try {
@@ -54,16 +62,25 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         // Not required for Kafka Transactions.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void done() {
         // Not required for Kafka Transactions.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public XAResource getXAResource() {
         return null;
