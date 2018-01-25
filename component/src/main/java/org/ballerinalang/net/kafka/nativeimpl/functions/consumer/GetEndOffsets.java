@@ -69,14 +69,7 @@ public class GetEndOffsets extends AbstractNativeFunction {
         }
 
         BRefValueArray partitions = ((BRefValueArray) getRefArgument(context, 1));
-        ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
-
-        for (int counter = 0; counter < partitions.size(); counter++) {
-            BStruct partition = (BStruct) partitions.get(counter);
-            String topic = partition.getStringField(0);
-            int partitionValue = new Long(partition.getIntField(0)).intValue();
-            partitionList.add(new TopicPartition(topic, partitionValue));
-        }
+        ArrayList<TopicPartition> partitionList = KafkaUtils.getTopicPartitionList(partitions);
 
         try {
             Map<TopicPartition, Long> offsetMap = kafkaConsumer.endOffsets(partitionList);

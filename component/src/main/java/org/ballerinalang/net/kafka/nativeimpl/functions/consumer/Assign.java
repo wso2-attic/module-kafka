@@ -31,6 +31,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.net.kafka.KafkaConstants;
+import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -63,16 +64,7 @@ public class Assign extends AbstractNativeFunction {
         }
 
         BRefValueArray partitions = ((BRefValueArray) getRefArgument(context, 1));
-        ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
-
-        if (partitions != null) {
-            for (int counter = 0; counter < partitions.size(); counter++) {
-                BStruct partition = (BStruct) partitions.get(counter);
-                String topic = partition.getStringField(0);
-                int partitionValue = new Long(partition.getIntField(0)).intValue();
-                partitionList.add(new TopicPartition(topic, partitionValue));
-            }
-        }
+        ArrayList<TopicPartition> partitionList = KafkaUtils.getTopicPartitionList(partitions);
 
         try {
             kafkaConsumer.assign(partitionList);

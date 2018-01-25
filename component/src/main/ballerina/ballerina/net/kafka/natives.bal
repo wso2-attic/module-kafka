@@ -92,7 +92,7 @@ public struct ProducerRecord {
    blob key;
    blob value;
    string topic;
-   int  partition = -1;
+   int partition = -1;
    int timestamp = -1;
 }
 
@@ -154,7 +154,7 @@ public struct ConsumerRecord {
    blob key;
    blob value;
    int offset;
-   int  partition;
+   int partition;
    int timestamp;
    string topic;
 }

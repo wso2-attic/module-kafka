@@ -298,7 +298,6 @@
         <ballerina.version>0.95.6</ballerina.version>
         <apache.kafka.version>1.0.0</apache.kafka.version>
         <org.testng.version>6.11</org.testng.version>
-        <apache.commons-pool2.version>2.4.2</apache.commons-pool2.version>
         <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -311,7 +310,6 @@
         <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
-        <apache.commons.lang.version>2.6</apache.commons.lang.version>
 
         <maven.wagon.ssh.version>2.1</maven.wagon.ssh.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>

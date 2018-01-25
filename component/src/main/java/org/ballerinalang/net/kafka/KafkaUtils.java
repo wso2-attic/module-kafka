@@ -140,8 +140,6 @@ public class KafkaUtils {
     public static BValue[] getSignatureParameters(Resource resource,
                                                   ConsumerRecords<byte[], byte[]> records,
                                                   KafkaConsumer<byte[], byte[]> kafkaConsumer) {
-
-
         List<ParamDetail> paramDetails = resource.getParamDetails();
         BValue[] bValues = new BValue[paramDetails.size()];
         if (paramDetails.size() > 0) {
@@ -184,7 +182,6 @@ public class KafkaUtils {
 
     private static BRefValueArray createOffsetStructArray(Resource resource,
                                                           ConsumerRecords<byte[], byte[]> records) {
-
         // Create offsets struct array.
         Map<TopicPartition, Long> partitionToUncommittedOffsetMap = new HashMap<>();
         records.forEach(record -> {
@@ -236,8 +233,6 @@ public class KafkaUtils {
                                                   ConsumerRecords<byte[], byte[]> records,
                                                   KafkaConsumer<byte[], byte[]> kafkaConsumer,
                                                   String groupId) {
-
-
         List<ParamDetail> paramDetails = resource.getParamDetails();
         BValue[] bValues = new BValue[paramDetails.size()];
         if (paramDetails.size() > 0) {
@@ -261,7 +256,6 @@ public class KafkaUtils {
     }
 
     public static Properties processKafkaConsumerConfig(Annotation kafkaConfig) {
-
         Properties configParams = new Properties();
 
         addStringArrayParamIfPresent(KafkaConstants.ALIAS_TOPICS, kafkaConfig, configParams);
@@ -315,7 +309,6 @@ public class KafkaUtils {
     }
 
     public static Properties processKafkaConsumerConfig(BMap bMap) {
-
         Properties configParams = new Properties();
 
         addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bMap, configParams);
@@ -354,7 +347,6 @@ public class KafkaUtils {
     }
 
     public static Properties processKafkaConsumerConfig(BStruct bStruct) {
-
         Properties configParams = new Properties();
 
         addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bStruct, configParams, 0);
@@ -395,7 +387,6 @@ public class KafkaUtils {
     }
 
     public static Properties processKafkaProducerConfig(BMap bMap) {
-
         Properties configParams = new Properties();
 
         addStringParamIfPresent(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bMap, configParams);
@@ -432,7 +423,6 @@ public class KafkaUtils {
     }
 
     public static Properties processKafkaProducerConfig(BStruct bStruct) {
-
         Properties configParams = new Properties();
 
         if (bStruct == null) {
@@ -612,6 +602,19 @@ public class KafkaUtils {
                 .getStructInfo(structName);
         BStructType structType = structInfo.getType();
         return new BStruct(structType);
+    }
+
+    public static ArrayList<TopicPartition> getTopicPartitionList(BRefValueArray partitions) {
+        ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
+        if (partitions != null) {
+            for (int counter = 0; counter < partitions.size(); counter++) {
+                BStruct partition = (BStruct) partitions.get(counter);
+                String topic = partition.getStringField(0);
+                int partitionValue = new Long(partition.getIntField(0)).intValue();
+                partitionList.add(new TopicPartition(topic, partitionValue));
+            }
+        }
+        return partitionList;
     }
 
 }

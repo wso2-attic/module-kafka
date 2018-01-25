@@ -49,7 +49,7 @@ public class Close extends AbstractNativeFunction {
 
     @Override
     public BValue[] execute(Context context) {
-
+        // Closes the Kafka native consumer.
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(KafkaConstants.NATIVE_CONSUMER);
