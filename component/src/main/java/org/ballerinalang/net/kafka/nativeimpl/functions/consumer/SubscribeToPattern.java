@@ -52,7 +52,6 @@ public class SubscribeToPattern extends AbstractNativeFunction {
 
     @Override
     public BValue[] execute(Context context) {
-
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         String topicRegex = getStringArgument(context, 0);
 
@@ -68,7 +67,6 @@ public class SubscribeToPattern extends AbstractNativeFunction {
                 IllegalStateException | KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-
         return VOID_RETURN;
     }
 

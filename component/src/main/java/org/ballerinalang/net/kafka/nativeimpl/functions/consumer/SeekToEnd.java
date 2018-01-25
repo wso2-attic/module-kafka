@@ -73,7 +73,6 @@ public class SeekToEnd extends AbstractNativeFunction {
                 IllegalArgumentException | KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-
         return VOID_RETURN;
     }
 

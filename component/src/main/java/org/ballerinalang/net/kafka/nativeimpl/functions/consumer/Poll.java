@@ -59,7 +59,6 @@ public class Poll extends AbstractNativeFunction {
 
     @Override
     public BValue[] execute(Context context) {
-
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct

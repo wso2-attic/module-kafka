@@ -69,7 +69,6 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
 
     @Override
     public BValue[] execute(Context context) {
-
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         BStringArray topicArray = (BStringArray) getRefArgument(context, 1);
         ArrayList<String> topics = new ArrayList<String>();
@@ -111,7 +110,6 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
                 IllegalStateException | KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-
         return VOID_RETURN;
     }
 

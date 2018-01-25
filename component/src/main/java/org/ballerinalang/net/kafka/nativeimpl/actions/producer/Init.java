@@ -53,7 +53,6 @@ public class Init extends AbstractNativeAction {
 
     @Override
     public ConnectorFuture execute(Context context) {
-
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
         BStringArray stringArray = (BStringArray) producerConnector.getRefField(0);
@@ -66,7 +65,6 @@ public class Init extends AbstractNativeAction {
 
         BStruct producerConf = (BStruct) producerConnector.getRefField(1);
         Properties producerProperties = KafkaUtils.processKafkaProducerConfig(producerConf);
-
         producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         try {

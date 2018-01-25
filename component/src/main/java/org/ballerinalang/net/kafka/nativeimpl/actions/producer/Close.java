@@ -48,7 +48,6 @@ public class Close extends AbstractNativeAction {
 
     @Override
     public ConnectorFuture execute(Context context) {
-
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
         BMap producerMap = (BMap) producerConnector.getRefField(2);
@@ -56,7 +55,6 @@ public class Close extends AbstractNativeAction {
 
         KafkaProducer<byte[], byte[]> kafkaProducer =
                 (KafkaProducer) producerStruct.getNativeData(KafkaConstants.NATIVE_PRODUCER);
-
         try {
             kafkaProducer.close();
         } catch (KafkaException e) {

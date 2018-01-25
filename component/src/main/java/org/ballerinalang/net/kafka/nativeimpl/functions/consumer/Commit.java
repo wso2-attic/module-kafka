@@ -61,7 +61,6 @@ public class Commit extends AbstractNativeFunction {
         } catch (KafkaException e) {
             throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
         }
-
         return VOID_RETURN;
     }
 

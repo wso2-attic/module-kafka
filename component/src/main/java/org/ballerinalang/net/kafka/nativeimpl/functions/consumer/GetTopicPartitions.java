@@ -59,7 +59,6 @@ public class GetTopicPartitions extends AbstractNativeFunction {
 
     @Override
     public BValue[] execute(Context context) {
-
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         String topic = getStringArgument(context, 0);
 

@@ -58,7 +58,6 @@ public class Send extends AbstractNativeAction {
 
     @Override
     public ConnectorFuture execute(Context context) {
-
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
         BMap producerMap = (BMap) producerConnector.getRefField(2);

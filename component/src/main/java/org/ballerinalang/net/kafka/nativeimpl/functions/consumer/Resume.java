@@ -71,7 +71,6 @@ public class Resume extends AbstractNativeFunction {
         } catch (IllegalStateException | KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-
         return VOID_RETURN;
     }
 

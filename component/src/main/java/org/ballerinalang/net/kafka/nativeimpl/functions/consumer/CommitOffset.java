@@ -83,7 +83,6 @@ public class CommitOffset extends AbstractNativeFunction {
         } catch (IllegalArgumentException | KafkaException e) {
             throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
         }
-
         return VOID_RETURN;
     }
 

@@ -57,7 +57,6 @@ public class GetTopicPartitions extends AbstractNativeAction {
 
     @Override
     public ConnectorFuture execute(Context context) {
-
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
         String topic = getStringArgument(context, 0);
 
@@ -65,7 +64,6 @@ public class GetTopicPartitions extends AbstractNativeAction {
         BStruct producerStruct = (BStruct) producerMap.get(new BString(KafkaConstants.NATIVE_PRODUCER));
 
         try {
-
             KafkaProducer<byte[], byte[]> kafkaProducer =
                     (KafkaProducer) producerStruct.getNativeData(KafkaConstants.NATIVE_PRODUCER);
             List<PartitionInfo> partitionInfos = kafkaProducer.partitionsFor(topic);
