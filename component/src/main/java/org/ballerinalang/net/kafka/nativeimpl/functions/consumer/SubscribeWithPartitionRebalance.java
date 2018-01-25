@@ -24,7 +24,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.WorkerContext;
-import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BFunctionPointer;
 import org.ballerinalang.model.values.BRefType;
@@ -37,10 +36,9 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
-import org.ballerinalang.util.codegen.PackageInfo;
+import org.ballerinalang.net.kafka.KafkaConstants;
+import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.codegen.StructInfo;
 import org.ballerinalang.util.codegen.cpentries.FunctionRefCPEntry;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.program.BLangFunctions;
@@ -55,11 +53,11 @@ import java.util.List;
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "subscribeWithPartitionRebalance",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Consumer",
                 structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        type = TypeKind.STRUCT, structType = "Consumer",
                         structPackage = "ballerina.net.kafka"),
                 @Argument(name = "topics", type = TypeKind.ARRAY, elementType = TypeKind.STRING),
                 @Argument(name = "onPartitionsRevoked", type = TypeKind.ANY),
@@ -86,7 +84,7 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
             onPartitionsRevoked = ((BFunctionPointer) getRefArgument(context, 2)).value();
         } else {
             return getBValues(BLangVMErrors.createError(context, 0,
-                    "The onPartitionsRevoked function is not provided"));
+                    "The onPartitionsRevoked function is not provided."));
         }
 
         if (context.getControlStackNew().getCurrentFrame().getRefLocalVars()[3] != null && context.getControlStackNew()
@@ -94,7 +92,7 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
             onPartitionsAssigned = ((BFunctionPointer) getRefArgument(context, 3)).value();
         } else {
             return getBValues(BLangVMErrors.createError(context, 0,
-                    "The onPartitionsAssigned function is not provided"));
+                    "The onPartitionsAssigned function is not provided."));
         }
 
         ConsumerRebalanceListener listener = new KafkaRebalanceListener(context, onPartitionsRevoked,
@@ -102,7 +100,7 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
 
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(Constants.NATIVE_CONSUMER);
+                .getNativeData(KafkaConstants.NATIVE_CONSUMER);
         if (kafkaConsumer == null) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
@@ -117,6 +115,12 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
         return VOID_RETURN;
     }
 
+    /**
+     * Implementation for {@link ConsumerRebalanceListener} interface from connector side.
+     * We register this listener at subscription.
+     *
+     * {@inheritDoc}
+     */
     class KafkaRebalanceListener implements ConsumerRebalanceListener {
 
         private Context context;
@@ -124,7 +128,6 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
         private FunctionRefCPEntry onPartitionsAssigned;
         private AbstractNativeFunction function;
         private BStruct consumerStruct;
-
 
         KafkaRebalanceListener(Context context,
                                FunctionRefCPEntry onPartitionsRevoked,
@@ -138,21 +141,27 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
             this.consumerStruct = consumerStruct;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
             ProgramFile programFile = context.getProgramFile();
             Context childContext = new WorkerContext(programFile, context);
-            BLangFunctions.
-                    invokeFunction(programFile, onPartitionsRevoked.getFunctionInfo(),
+            BLangFunctions
+                    .invokeFunction(programFile, onPartitionsRevoked.getFunctionInfo(),
                             function.getBValues(consumerStruct, getPartitionsArray(partitions)), childContext);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
             ProgramFile programFile = context.getProgramFile();
             Context childContext = new WorkerContext(programFile, context);
-            BLangFunctions.
-                    invokeFunction(programFile, onPartitionsAssigned.getFunctionInfo(),
+            BLangFunctions
+                    .invokeFunction(programFile, onPartitionsAssigned.getFunctionInfo(),
                             function.getBValues(consumerStruct, getPartitionsArray(partitions)), childContext);
 
         }
@@ -161,24 +170,16 @@ public class SubscribeWithPartitionRebalance extends AbstractNativeFunction {
             List<BStruct> assignmentList = new ArrayList<>();
             if (!partitions.isEmpty()) {
                 partitions.forEach(assignment -> {
-                    BStruct infoStruct = createPartitionStruct(context);
-                    infoStruct.setStringField(0, assignment.topic());
-                    infoStruct.setIntField(0, assignment.partition());
-                    assignmentList.add(infoStruct);
+                    BStruct partitionStruct = KafkaUtils.createKafkaPackageStruct(context,
+                            KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
+                    partitionStruct.setStringField(0, assignment.topic());
+                    partitionStruct.setIntField(0, assignment.partition());
+                    assignmentList.add(partitionStruct);
                 });
             }
             return new BRefValueArray(assignmentList.toArray(new BRefType[0]),
-                    createPartitionStruct(context).getType());
-        }
-
-        private BStruct createPartitionStruct(Context context) {
-            PackageInfo kafkaPackageInfo = context.getProgramFile()
-                    .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
-            StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                    .getStructInfo(Constants.TOPIC_PARTITION_STRUCT_NAME);
-            BStructType structType = consumerRecordStructInfo.getType();
-            BStruct bStruct = new BStruct(structType);
-            return bStruct;
+                    KafkaUtils.createKafkaPackageStruct(context,
+                            KafkaConstants.TOPIC_PARTITION_STRUCT_NAME).getType());
         }
 
     }

@@ -21,7 +21,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
-import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
@@ -32,9 +31,8 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
-import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.net.kafka.KafkaConstants;
+import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -45,11 +43,11 @@ import java.util.List;
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "poll",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Consumer",
                 structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        type = TypeKind.STRUCT, structType = "Consumer",
                         structPackage = "ballerina.net.kafka"),
                 @Argument(name = "timeout", type = TypeKind.INT)
         },
@@ -65,7 +63,7 @@ public class Poll extends AbstractNativeFunction {
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(Constants.NATIVE_CONSUMER);
+                .getNativeData(KafkaConstants.NATIVE_CONSUMER);
         if (kafkaConsumer == null) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
@@ -77,7 +75,8 @@ public class Poll extends AbstractNativeFunction {
             ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(timeout);
             if (!recordsRetrieved.isEmpty()) {
                 recordsRetrieved.forEach(record -> {
-                    BStruct recordStruct = createRecordStruct(context);
+                    BStruct recordStruct = KafkaUtils.createKafkaPackageStruct(context,
+                            KafkaConstants.CONSUMER_RECORD_STRUCT_NAME);
                     recordStruct.setBlobField(0, record.key());
                     recordStruct.setBlobField(1, record.value());
                     recordStruct.setIntField(0, record.offset());
@@ -88,20 +87,12 @@ public class Poll extends AbstractNativeFunction {
                 });
             }
             return getBValues(new BRefValueArray(recordsList.toArray(new BRefType[0]),
-                    createRecordStruct(context).getType()));
+                    KafkaUtils.createKafkaPackageStruct(context,
+                            KafkaConstants.CONSUMER_RECORD_STRUCT_NAME).getType()));
         } catch (IllegalStateException |
                 IllegalArgumentException | KafkaException e) {
             return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-    }
-
-    private BStruct createRecordStruct(Context context) {
-        PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
-        StructInfo consumerRecordStructInfo = kafkaPackageInfo.getStructInfo(Constants.CONSUMER_RECORD_STRUCT_NAME);
-        BStructType structType = consumerRecordStructInfo.getType();
-        BStruct bStruct = new BStruct(structType);
-        return bStruct;
     }
 
 }

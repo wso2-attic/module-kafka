@@ -17,6 +17,7 @@
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.BallerinaTransactionContext;
@@ -29,14 +30,15 @@ import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
-import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.net.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.util.exceptions.BallerinaException;
+
+import java.util.Properties;
 
 
 /**
@@ -44,7 +46,7 @@ import org.ballerinalang.util.exceptions.BallerinaException;
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "send",
-        connectorName = Constants.PRODUCER_CONNECTOR_NAME,
+        connectorName = KafkaConstants.PRODUCER_CONNECTOR_NAME,
         args = {
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR),
@@ -59,13 +61,12 @@ public class Send extends AbstractNativeAction {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
-        BStruct producerConf = ((BStruct) producerConnector.getRefField(0));
-        BMap<String, BValue> producerBalConfig = (BMap<String, BValue>) producerConf.getRefField(0);
+        BMap producerMap = (BMap) producerConnector.getRefField(2);
+        BStruct producerStruct = (BStruct) producerMap.get(new BString(KafkaConstants.NATIVE_PRODUCER));
 
-        BMap producerMap = (BMap) producerConnector.getRefField(1);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
-
-        KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+        KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(KafkaConstants.NATIVE_PRODUCER);
+        Properties producerProperties = (Properties) producerStruct
+                .getNativeData(KafkaConstants.NATIVE_PRODUCER_CONFIG);
 
         String topic = getStringArgument(context, 0);
         byte[] value = getBlobArgument(context, 0);
@@ -73,7 +74,7 @@ public class Send extends AbstractNativeAction {
         ProducerRecord<byte[], byte[]> kafkaRecord = new ProducerRecord(topic, value);
 
         try {
-            if (producerBalConfig.get(Constants.PARAM_TRANSACTION_ID) != null
+            if (producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG) != null
                     && context.isInTransaction()) {
                 String connectorKey = producerConnector.getStringField(0);
                 BallerinaTransactionManager ballerinaTxManager = context.getBallerinaTransactionManager();

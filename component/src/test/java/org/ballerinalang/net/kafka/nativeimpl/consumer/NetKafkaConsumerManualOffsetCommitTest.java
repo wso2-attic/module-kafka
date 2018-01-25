@@ -31,7 +31,7 @@ import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
 import org.testng.Assert;
@@ -210,9 +210,9 @@ public class NetKafkaConsumerManualOffsetCommitTest {
 
     private BStruct createPartitionStruct(Context context) {
         PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
+                .getPackageInfo(KafkaConstants.KAFKA_NATIVE_PACKAGE);
         StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(Constants.TOPIC_PARTITION_STRUCT_NAME);
+                .getStructInfo(KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
         BStructType structType = consumerRecordStructInfo.getType();
         BStruct bStruct = new BStruct(structType);
         return bStruct;
@@ -220,9 +220,9 @@ public class NetKafkaConsumerManualOffsetCommitTest {
 
     private BStruct createOffsetStruct(Context context) {
         PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
+                .getPackageInfo(KafkaConstants.KAFKA_NATIVE_PACKAGE);
         StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(Constants.OFFSET_STRUCT_NAME);
+                .getStructInfo(KafkaConstants.OFFSET_STRUCT_NAME);
         BStructType structType = consumerRecordStructInfo.getType();
         BStruct bStruct = new BStruct(structType);
         return bStruct;

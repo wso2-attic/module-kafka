@@ -20,7 +20,7 @@ package org.ballerinalang.net.kafka.impl;
 
 
 import org.apache.kafka.common.KafkaException;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.net.kafka.api.KafkaListener;
 import org.ballerinalang.net.kafka.api.KafkaServerConnector;
 import org.ballerinalang.net.kafka.consumer.KafkaRecordConsumer;
@@ -50,8 +50,8 @@ public class KafkaServerConnectorImpl implements KafkaServerConnector {
                                     KafkaListener kafkaListener) throws KafkaConnectorException {
         this.kafkaListener = kafkaListener;
         this.serviceId = serviceId;
-        if (configParams.get(Constants.ALIAS_CONCURRENT_CONSUMERS) != null) {
-            this.numOfConcurrentConsumers = (Integer) configParams.get(Constants.ALIAS_CONCURRENT_CONSUMERS);
+        if (configParams.get(KafkaConstants.ALIAS_CONCURRENT_CONSUMERS) != null) {
+            this.numOfConcurrentConsumers = (Integer) configParams.get(KafkaConstants.ALIAS_CONCURRENT_CONSUMERS);
         }
         if (this.numOfConcurrentConsumers <= 0) {
             throw new KafkaConnectorException("Number of Concurrent consumers should be a positive " +

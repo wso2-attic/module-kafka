@@ -23,7 +23,6 @@ import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.AbstractNativeFunction;
@@ -31,7 +30,7 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.net.kafka.KafkaUtils;
 
 import java.util.Properties;
@@ -41,11 +40,11 @@ import java.util.Properties;
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "connect",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Consumer",
                 structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        type = TypeKind.STRUCT, structType = "Consumer",
                         structPackage = "ballerina.net.kafka")
         },
         returnType = {@ReturnType(type = TypeKind.STRUCT)},
@@ -54,15 +53,27 @@ public class Connect extends AbstractNativeFunction {
 
     @Override
     public BValue[] execute(Context context) {
-        // Consumer initialization
+        // Consumer initialization.
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
-        BMap<String, BValue> consumerBalConfig = (BMap<String, BValue>) consumerStruct.getRefField(0);
+        BStruct consumerConfig = (BStruct) consumerStruct.getRefField(0);
+        // Check whether consumer configuration is available.
+        if (consumerConfig == null) {
+            return getBValues(BLangVMErrors.createError(context,
+                    0, "Kafka consumer is not initialized with consumer configuration."));
+        }
+        // Check whether already native consumer is attached to the struct.
+        // This can be happen either from Kafka service or via programmatically.
+        if (consumerStruct.getNativeData(KafkaConstants.NATIVE_CONSUMER) != null) {
+            return getBValues(BLangVMErrors.createError(context,
+                    0, "Kafka consumer is already connected to external broker." +
+                            " Please close it before re-connecting the external broker again."));
+        }
 
-        Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerBalConfig);
+        Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerConfig);
 
         try {
             KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<>(consumerProperties);
-            consumerStruct.addNativeData(Constants.NATIVE_CONSUMER, kafkaConsumer);
+            consumerStruct.addNativeData(KafkaConstants.NATIVE_CONSUMER, kafkaConsumer);
         } catch (KafkaException e) {
             return getBValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }

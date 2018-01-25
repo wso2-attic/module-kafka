@@ -28,7 +28,7 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 /**
@@ -36,11 +36,11 @@ import org.ballerinalang.util.exceptions.BallerinaException;
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "close",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Consumer",
                 structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        type = TypeKind.STRUCT, structType = "Consumer",
                         structPackage = "ballerina.net.kafka")
         },
         returnType = {@ReturnType(type = TypeKind.STRUCT)},
@@ -52,10 +52,12 @@ public class Close extends AbstractNativeFunction {
 
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(Constants.NATIVE_CONSUMER);
+                .getNativeData(KafkaConstants.NATIVE_CONSUMER);
         if (kafkaConsumer == null) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
+        // Clears the reference to Kafka Native consumer.
+        consumerStruct.addNativeData(KafkaConstants.NATIVE_CONSUMER, null);
 
         try {
             kafkaConsumer.close();

@@ -22,7 +22,6 @@ import org.apache.kafka.common.PartitionInfo;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.AbstractNativeAction;
 import org.ballerinalang.connector.api.ConnectorFuture;
-import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
@@ -34,9 +33,8 @@ import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
-import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.net.kafka.KafkaConstants;
+import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ import java.util.List;
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "getTopicPartitions",
-        connectorName = Constants.PRODUCER_CONNECTOR_NAME,
+        connectorName = KafkaConstants.PRODUCER_CONNECTOR_NAME,
         args = {
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR),
@@ -63,25 +61,27 @@ public class GetTopicPartitions extends AbstractNativeAction {
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
         String topic = getStringArgument(context, 0);
 
-        BMap producerMap = (BMap) producerConnector.getRefField(1);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.getRefField(2);
+        BStruct producerStruct = (BStruct) producerMap.get(new BString(KafkaConstants.NATIVE_PRODUCER));
 
         try {
 
             KafkaProducer<byte[], byte[]> kafkaProducer =
-                    (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+                    (KafkaProducer) producerStruct.getNativeData(KafkaConstants.NATIVE_PRODUCER);
             List<PartitionInfo> partitionInfos = kafkaProducer.partitionsFor(topic);
             List<BStruct> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {
-                    BStruct infoStruct = createRecordStruct(context);
+                    BStruct infoStruct = KafkaUtils.createKafkaPackageStruct(context,
+                            KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
                     infoStruct.setStringField(0, partitionInfo.topic());
                     infoStruct.setIntField(0, partitionInfo.partition());
                     infoList.add(infoStruct);
                 });
                 context.getControlStackNew().getCurrentFrame().returnValues[0] =
-                        new BRefValueArray(infoList.toArray(new BRefType[0]), createRecordStruct(context).getType());
-
+                        new BRefValueArray(infoList.toArray(new BRefType[0]),
+                                KafkaUtils.createKafkaPackageStruct(context,
+                                        KafkaConstants.TOPIC_PARTITION_STRUCT_NAME).getType());
             }
         } catch (KafkaException e) {
             throw new BallerinaException("Failed to fetch partitions from the producer " + e.getMessage(), e, context);
@@ -89,16 +89,6 @@ public class GetTopicPartitions extends AbstractNativeAction {
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;
-    }
-
-    private BStruct createRecordStruct(Context context) {
-        PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
-        StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(Constants.TOPIC_PARTITION_STRUCT_NAME);
-        BStructType structType = consumerRecordStructInfo.getType();
-        BStruct bStruct = new BStruct(structType);
-        return bStruct;
     }
 
 }

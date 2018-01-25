@@ -28,12 +28,12 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BStruct;
-import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
@@ -44,7 +44,7 @@ import java.util.Properties;
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
                  actionName = "<init>",
-                 connectorName = Constants.PRODUCER_CONNECTOR_NAME,
+                 connectorName = KafkaConstants.PRODUCER_CONNECTOR_NAME,
                  args = {
                          @Argument(name = "c",
                                    type = TypeKind.CONNECTOR)
@@ -55,10 +55,19 @@ public class Init extends AbstractNativeAction {
     public ConnectorFuture execute(Context context) {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
-        BStruct producerStruct = ((BStruct) producerConnector.getRefField(0));
-        BMap<String, BValue> producerBalConfig = (BMap<String, BValue>) producerStruct.getRefField(0);
 
-        Properties producerProperties = KafkaUtils.processKafkaProducerConfig(producerBalConfig);
+        BStringArray stringArray = (BStringArray) producerConnector.getRefField(0);
+        String bootstrapServers;
+        if (stringArray.size() != 1) {
+            throw new BallerinaException("Mandatory Kafka bootstrap servers parameter size should be 1.");
+        } else {
+            bootstrapServers = stringArray.get(0);
+        }
+
+        BStruct producerConf = (BStruct) producerConnector.getRefField(1);
+        Properties producerProperties = KafkaUtils.processKafkaProducerConfig(producerConf);
+
+        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         try {
             KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<>(producerProperties);
@@ -66,9 +75,13 @@ public class Init extends AbstractNativeAction {
                 kafkaProducer.initTransactions();
             }
 
-            BMap producerMap = (BMap) producerConnector.getRefField(1);
-            producerStruct.addNativeData(Constants.NATIVE_PRODUCER, kafkaProducer);
-            producerMap.put(new BString(Constants.NATIVE_PRODUCER), producerStruct);
+            BMap producerMap = (BMap) producerConnector.getRefField(2);
+            BStruct producerStruct = KafkaUtils.createKafkaPackageStruct(context,
+                    KafkaConstants.PRODUCER_STRUCT_NAME);
+            producerStruct.addNativeData(KafkaConstants.NATIVE_PRODUCER, kafkaProducer);
+            producerStruct.addNativeData(KafkaConstants.NATIVE_PRODUCER_CONFIG, producerProperties);
+
+            producerMap.put(new BString(KafkaConstants.NATIVE_PRODUCER), producerStruct);
         } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to initialize the producer " + e.getMessage(), e, context);
         }

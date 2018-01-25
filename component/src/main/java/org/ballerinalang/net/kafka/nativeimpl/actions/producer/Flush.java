@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -31,7 +30,7 @@ import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 /**
@@ -39,7 +38,7 @@ import org.ballerinalang.util.exceptions.BallerinaException;
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "flush",
-        connectorName = Constants.PRODUCER_CONNECTOR_NAME,
+        connectorName = KafkaConstants.PRODUCER_CONNECTOR_NAME,
         args = {
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR)
@@ -52,11 +51,11 @@ public class Flush extends AbstractNativeAction {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
-        BMap producerMap = (BMap) producerConnector.getRefField(1);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.getRefField(2);
+        BStruct producerStruct = (BStruct) producerMap.get(new BString(KafkaConstants.NATIVE_PRODUCER));
 
         KafkaProducer<byte[], byte[]> kafkaProducer =
-                (KafkaProducer) producerStruct.getNativeData(Constants.NATIVE_PRODUCER);
+                (KafkaProducer) producerStruct.getNativeData(KafkaConstants.NATIVE_PRODUCER);
 
         try {
             kafkaProducer.flush();

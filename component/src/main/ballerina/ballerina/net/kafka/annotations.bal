@@ -1,5 +1,6 @@
 package ballerina.net.kafka;
 
+@Description { value:"Annotation which represents Kafka Consumer Service configuration."}
 public annotation configuration attach service<> {
     string bootstrapServers;
     string groupId;
@@ -22,7 +23,7 @@ public annotation configuration attach service<> {
     int fetchMinBytes;
     int fetchMaxBytes;
     int fetchMaxWait;
-    int reconnectBackoff;
+    int reconnectBackoffMax;
     int retryBackoff;
     boolean checkCRCS;
     int metricsSampleWindow;

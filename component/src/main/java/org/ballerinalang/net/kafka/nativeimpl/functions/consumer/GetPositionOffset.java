@@ -30,7 +30,7 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 /**
@@ -38,11 +38,11 @@ import org.ballerinalang.util.exceptions.BallerinaException;
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getPositionOffset",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Consumer",
                 structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        type = TypeKind.STRUCT, structType = "Consumer",
                         structPackage = "ballerina.net.kafka"),
                 @Argument(name = "partition", type = TypeKind.STRUCT, structType = "TopicPartition",
                         structPackage = "ballerina.net.kafka")
@@ -56,7 +56,7 @@ public class GetPositionOffset extends AbstractNativeFunction {
 
         BStruct consumerStruct = (BStruct) getRefArgument(context, 0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(Constants.NATIVE_CONSUMER);
+                .getNativeData(KafkaConstants.NATIVE_CONSUMER);
         if (kafkaConsumer == null) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }

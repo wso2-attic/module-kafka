@@ -21,8 +21,6 @@ import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.PartitionInfo;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
-
-import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
@@ -33,9 +31,8 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
-import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.net.kafka.KafkaConstants;
+import org.ballerinalang.net.kafka.KafkaUtils;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -46,11 +43,11 @@ import java.util.List;
  */
 @BallerinaFunction(packageName = "ballerina.net.kafka",
         functionName = "getTopicPartitions",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "KafkaConsumer",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Consumer",
                 structPackage = "ballerina.net.kafka"),
         args = {
                 @Argument(name = "c",
-                        type = TypeKind.STRUCT, structType = "KafkaConsumer",
+                        type = TypeKind.STRUCT, structType = "Consumer",
                         structPackage = "ballerina.net.kafka"),
                 @Argument(name = "topic", type = TypeKind.STRING)
         },
@@ -67,7 +64,7 @@ public class GetTopicPartitions extends AbstractNativeFunction {
         String topic = getStringArgument(context, 0);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(Constants.NATIVE_CONSUMER);
+                .getNativeData(KafkaConstants.NATIVE_CONSUMER);
         if (kafkaConsumer == null) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
@@ -77,27 +74,19 @@ public class GetTopicPartitions extends AbstractNativeFunction {
             List<BStruct> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {
-                    BStruct infoStruct = createRecordStruct(context);
-                    infoStruct.setStringField(0, partitionInfo.topic());
-                    infoStruct.setIntField(0, partitionInfo.partition());
-                    infoList.add(infoStruct);
+                    BStruct partitionStruct = KafkaUtils.createKafkaPackageStruct(context,
+                            KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
+                    partitionStruct.setStringField(0, partitionInfo.topic());
+                    partitionStruct.setIntField(0, partitionInfo.partition());
+                    infoList.add(partitionStruct);
                 });
             }
             return getBValues(new BRefValueArray(infoList.toArray(new BRefType[0]),
-                    createRecordStruct(context).getType()));
+                    KafkaUtils.createKafkaPackageStruct(context,
+                            KafkaConstants.TOPIC_PARTITION_STRUCT_NAME).getType()));
         } catch (KafkaException e) {
             return getBValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
         }
-    }
-
-    private BStruct createRecordStruct(Context context) {
-        PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
-        StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(Constants.TOPIC_PARTITION_STRUCT_NAME);
-        BStructType structType = consumerRecordStructInfo.getType();
-        BStruct bStruct = new BStruct(structType);
-        return bStruct;
     }
 
 }

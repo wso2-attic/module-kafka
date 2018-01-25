@@ -7,6 +7,7 @@ function funcTestKafkaProduce() {
     record.value = byteMsg;
     record.topic = "test";
     kafkaProduce(record);
+
     msg = "Hello World 2";
     byteMsg = msg.toBlob("UTF-8");
     kafka:ProducerRecord recordNext = {};
@@ -16,17 +17,15 @@ function funcTestKafkaProduce() {
 }
 
 function kafkaProduce(kafka:ProducerRecord record) {
-    endpoint<kafka:KafkaProducerClient> kafkaEP {
-        create kafka:KafkaProducerClient (getConnectorConfig());
+    endpoint<kafka:ProducerClient> kafkaEP {
+        create kafka:ProducerClient (["localhost:9094"], getProducerConfig());
     }
     kafkaEP.sendAdvanced(record);
     kafkaEP.flush();
     kafkaEP.close();
 }
 
-function getConnectorConfig () (kafka:KafkaProducer) {
-    kafka:KafkaProducer prod = {};
-    map m = {"bootstrap.servers":"localhost:9094"};
-    prod.properties = m;
-    return prod;
+function getProducerConfig () (kafka:ProducerConfig) {
+    kafka:ProducerConfig pc = {clientID:"basic-producer"};
+    return pc;
 }

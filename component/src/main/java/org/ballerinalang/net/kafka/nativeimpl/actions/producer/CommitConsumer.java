@@ -16,10 +16,10 @@
 
 package org.ballerinalang.net.kafka.nativeimpl.actions.producer;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.BallerinaTransactionContext;
@@ -32,17 +32,17 @@ import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStruct;
-import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.net.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -50,7 +50,7 @@ import java.util.Set;
  */
 @BallerinaAction(packageName = "ballerina.net.kafka",
         actionName = "commitConsumer",
-        connectorName = Constants.PRODUCER_CONNECTOR_NAME,
+        connectorName = KafkaConstants.PRODUCER_CONNECTOR_NAME,
         args = {
                 @Argument(name = "c",
                         type = TypeKind.CONNECTOR),
@@ -66,18 +66,17 @@ public class CommitConsumer extends AbstractNativeAction {
 
         BConnector producerConnector = (BConnector) getRefArgument(context, 0);
 
-        BStruct producerConf = ((BStruct) producerConnector.getRefField(0));
-        BMap<String, BValue> producerBalConfig = (BMap<String, BValue>) producerConf.getRefField(0);
-
-        BMap producerMap = (BMap) producerConnector.getRefField(1);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(Constants.NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.getRefField(2);
+        BStruct producerStruct = (BStruct) producerMap.get(new BString(KafkaConstants.NATIVE_PRODUCER));
 
         KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct
-                .getNativeData(Constants.NATIVE_PRODUCER);
+                .getNativeData(KafkaConstants.NATIVE_PRODUCER);
+        Properties producerProperties = (Properties) producerStruct
+                .getNativeData(KafkaConstants.NATIVE_PRODUCER_CONFIG);
 
         BStruct consumerStruct = (BStruct) getRefArgument(context, 1);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(Constants.NATIVE_CONSUMER);
+                .getNativeData(KafkaConstants.NATIVE_CONSUMER);
 
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
         Set<TopicPartition> topicPartitions = kafkaConsumer.assignment();
@@ -87,11 +86,11 @@ public class CommitConsumer extends AbstractNativeAction {
             partitionToMetadataMap.put(new TopicPartition(tp.topic(), tp.partition()), new OffsetAndMetadata(pos));
         });
 
-        BMap<String, BValue> consumerBalConfig = (BMap<String, BValue>) consumerStruct.getRefField(0);
-        String groupID = consumerBalConfig.get(ConsumerConfig.GROUP_ID_CONFIG).stringValue();
+        BStruct consumerConfig = (BStruct) consumerStruct.getRefField(0);
+        String groupID = consumerConfig.getStringField(1);
 
         try {
-            if (producerBalConfig.get(Constants.PARAM_TRANSACTION_ID) != null
+            if (producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG) != null
                     && context.isInTransaction()) {
                 String connectorKey = producerConnector.getStringField(0);
                 BallerinaTransactionManager ballerinaTxManager = context.getBallerinaTransactionManager();

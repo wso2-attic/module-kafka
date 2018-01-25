@@ -29,7 +29,7 @@ import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructInfo;
 import org.testng.Assert;
@@ -171,9 +171,9 @@ public class NetKafkaConsumerManualCommitTest {
 
     private BStruct createPartitionStruct(Context context) {
         PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(Constants.KAFKA_NATIVE_PACKAGE);
+                .getPackageInfo(KafkaConstants.KAFKA_NATIVE_PACKAGE);
         StructInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(Constants.TOPIC_PARTITION_STRUCT_NAME);
+                .getStructInfo(KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
         BStructType structType = consumerRecordStructInfo.getType();
         BStruct bStruct = new BStruct(structType);
         return bStruct;

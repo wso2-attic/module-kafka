@@ -23,13 +23,14 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
-import org.ballerinalang.net.kafka.Constants;
+import org.ballerinalang.net.kafka.KafkaConstants;
 import org.ballerinalang.net.kafka.api.KafkaListener;
 import org.ballerinalang.net.kafka.future.KafkaPollCycleFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -64,22 +65,22 @@ public class KafkaRecordConsumer {
         this.consumerId = consumerId;
         // Initialize Kafka Consumer.
         this.kafkaConsumer = new KafkaConsumer<>(configParams);
-        ArrayList<String> topics = (ArrayList<String>) configParams.get(Constants.ALIAS_TOPICS);
+        List<String> topics = (ArrayList<String>) configParams.get(KafkaConstants.ALIAS_TOPICS);
         // Subscribe Kafka Consumer to given topics.
         this.kafkaConsumer.subscribe(topics);
         this.kafkaListener = kafkaListener;
-        if (configParams.get(Constants.ALIAS_POLLING_TIMEOUT) != null) {
-            this.pollingTimeout = (Integer) configParams.get(Constants.ALIAS_POLLING_TIMEOUT);
+        if (configParams.get(KafkaConstants.ALIAS_POLLING_TIMEOUT) != null) {
+            this.pollingTimeout = (Integer) configParams.get(KafkaConstants.ALIAS_POLLING_TIMEOUT);
         }
-        if (configParams.get(Constants.ALIAS_POLLING_INTERVAL) != null) {
-            this.pollingInterval = (Integer) configParams.get(Constants.ALIAS_POLLING_INTERVAL);
+        if (configParams.get(KafkaConstants.ALIAS_POLLING_INTERVAL) != null) {
+            this.pollingInterval = (Integer) configParams.get(KafkaConstants.ALIAS_POLLING_INTERVAL);
         }
         if (configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG) != null) {
             this.decoupleProcessing = (Boolean) configParams.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG);
         }
         // This is to override default decouple processing setting if required.
-        if (configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING) != null) {
-            this.decoupleProcessing = (Boolean) configParams.get(Constants.ALIAS_DECOUPLE_PROCESSING);
+        if (configParams.get(KafkaConstants.ALIAS_DECOUPLE_PROCESSING) != null) {
+            this.decoupleProcessing = (Boolean) configParams.get(KafkaConstants.ALIAS_DECOUPLE_PROCESSING);
         }
         this.groupId = (String) configParams.get(ConsumerConfig.GROUP_ID_CONFIG);
     }

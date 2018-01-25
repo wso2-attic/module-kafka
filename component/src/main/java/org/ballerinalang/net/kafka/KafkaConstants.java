@@ -25,23 +25,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Constants for kafka.
+ * Constants related to for Kafka API.
  */
-public class Constants {
+public class KafkaConstants {
 
-    private Constants() {
+    private KafkaConstants() {
     }
 
-    public static final String PRODUCER_CONNECTOR_NAME = "KafkaProducerClient";
+    public static final String PRODUCER_CONNECTOR_NAME = "ProducerClient";
+
     public static final String NATIVE_CONSUMER = "KafkaConsumer";
     public static final String NATIVE_PRODUCER = "KafkaProducer";
+    public static final String NATIVE_PRODUCER_CONFIG = "KafkaProducerConfig";
+
     public static final String KAFKA_NATIVE_PACKAGE = "ballerina.net.kafka";
+
     public static final String TOPIC_PARTITION_STRUCT_NAME = "TopicPartition";
     public static final String OFFSET_STRUCT_NAME = "Offset";
-
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
-    public static final String CONSUMER_STRUCT_NAME = "KafkaConsumer";
-    public static final String PRODUCER_STRUCT_NAME = "KafkaProducer";
+    public static final String CONSUMER_STRUCT_NAME = "Consumer";
+    public static final String CONSUMER_CONFIG_STRUCT_NAME = "ConsumerConfig";
+    public static final String PRODUCER_STRUCT_NAME = "Producer";
+
     public static final String ANNOTATION_KAFKA_CONFIGURATION = "configuration";
     public static final String PROPERTIES_ARRAY = "properties";
 
@@ -70,7 +75,7 @@ public class Constants {
     public static final String ALIAS_FETCH_MAX_BYTES_CONFIG = "fetchMaxBytes";
 
     public static final String ALIAS_FETCH_MAX_WAIT_MS_CONFIG = "fetchMaxWait";
-    public static final String ALIAS_RECONNECT_BACKOFF_MS_CONFIG = "reconnectBackoff";
+    public static final String ALIAS_RECONNECT_BACKOFF_MS_CONFIG = "reconnectBackoffMax";
     public static final String ALIAS_RETRY_BACKOFF_MS_CONFIG = "retryBackoff";
     public static final String ALIAS_CHECK_CRCS_CONFIG = "checkCRCS";
 
@@ -92,7 +97,6 @@ public class Constants {
             = "org.apache.kafka.common.serialization.ByteArrayDeserializer";
     public static final String DEFAULT_VALUE_DESERIALIZER
             = "org.apache.kafka.common.serialization.ByteArrayDeserializer";
-    public static final String PARAM_TRANSACTION_ID = "transactional.id";
 
     public static final String DEFAULT_KEY_SERIALIZER
             = "org.apache.kafka.common.serialization.ByteArraySerializer";
@@ -145,4 +149,7 @@ public class Constants {
     public static final Map<String, String> MAPPING_PARAMETERS = Collections.unmodifiableMap(mappingParameters);
 
 }
+
+
+
 
