@@ -23,7 +23,7 @@ import ballerina.net.kafka;
     autoCommit: false
 }
 service<kafka> kafkaService {
-    resource onMessage (kafka:KafkaConsumer consumer, kafka:ConsumerRecord[] records) {
+    resource onMessage (kafka:Consumer consumer, kafka:ConsumerRecord[] records) {
        // Dispatched set of Kafka records to service, We process each one by one.
        int counter = 0;
        while (counter < lengthof records ) {
@@ -55,26 +55,21 @@ function main (string[] args) {
     blob serializedMsg = msg.toBlob("UTF-8");
     // We create ProducerRecord which consist of advanced optional parameters.
     // Here we set valid partition number which will be used when sending the record.
-    kafka:ProducerRecord record = {value:serializedMsg, topic:"test-topic", partition:1};
-    kafkaAdvancedProduce(record);
+    kafka:ProducerRecord record = { value:serializedMsg, topic:"test-topic", partition:1 };
+
+    // We create a producer configs with optional parameters client.id - used for broker side logging.
+    // acks - number of acknowledgments for request complete, noRetries - number of retries if record send fails.
+    kafka:ProducerConfig producerConfig = { clientID:"basic-producer", acks:"all", noRetries:3};
+    kafkaAdvancedProduce(record, producerConfig);
 }
 
-function kafkaAdvancedProduce(kafka:ProducerRecord record) {
-    endpoint<kafka:KafkaProducerClient> kafkaEP {
-        create kafka:KafkaProducerClient (getConnectorConfig());
+function kafkaAdvancedProduce(kafka:ProducerRecord record, kafka:ProducerConfig producerConfig) {
+    endpoint<kafka:ProducerClient> kafkaEP {
+        create kafka:ProducerClient (["localhost:9092, localhost:9093"], producerConfig);
     }
     kafkaEP.sendAdvanced(record);
     kafkaEP.flush();
-}
-
-function getConnectorConfig () (kafka:KafkaProducer) {
-    kafka:KafkaProducer producer = {};
-    // Configuration for the Kafka Producer as key / value pairs.
-    // bootstrap.servers specifies host/port pairs to used for establishing the initial connection to the Kafka cluster
-    // Ballerina internally registers byte key / value serializers so those are avoided from setting programmatically
-    map m = {"bootstrap.servers":"localhost:9092, localhost:9093"};
-    producer.properties = m;
-    return producer;
+    kafkaEP.close();
 }
 ````
 
