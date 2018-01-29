@@ -285,6 +285,7 @@ public class KafkaUtils {
 
         addIntParamIfPresent(KafkaConstants.ALIAS_FETCH_MAX_WAIT_MS_CONFIG, kafkaConfig, configParams);
         addIntParamIfPresent(KafkaConstants.ALIAS_RECONNECT_BACKOFF_MS_CONFIG, kafkaConfig, configParams);
+        addIntParamIfPresent(KafkaConstants.ALIAS_RECONNECT_BACKOFF_MAX_MS_CONFIG, kafkaConfig, configParams);
         addIntParamIfPresent(KafkaConstants.ALIAS_RETRY_BACKOFF_MS_CONFIG, kafkaConfig, configParams);
         addBooleanParamIfPresent(KafkaConstants.ALIAS_CHECK_CRCS_CONFIG, kafkaConfig, configParams);
 
@@ -377,6 +378,7 @@ public class KafkaUtils {
         addIntParamIfPresent(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, bStruct, configParams, 15);
         addIntParamIfPresent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, bStruct, configParams, 16);
         addIntParamIfPresent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, bStruct, configParams, 17);
+        addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bStruct, configParams, 18);
 
         addBooleanParamIfPresent(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, bStruct, configParams, 0, true);
         addBooleanParamIfPresent(ConsumerConfig.CHECK_CRCS_CONFIG, bStruct, configParams, 1, true);

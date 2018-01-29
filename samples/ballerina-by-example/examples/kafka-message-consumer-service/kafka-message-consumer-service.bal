@@ -8,7 +8,7 @@ import ballerina.net.kafka;
     pollingInterval: 1000
 }
 service<kafka> kafkaService {
-    resource onMessage (kafka:KafkaConsumer consumer, kafka:ConsumerRecord[] records) {
+    resource onMessage (kafka:Consumer consumer, kafka:ConsumerRecord[] records) {
        // Dispatched set of Kafka records to service, We process each one by one.
        int counter = 0;
        while (counter < lengthof records ) {

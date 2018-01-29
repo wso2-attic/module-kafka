@@ -2,7 +2,7 @@ import ballerina.task;
 import ballerina.math;
 import ballerina.net.kafka;
 
-kafka:KafkaConsumer consumer;
+kafka:Consumer consumer;
 
 function main (string[] args) {
     // Here we initializes a consumer which connects to remote cluster.
@@ -12,8 +12,8 @@ function main (string[] args) {
     // We subscribes the consumer to topic test-topic with partition rebalance listening, which will trigger
     //onAssigned, onRevocked functions on dynamically revocation / assignment of partitions to the consumer
     string[] topics = ["test-topic"];
-    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onAssigned = printAssignedPartitions;
-    function(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) onRevoked = printRevokedPartitions;
+    function(kafka:Consumer consumer, kafka:TopicPartition[] partitions) onAssigned = printAssignedPartitions;
+    function(kafka:Consumer consumer, kafka:TopicPartition[] partitions) onRevoked = printRevokedPartitions;
 
     var subErr = consumer.subscribeWithPartitionRebalance(topics, onRevoked, onAssigned);
 
@@ -66,21 +66,22 @@ function pollError(error e) {
     println(e);
 }
 
-function getConsumer () (kafka:KafkaConsumer) {
-    kafka:KafkaConsumer consumer = {};
+function getConsumer () (kafka:Consumer) {
+    kafka:Consumer consumer = {};
     // Configuration for the Kafka Consumer as key / value pairs.
-    // We enable manual offset commit with "enable.auto.commit": false
-    // Since we are interested in old message once the consumer is connected this is enabled with "auto.offset.reset":"earliest"
-    // Ballerina internally registers byte key / value de-serializers so those are avoided from setting programmatically
-    map m = {"bootstrap.servers":"localhost:9092, localhost:9093","group.id": "group-id","enable.auto.commit": false, "auto.offset.reset":"earliest"};
-    consumer.properties = m;
+    // We enable manual offset commit with "enable.auto.commit": false.
+    // Since we are interested in old message once the consumer is connected this is enabled with "auto.offset.reset":"earliest".
+    // Ballerina internally registers byte key / value de-serializers so those are avoided from setting programmatically.
+    kafka:ConsumerConfig conf = { bootstrapServers:"localhost:9092, localhost:9093", groupId:"group-id",
+                                      offsetReset:"earliest", autoCommit:false };
+    consumer.config = conf;
     return consumer;
 }
 
-function printAssignedPartitions(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
+function printAssignedPartitions(kafka:Consumer consumer, kafka:TopicPartition[] partitions) {
     println("Number of partitions assigned to consumer: " + lengthof partitions);
 }
 
-function printRevokedPartitions(kafka:KafkaConsumer consumer, kafka:TopicPartition[] partitions) {
+function printRevokedPartitions(kafka:Consumer consumer, kafka:TopicPartition[] partitions) {
     println("Number of partitions revoked from consumer: " + lengthof partitions);
 }

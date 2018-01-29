@@ -3,6 +3,34 @@ package ballerina.net.kafka;
 import ballerina.util;
 
 @Description { value:"Struct which represents Kafka Producer configuration" }
+@Field { value:"bootstrapServers: List of remote server endpoints." }
+@Field { value:"acks: Number of acknowledgments." }
+@Field { value:"compressionType: Compression type to be used for." }
+@Field { value:"clientID: Id to be used for server side logging." }
+@Field { value:"metricsRecordingLevel: Metrics recording level." }
+@Field { value:"metricReporterClasses: Metrics reporter classes." }
+@Field { value:"partitionerClass: Partitioner class to be used to select partition the message is sent." }
+@Field { value:"interceptorClasses: Interceptor classes to be used before sending records." }
+@Field { value:"transactionalID: TransactionalId to use for transactional delivery." }
+@Field { value:"bufferMemory: Total bytes of memory the producer can use to buffer records ." }
+@Field { value:"noRetries: Number of retries to resend a record." }
+@Field { value:"batchSize: Number of records to be batched for a single request." }
+@Field { value:"linger: Delay to allow other records to be batched." }
+@Field { value:"sendBuffer: Size of the TCP send buffer (SO_SNDBUF)." }
+@Field { value:"receiveBuffer: Size of the TCP receive buffer (SO_RCVBUF)." }
+@Field { value:"maxRequestSize: The maximum size of a request in bytes." }
+@Field { value:"reconnectBackoff: Time to wait before attempting to reconnect." }
+@Field { value:"reconnectBackoffMax: Maximum amount of time in milliseconds to wait when reconnecting." }
+@Field { value:"retryBackoff: Time to wait before attempting to retry a failed request." }
+@Field { value:"maxBlock: Max block time which the send is blocked if buffer is full ." }
+@Field { value:"requestTimeout: Wait time for response of a request." }
+@Field { value:"metadataMaxAge: Max time to force a refresh of metadata." }
+@Field { value:"metricsSampleWindow: Window of time a metrics sample is computed over." }
+@Field { value:"metricsNumSamples: Number of samples maintained to compute metrics." }
+@Field { value:"maxInFlightRequestsPerConnection: Maximum number of unacknowledged requests on a single connection." }
+@Field { value:"connectionsMaxIdle: Close idle connections after the number of milliseconds." }
+@Field { value:"transactionTimeout: Timeout fro transaction status update from the producer." }
+@Field { value:"enableIdempotence: Exactly one copy of each message is written in the stream when enabled." }
 public struct ProducerConfig {
     string bootstrapServers;                    // BOOTSTRAP_SERVERS_CONFIG 0
     string acks;                                // ACKS_CONFIG 1
@@ -37,6 +65,37 @@ public struct ProducerConfig {
 }
 
 @Description { value:"Struct which represents Kafka Consumer configuration" }
+@Field { value:"bootstrapServers: List of remote server endpoints." }
+@Field { value:"groupId: Unique string that identifies the consumer." }
+@Field { value:"offsetReset: Offset reset strategy if no initial offset." }
+@Field { value:"partitionAssignmentStrategy: Strategy class for handle partition assignment among consumers." }
+@Field { value:"metricsRecordingLevel: Metrics recording level." }
+@Field { value:"metricReporterClasses: Metrics reporter classes." }
+@Field { value:"clientID: Id to be used for server side logging." }
+@Field { value:"interceptorClasses: Interceptor classes to be used before sending records." }
+@Field { value:"isolationLevel: How the transactional messages are read." }
+@Field { value:"sessionTimeout: Timeout used to detect consumer failures when heartbeat threshold is reached." }
+@Field { value:"heartBeatInterval: Expected time between heartbeats." }
+@Field { value:"metadataMaxAge: Max time to force a refresh of metadata." }
+@Field { value:"autoCommitInterval: Offset committing interval." }
+@Field { value:"maxPartitionFetchBytes: The max amount of data per-partition the server return." }
+@Field { value:"sendBuffer: Size of the TCP send buffer (SO_SNDBUF)." }
+@Field { value:"receiveBuffer: Size of the TCP receive buffer (SO_RCVBUF)." }
+@Field { value:"fetchMinBytes: Minimum amount of data the server should return for a fetch request." }
+@Field { value:"fetchMaxBytes: Maximum amount of data the server should return for a fetch request." }
+@Field { value:"fetchMaxWait: Maximum amount of time the server will block before answering the fetch request." }
+@Field { value:"reconnectBackoffMax: Maximum amount of time in milliseconds to wait when reconnecting." }
+@Field { value:"retryBackoff: Time to wait before attempting to retry a failed request." }
+@Field { value:"metricsSampleWindow: Window of time a metrics sample is computed over." }
+@Field { value:"metricsNumSamples: Number of samples maintained to compute metrics." }
+@Field { value:"requestTimeout: Wait time for response of a request." }
+@Field { value:"connectionsMaxIdle: Close idle connections after the number of milliseconds." }
+@Field { value:"maxPollRecords: Maximum number of records returned in a single call to poll." }
+@Field { value:"maxPollInterval: Maximum delay between invocations of poll." }
+@Field { value:"reconnectBackoff: Time to wait before attempting to reconnect." }
+@Field { value:"autoCommit: Enables auto commit offsets." }
+@Field { value:"checkCRCS: Check the CRC32 of the records consumed." }
+@Field { value:"excludeInternalTopics: Whether records from internal topics should be exposed to the consumer." }
 public struct ConsumerConfig {
     string bootstrapServers;                    // BOOTSTRAP_SERVERS_CONFIG 0
     string groupId;                             // GROUP_ID_CONFIG 1
@@ -66,6 +125,7 @@ public struct ConsumerConfig {
     int connectionMaxIdle = -1;                 // CONNECTIONS_MAX_IDLE_MS_CONFIG 15
     int maxPollRecords = -1;                    // MAX_POLL_RECORDS_CONFIG 16
     int maxPollInterval = -1;                   // MAX_POLL_INTERVAL_MS_CONFIG 17
+    int reconnectBackoff = -1;                  // RECONNECT_BACKOFF_MAX_MS_CONFIG 18
 
     boolean autoCommit = true;                  // ENABLE_AUTO_COMMIT_CONFIG 0
     boolean checkCRCS = true;                   // CHECK_CRCS_CONFIG 1

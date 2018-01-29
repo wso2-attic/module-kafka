@@ -75,7 +75,8 @@ public class KafkaConstants {
     public static final String ALIAS_FETCH_MAX_BYTES_CONFIG = "fetchMaxBytes";
 
     public static final String ALIAS_FETCH_MAX_WAIT_MS_CONFIG = "fetchMaxWait";
-    public static final String ALIAS_RECONNECT_BACKOFF_MS_CONFIG = "reconnectBackoffMax";
+    public static final String ALIAS_RECONNECT_BACKOFF_MS_CONFIG = "reconnectBackoff";
+    public static final String ALIAS_RECONNECT_BACKOFF_MAX_MS_CONFIG = "reconnectBackoffMax";
     public static final String ALIAS_RETRY_BACKOFF_MS_CONFIG = "retryBackoff";
     public static final String ALIAS_CHECK_CRCS_CONFIG = "checkCRCS";
 
@@ -127,7 +128,8 @@ public class KafkaConstants {
         mappingParameters.put(ALIAS_FETCH_MAX_BYTES_CONFIG, ConsumerConfig.FETCH_MAX_BYTES_CONFIG);
 
         mappingParameters.put(ALIAS_FETCH_MAX_WAIT_MS_CONFIG, ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG);
-        mappingParameters.put(ALIAS_RECONNECT_BACKOFF_MS_CONFIG, ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG);
+        mappingParameters.put(ALIAS_RECONNECT_BACKOFF_MS_CONFIG, ConsumerConfig.RECONNECT_BACKOFF_MS_CONFIG);
+        mappingParameters.put(ALIAS_RECONNECT_BACKOFF_MAX_MS_CONFIG, ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG);
         mappingParameters.put(ALIAS_RETRY_BACKOFF_MS_CONFIG, ConsumerConfig.RETRY_BACKOFF_MS_CONFIG);
         mappingParameters.put(ALIAS_CHECK_CRCS_CONFIG, ConsumerConfig.CHECK_CRCS_CONFIG);
 

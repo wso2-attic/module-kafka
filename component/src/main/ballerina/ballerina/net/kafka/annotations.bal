@@ -23,6 +23,7 @@ public annotation configuration attach service<> {
     int fetchMinBytes;
     int fetchMaxBytes;
     int fetchMaxWait;
+    int reconnectBackoff;
     int reconnectBackoffMax;
     int retryBackoff;
     boolean checkCRCS;

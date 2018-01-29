@@ -2,7 +2,7 @@ import ballerina.task;
 import ballerina.math;
 import ballerina.net.kafka;
 
-kafka:KafkaConsumer consumer;
+kafka:Consumer consumer;
 
 function main (string[] args) {
     // Here we initializes a consumer which connects to remote cluster.
@@ -62,13 +62,14 @@ function pollError(error e) {
     println(e);
 }
 
-function getConsumer () (kafka:KafkaConsumer) {
-    kafka:KafkaConsumer consumer = {};
+function getConsumer () (kafka:Consumer) {
+    kafka:Consumer consumer = {};
     // Configuration for the Kafka Consumer as key / value pairs.
-    // We enable manual offset commit with "enable.auto.commit": false
-    // Since we are interested in old message once the consumer is connected this is enabled with "auto.offset.reset":"earliest"
-    // Ballerina internally registers byte key / value de-serializers so those are avoided from setting programmatically
-    map m = {"bootstrap.servers":"localhost:9092, localhost:9093","group.id": "group-id","enable.auto.commit": false, "auto.offset.reset":"earliest"};
-    consumer.properties = m;
+    // We enable manual offset commit with "enable.auto.commit": false.
+    // Since we are interested in old message once the consumer is connected this is enabled with "auto.offset.reset":"earliest".
+    // Ballerina internally registers byte key / value de-serializers so those are avoided from setting programmatically.
+    kafka:ConsumerConfig conf = { bootstrapServers:"localhost:9092, localhost:9093", groupId:"group-id",
+                                  offsetReset:"earliest", autoCommit:false };
+    consumer.config = conf;
     return consumer;
 }
