@@ -113,7 +113,7 @@
             <!-- copy built-in ballerina sources to the jar -->
             <resource>
                 <directory>${generated.ballerina.source.directory}</directory>
-                <targetPath>META-INF/natives</targetPath>
+                <targetPath>META-INF/wso2</targetPath>
             </resource>
     	</resources>
         <plugins>
@@ -128,7 +128,7 @@
                         <processor>org.ballerinalang.codegen.BallerinaAnnotationProcessor</processor>
                     </processors>
                     <options>
-                        <nativeEntityProviderPackage>org.ballerinalang.net.kafka.generated.providers</nativeEntityProviderPackage>
+                        <nativeEntityProviderPackage>org.ballerinalang.kafka.generated.providers</nativeEntityProviderPackage>
                         <nativeEntityProviderClass>StandardNativeElementProvider</nativeEntityProviderClass>
                     </options>
                 </configuration>
@@ -297,7 +297,8 @@
                         </goals>
                         <configuration>
                             <outputDir>${project.build.directory}/docs</outputDir>
-                            <sourceDir>${connectors.source.temp.dir}</sourceDir>
+                            <sourceRoot>${connectors.source.temp.dir}</sourceRoot>
+                            <orgName>wso2</orgName>
                         </configuration>
                     </execution>
                 </executions>
@@ -322,6 +323,6 @@
     </build>
     
     <properties>
-        <generated.ballerina.source.directory>${project.build.directory}/../src/main/ballerina</generated.ballerina.source.directory>
+        <generated.ballerina.source.directory>${project.build.directory}/../src/main/wso2</generated.ballerina.source.directory>
     </properties>
 </project>
