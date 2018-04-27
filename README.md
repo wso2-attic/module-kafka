@@ -1,6 +1,13 @@
 # **Ballerina Kafka Connector**
 
-Ballerina Kafka Connector is used to connect Ballerina with Kafka Brokers. With the Kafka Connector, Ballerina can act as Kafka Consumers and Kafka Producers. This connector supports both 1.0.0 and 1.1.0 kafka versions.
+Ballerina Kafka Connector is used to connect Ballerina with Kafka Brokers. With this Kafka Connector, Ballerina can act as Kafka Consumers and Kafka Producers.
+
+### Compatibility
+
+| Ballerina Version   | Kafka Version |
+|:-------------------:|:---------------------:|
+|0.970.0                 |1.0.0             |
+|                       |1.1.0             |
 
 Steps to configure,
 1. Extract `ballerina-kafka-connector-<version>.zip` and copy containing jars in to `<BRE_HOME>/bre/lib/`
@@ -8,8 +15,8 @@ Steps to configure,
 
 ## Ballerina as a Kafka Consumer
 
-Here service 'kafkaService' is subscribed to topic 'test-topic' on remote Kafka broker cluster. In this example, offsets are manually committed inside the resource
-by setting property autoCommit = false at service level annotation.
+Following is a simple service (kafkaService) which is subscribed to topic 'test-topic' on remote Kafka broker cluster. In this example, offsets are manually committed inside the resource
+by setting property `autoCommit = false` at service level annotation.
 
 ```ballerina
 import wso2/kafka;
@@ -35,7 +42,7 @@ service<kafka:Consumer> kafkaService bind consumer {
 
 ## Ballerina as a Kafka Producer
 
-Here Kafka record is created from serialized string, and then it is published to topic 'test-topic' partition '1' in remote Kafka broker cluster.
+Following example demonstrates a way to publish a message to a specified topic. A Kafka record is created from serialized string, and then it is published to topic 'test-topic' partition '1' in remote Kafka broker cluster.
 
 ```ballerina
 import wso2/kafka;
