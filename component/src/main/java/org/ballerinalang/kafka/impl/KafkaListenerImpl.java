@@ -29,8 +29,7 @@ import org.ballerinalang.model.values.BStruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 /**
  *  Kafka Connector listener for Ballerina.
@@ -51,8 +50,7 @@ public class KafkaListenerImpl implements KafkaListener {
      */
     @Override
     public void onRecordsReceived(ConsumerRecords records, KafkaConsumer kafkaConsumer) {
-        Map<String, Object> properties = new HashMap<>();
-        Executor.submit(resource, callback, properties, null,
+        Executor.submit(resource, callback, Collections.emptyMap(), null,
                         KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer));
     }
 
@@ -64,9 +62,8 @@ public class KafkaListenerImpl implements KafkaListener {
                                   KafkaConsumer kafkaConsumer,
                                   KafkaPollCycleFutureListener listener,
                                   String groupID) {
-        Map<String, Object> properties = new HashMap<>();
-        Executor.submit(resource, listener, properties, null,
-                KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer, groupID));
+        Executor.submit(resource, listener, Collections.emptyMap(), null,
+                        KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer, groupID));
 
     }
 
