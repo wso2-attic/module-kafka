@@ -96,7 +96,7 @@ public class GetBeginningOffsets implements NativeCallableUnit {
             context.setReturnValues(new BRefValueArray(offsetList.toArray(new BRefType[0]),
                                  KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME).getType()));
         } catch (KafkaException e) {
-            context.setReturnValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
     }
 

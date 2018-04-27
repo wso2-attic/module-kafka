@@ -88,7 +88,7 @@ public class GetAssignment implements NativeCallableUnit {
                             assignmentList.toArray(new BRefType[0]),
                             KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType()));
         } catch (KafkaException e) {
-            context.setReturnValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
     }
 

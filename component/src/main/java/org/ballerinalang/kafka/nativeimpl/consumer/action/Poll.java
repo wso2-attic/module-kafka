@@ -95,7 +95,7 @@ public class Poll implements NativeCallableUnit {
                                                              CONSUMER_RECORD_STRUCT_NAME).getType()));
         } catch (IllegalStateException |
                 IllegalArgumentException | KafkaException e) {
-            context.setReturnValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
     }
 

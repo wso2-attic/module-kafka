@@ -68,7 +68,7 @@ public class RegisterListener implements NativeCallableUnit {
             KafkaServerConnector serverConnector = new KafkaServerConnectorImpl(serviceId, configParams, kafkaListener);
             serverConnector.start();
         } catch (KafkaConnectorException e) {
-            context.setReturnValues(null, BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
         }
     }
 
