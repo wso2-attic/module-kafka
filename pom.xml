@@ -22,7 +22,7 @@
     <groupId>org.ballerinalang</groupId>
     <artifactId>ballerina-kafka-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.95.1-SNAPSHOT</version>
+    <version>0.96.0-SNAPSHOT</version>
     <name>Ballerina - Kafka Parent</name>
 
     <scm>
@@ -295,14 +295,14 @@
         <version.kafka.scala>2.11</version.kafka.scala>
         <debezium.version>0.7.0</debezium.version>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.95.6</ballerina.version>
+        <ballerina.version>0.970.0-beta20-SNAPSHOT</ballerina.version>
         <apache.kafka.version>1.0.0</apache.kafka.version>
         <org.testng.version>6.11</org.testng.version>
         <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <docerina.maven.plugin.version>${ballerina.version}</docerina.maven.plugin.version>
-        <connectors.source.temp.dir>${basedir}/target/classes/META-INF/natives</connectors.source.temp.dir>
+        <connectors.source.temp.dir>${project.build.directory}/classes/META-INF/wso2</connectors.source.temp.dir>
         <slf4j.api.version>1.7.22</slf4j.api.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
         <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>

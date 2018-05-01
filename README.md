@@ -1,6 +1,13 @@
 # **Ballerina Kafka Connector**
 
-Ballerina Kafka Connector is used to connect Ballerina with Kafka Brokers. With the Kafka Connector, Ballerina can act as Kafka Consumers and Kafka Producers.
+Ballerina Kafka Connector is used to connect Ballerina with Kafka Brokers. With this Kafka Connector, Ballerina can act as Kafka Consumers and Kafka Producers.
+
+### Compatibility
+
+| Ballerina Version   | Kafka Version |
+|:-------------------:|:---------------------:|
+|0.970.0                 |1.0.0             |
+|                       |1.1.0             |
 
 Steps to configure,
 1. Extract `ballerina-kafka-connector-<version>.zip` and copy containing jars in to `<BRE_HOME>/bre/lib/`
@@ -8,68 +15,50 @@ Steps to configure,
 
 ## Ballerina as a Kafka Consumer
 
-Here service 'kafkaService' is subscribed to topic 'test-topic' on remote Kafka broker cluster. In this example, offsets are manually committed inside the resource
-by setting property autoCommit = false at service level annotation.
+Following is a simple service (kafkaService) which is subscribed to topic 'test-topic' on remote Kafka broker cluster. In this example, offsets are manually committed inside the resource
+by setting property `autoCommit = false` at service level annotation.
 
 ```ballerina
-import ballerina.net.kafka;
+import wso2/kafka;
+import ballerina/io;
 
-@Description{value : "Service level annotation to provide Kafka consumer configuration. Here enable.auto.commit = false"}
-@kafka:configuration {
-    bootstrapServers: "localhost:9092, localhost:9093",
+endpoint kafka:SimpleConsumer consumer {
+    bootstrapServers: "localhost:9092",
     groupId: "group-id",
-    topics: ["test-topic"],
-    pollingInterval: 1000,
-    autoCommit: false
-}
-service<kafka> kafkaService {
-    resource onMessage (kafka:Consumer consumer, kafka:ConsumerRecord[] records) {
-       // Dispatched set of Kafka records to service, We process each one by one.
-       int counter = 0;
-       while (counter < lengthof records ) {
-             processKafkaRecord(records[counter]);
-             counter = counter + 1;
-       }
-       // Commit offsets returned for returned records, marking them as consumed.
-       consumer.commit();
-    }
-}
+    topics: ["test-kafka-topic"],
+    pollingInterval: 1000
+};
 
-function processKafkaRecord(kafka:ConsumerRecord record) {
-    blob serializedMsg = record.value;
-    string msg = serializedMsg.toString("UTF-8");
-    // Print the retrieved Kafka record.
-    println("Topic: " + record.topic + " Received Message: " + msg);
+service<kafka:Consumer> kafkaService bind consumer {
+    onMessage (kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+        foreach record in records {
+            blob serializedMsg = record.value;
+             string msg = serializedMsg.toString("UTF-8");
+             io:println("Topic: " + record.topic + " Received Message: " + msg);
+        }
+    }
 }
 ````
 
 ## Ballerina as a Kafka Producer
 
-Here Kafka record is created from serialized string, and then it is published to topic 'test-topic' partition '1' in remote Kafka broker cluster.
+Following example demonstrates a way to publish a message to a specified topic. A Kafka record is created from serialized string, and then it is published to topic 'test-topic' partition '1' in remote Kafka broker cluster.
 
 ```ballerina
-import ballerina.net.kafka;
+import wso2/kafka;
 
-function main (string[] args) {
-    string msg = "Hello World Advanced";
+endpoint kafka:SimpleProducer producer {
+    bootstrapServers: "localhost:9092, localhost:9093",
+    clientID:"basic-producer",
+    acks:"all",
+    noRetries:3
+};
+
+function main (string... args) {
+    string msg = "Hello World, Ballerina";
     blob serializedMsg = msg.toBlob("UTF-8");
-    // We create ProducerRecord which consist of advanced optional parameters.
-    // Here we set valid partition number which will be used when sending the record.
-    kafka:ProducerRecord record = { value:serializedMsg, topic:"test-topic", partition:1 };
+    kafkaProducer->send(serializedMsg, "test-topic");
 
-    // We create a producer configs with optional parameters client.id - used for broker side logging.
-    // acks - number of acknowledgments for request complete, noRetries - number of retries if record send fails.
-    kafka:ProducerConfig producerConfig = { clientID:"basic-producer", acks:"all", noRetries:3};
-    kafkaAdvancedProduce(record, producerConfig);
-}
-
-function kafkaAdvancedProduce(kafka:ProducerRecord record, kafka:ProducerConfig producerConfig) {
-    endpoint<kafka:ProducerClient> kafkaEP {
-        create kafka:ProducerClient (["localhost:9092, localhost:9093"], producerConfig);
-    }
-    kafkaEP.sendAdvanced(record);
-    kafkaEP.flush();
-    kafkaEP.close();
 }
 ````
 
