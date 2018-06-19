@@ -47,13 +47,13 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "seek",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "offset", type = TypeKind.STRUCT, structType = OFFSET_STRUCT_NAME,
+                @Argument(name = "offset", type = TypeKind.OBJECT, structType = OFFSET_STRUCT_NAME,
                         structPackage = KAFKA_NATIVE_PACKAGE)
         },
-        returnType = { @ReturnType(type = TypeKind.STRUCT)},
+        returnType = { @ReturnType(type = TypeKind.OBJECT)},
         isPublic = true)
 public class Seek implements NativeCallableUnit {
 
@@ -76,7 +76,7 @@ public class Seek implements NativeCallableUnit {
             kafkaConsumer.seek(new TopicPartition(topic, partitionValue), offsetValue);
         } catch (IllegalStateException |
                 IllegalArgumentException | KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

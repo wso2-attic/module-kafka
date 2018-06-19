@@ -54,15 +54,15 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "getEndOffsets",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "partitions", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+                @Argument(name = "partitions", type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
                         structType = TOPIC_PARTITION_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE)
         },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
                 structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
-                      @ReturnType(type = TypeKind.STRUCT)
+                      @ReturnType(type = TypeKind.OBJECT)
         },
         isPublic = true)
 public class GetEndOffsets implements NativeCallableUnit {
@@ -97,7 +97,7 @@ public class GetEndOffsets implements NativeCallableUnit {
                                                  KafkaUtils.createKafkaPackageStruct(context,
                                                                          OFFSET_STRUCT_NAME).getType()));
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

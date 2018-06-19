@@ -128,20 +128,20 @@ public type Consumer object {
 documentation { Represent a Kafka consumer endpoint
     E{{}}
     F{{consumerActions}} handle all the actions related to the endpoint
-    F{{config}} used to store configurations related to a Kafka connection
+    F{{consumerConfig}} used to store configurations related to a Kafka connection
 }
 public type SimpleConsumer object {
 
     public {
         ConsumerAction consumerActions;
-        ConsumerConfig config;
+        ConsumerConfig consumerConfig;
     }
 
     documentation { Initialize the consumer endpoint
         P{{config}} configurations related to the endpoint
     }
     public function init(ConsumerConfig config) {
-        self.config = config;
+        self.consumerConfig = config;
         self.consumerActions.config = config;
         self.initEndpoint();
     }
@@ -167,7 +167,7 @@ public type SimpleConsumer object {
     }
 
     function initEndpoint() {
-        match self.config.bootstrapServers {
+        match self.consumerConfig.bootstrapServers {
             () => {
                 //do nothing
             }
@@ -176,7 +176,7 @@ public type SimpleConsumer object {
             }
         }
 
-        match self.config.topics {
+        match self.consumerConfig.topics {
             () => {
                 //do nothing
             }

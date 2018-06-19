@@ -48,7 +48,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "registerListener",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_ENDPOINT_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_ENDPOINT_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {@Argument(name = "serviceType", type = TypeKind.TYPEDESC)}
 )
@@ -68,7 +68,7 @@ public class RegisterListener implements NativeCallableUnit {
             KafkaServerConnector serverConnector = new KafkaServerConnectorImpl(serviceId, configParams, kafkaListener);
             serverConnector.start();
         } catch (KafkaConnectorException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

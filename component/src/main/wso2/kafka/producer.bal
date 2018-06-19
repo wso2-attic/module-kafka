@@ -82,20 +82,20 @@ public type ProducerConfig {
 documentation { Represent a Kafka producer endpoint
     E{{}}
     F{{producerActions}} handle all the actions related to the endpoint
-    F{{config}} used to store configurations related to a Kafka connection
+    F{{producerConfig}} used to store configurations related to a Kafka connection
 }
 public type SimpleProducer object {
 
     public {
         ProducerAction producerActions;
-        ProducerConfig config;
+        ProducerConfig producerConfig;
     }
 
     documentation { Initialize the producer endpoint
         P{{config}} configurations related to the endpoint
     }
     public function init(ProducerConfig config) {
-        self.config = config;
+        self.producerConfig = config;
         self.producerActions.init(config);
     }
 

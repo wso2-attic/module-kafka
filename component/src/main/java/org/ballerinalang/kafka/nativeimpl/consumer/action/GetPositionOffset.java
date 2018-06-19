@@ -48,13 +48,13 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "getPositionOffset",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "partition", type = TypeKind.STRUCT, structType = TOPIC_PARTITION_STRUCT_NAME,
+                @Argument(name = "partition", type = TypeKind.OBJECT, structType = TOPIC_PARTITION_STRUCT_NAME,
                         structPackage = KAFKA_NATIVE_PACKAGE)
         },
-        returnType = { @ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.STRUCT)},
+        returnType = { @ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.OBJECT)},
         isPublic = true)
 public class GetPositionOffset implements NativeCallableUnit {
 
@@ -75,7 +75,7 @@ public class GetPositionOffset implements NativeCallableUnit {
             long position = kafkaConsumer.position(new TopicPartition(topic, partitionValue));
             context.setReturnValues(new BInteger(position));
         } catch (IllegalArgumentException | KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

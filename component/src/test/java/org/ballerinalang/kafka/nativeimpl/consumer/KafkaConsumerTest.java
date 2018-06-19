@@ -92,7 +92,7 @@ public class KafkaConsumerTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetAssignment", inputBValues);
 
         Assert.assertEquals(returnBValues.length, 2);
-        Assert.assertEquals((returnBValues[0]).getType().getTag(), TypeTags.STRUCT_TAG);
+        Assert.assertEquals((returnBValues[0]).getType().getTag(), TypeTags.RECORD_TYPE_TAG);
         Assert.assertEquals((((BStruct) returnBValues[0]).getStringField(0)), "test");
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);

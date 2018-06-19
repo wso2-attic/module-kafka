@@ -43,7 +43,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "commit",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         returnType = {@ReturnType(type = TypeKind.NONE)},
         isPublic = true

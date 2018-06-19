@@ -53,12 +53,12 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "getTopicPartitions",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = PRODUCER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "topic", type = TypeKind.STRING)
         },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
                 structType = TOPIC_PARTITION_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE)})
 public class GetTopicPartitions implements NativeCallableUnit {

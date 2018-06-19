@@ -46,7 +46,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "connect",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         isPublic = true)
 public class Connect implements NativeCallableUnit {
@@ -59,14 +59,14 @@ public class Connect implements NativeCallableUnit {
         // Check whether consumer configuration is available.
         if (Objects.isNull(consumerConfig)) {
             context.setReturnValues(BLangVMErrors.
-                    createError(context, 0,
+                    createError(context,
                      "Kafka consumer is not initialized with consumer configuration."));
         }
         // Check whether already native consumer is attached to the struct.
         // This can be happen either from Kafka service or via programmatically.
         if (Objects.nonNull(consumerStruct.getNativeData(NATIVE_CONSUMER))) {
             context.setReturnValues(BLangVMErrors.createError(context,
-                    0, "Kafka consumer is already connected to external broker." +
+                    "Kafka consumer is already connected to external broker." +
                     " Please close it before re-connecting the external broker again."));
         }
 
@@ -76,7 +76,7 @@ public class Connect implements NativeCallableUnit {
             KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<>(consumerProperties);
             consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

@@ -49,10 +49,10 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "commitOffset",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
                         structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE)
         },
         isPublic = true)
