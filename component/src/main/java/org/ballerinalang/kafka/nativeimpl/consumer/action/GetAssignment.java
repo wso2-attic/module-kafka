@@ -52,12 +52,12 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "getAssignment",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                 structType = TOPIC_PARTITION_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-                @ReturnType(type = TypeKind.STRUCT)},
+                @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class GetAssignment implements NativeCallableUnit {
 
@@ -88,7 +88,7 @@ public class GetAssignment implements NativeCallableUnit {
                             assignmentList.toArray(new BRefType[0]),
                             KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType()));
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

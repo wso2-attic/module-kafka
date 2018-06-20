@@ -112,6 +112,13 @@
         <dependencies>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-builtin</artifactId>
+                <version>${ballerina.version}</version>
+                <type>zip</type>
+                <classifier>ballerina-binary-repo</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-core</artifactId>
                 <version>${ballerina.version}</version>
                 <exclusions>
@@ -287,6 +294,11 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven.deploy.plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -295,7 +307,7 @@
         <version.kafka.scala>2.11</version.kafka.scala>
         <debezium.version>0.7.0</debezium.version>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.970.0</ballerina.version>
+        <ballerina.version>0.975.0</ballerina.version>
         <apache.kafka.version>1.0.0</apache.kafka.version>
         <org.testng.version>6.11</org.testng.version>
         <maven.findbugsplugin.version.exclude>findbugs-exclude.xml</maven.findbugsplugin.version.exclude>
@@ -310,6 +322,7 @@
         <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
+        <maven.surefire.plugin.version>2.20.1</maven.surefire.plugin.version>
 
         <maven.wagon.ssh.version>2.1</maven.wagon.ssh.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>

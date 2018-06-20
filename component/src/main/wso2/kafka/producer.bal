@@ -46,7 +46,7 @@ documentation { value:"Struct which represents Kafka Producer configuration
     F{{transactionTimeout}} timeout fro transaction status update from the producer
     F{{enableIdempotence}} exactly one copy of each message is written in the stream when enabled
 }
-public type ProducerConfig {
+public type ProducerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks; // ACKS_CONFIG 1
     string? compressionType; // COMPRESSION_TYPE_CONFIG 2

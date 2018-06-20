@@ -61,14 +61,14 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "subscribeWithPartitionRebalance",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "topics", type = TypeKind.ARRAY, elementType = TypeKind.STRING),
                 @Argument(name = "onPartitionsRevoked", type = TypeKind.ANY),
                 @Argument(name = "onPartitionsAssigned", type = TypeKind.ANY)
         },
-        returnType = {@ReturnType(type = TypeKind.STRUCT)},
+        returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
     @Override
@@ -88,14 +88,14 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         if (Objects.nonNull(partitionsRevoked) && partitionsRevoked instanceof BFunctionPointer) {
             onPartitionsRevoked = ((BFunctionPointer) context.getRefArgument(2)).value();
         } else {
-            context.setReturnValues(BLangVMErrors.createError(context, 0,
+            context.setReturnValues(BLangVMErrors.createError(context,
                                                         "The onPartitionsRevoked function is not provided."));
         }
 
         if (Objects.nonNull(partitionsAssigned) && partitionsAssigned instanceof BFunctionPointer) {
             onPartitionsAssigned = ((BFunctionPointer) context.getRefArgument(3)).value();
         } else {
-            context.setReturnValues(BLangVMErrors.createError(context, 0,
+            context.setReturnValues(BLangVMErrors.createError(context,
                                                         "The onPartitionsAssigned function is not provided."));
         }
 
@@ -112,7 +112,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         try {
             kafkaConsumer.subscribe(topics, listener);
         } catch (IllegalArgumentException | IllegalStateException | KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

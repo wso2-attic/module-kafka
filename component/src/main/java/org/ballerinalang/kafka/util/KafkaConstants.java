@@ -27,8 +27,8 @@ public class KafkaConstants {
     }
 
     public static final String ORG_NAME = "wso2";
-    public static final String PACKAGE_NAME = "kafka";
-    public static final String KAFKA_NATIVE_PACKAGE = "wso2.kafka";
+    public static final String PACKAGE_NAME = "kafka:0.0.0";
+    public static final String KAFKA_NATIVE_PACKAGE = "wso2/kafka:0.0.0";
 
     public static final String NATIVE_CONSUMER = "KafkaConsumer";
     public static final String NATIVE_PRODUCER = "KafkaProducer";

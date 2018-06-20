@@ -31,7 +31,8 @@ import org.ballerinalang.connector.api.ParamDetail;
 import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.connector.api.Service;
 import org.ballerinalang.model.types.BArrayType;
-import org.ballerinalang.model.types.BStructType;
+import org.ballerinalang.model.types.BObjectType;
+import org.ballerinalang.model.types.BRecordType;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
@@ -41,7 +42,7 @@ import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -106,8 +107,8 @@ public class KafkaUtils {
     }
 
     private static void validateConsumerParam(ParamDetail param) {
-        if (param.getVarType().getTag() == TypeTags.STRUCT_TAG) {
-            BStructType type = (BStructType) param.getVarType();
+        if (param.getVarType().getTag() == TypeTags.OBJECT_TYPE_TAG) {
+            BObjectType type = (BObjectType) param.getVarType();
             if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
                     type.getName().equals(CONSUMER_STRUCT_NAME)) {
                 return;
@@ -119,10 +120,10 @@ public class KafkaUtils {
     private static void validateRecordsParam(ParamDetail param) {
         if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
             BArrayType array = (BArrayType) param.getVarType();
-            if (array.getElementType().getTag() == TypeTags.STRUCT_TAG) {
-                BStructType type = (BStructType) array.getElementType();
+            if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
+                BRecordType type = (BRecordType) array.getElementType();
                 if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
-                    type.getName().equals(CONSUMER_RECORD_STRUCT_NAME)) {
+                        type.getName().equals(CONSUMER_RECORD_STRUCT_NAME)) {
                     return;
                 }
 
@@ -134,10 +135,10 @@ public class KafkaUtils {
     private static void validateOffsetsParam(ParamDetail param) {
         if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
             BArrayType array = (BArrayType) param.getVarType();
-            if (array.getElementType().getTag() == TypeTags.STRUCT_TAG) {
-                BStructType type = (BStructType) array.getElementType();
+            if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
+                BRecordType type = (BRecordType) array.getElementType();
                 if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
-                    type.getName().equals(OFFSET_STRUCT_NAME)) {
+                        type.getName().equals(OFFSET_STRUCT_NAME)) {
                     return;
                 }
             }
@@ -429,10 +430,9 @@ public class KafkaUtils {
     public static BStruct createKafkaPackageStruct(Context context, String structName) {
         PackageInfo kafkaPackageInfo = context.getProgramFile()
                 .getPackageInfo(KAFKA_NATIVE_PACKAGE);
-        StructInfo structInfo = kafkaPackageInfo
+        StructureTypeInfo structInfo = kafkaPackageInfo
                 .getStructInfo(structName);
-        BStructType structType = structInfo.getType();
-        return new BStruct(structType);
+        return new BStruct(structInfo.getType());
     }
 
     public static ArrayList<TopicPartition> getTopicPartitionList(BRefValueArray partitions) {
