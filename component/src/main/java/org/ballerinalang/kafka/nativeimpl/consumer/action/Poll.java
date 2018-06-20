@@ -52,14 +52,14 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "poll",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "timeout", type = TypeKind.INT)
         },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                 structPackage = KAFKA_NATIVE_PACKAGE, structType = CONSUMER_RECORD_STRUCT_NAME),
-                @ReturnType(type = TypeKind.STRUCT)},
+                @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class Poll implements NativeCallableUnit {
 
@@ -95,7 +95,7 @@ public class Poll implements NativeCallableUnit {
                                                              CONSUMER_RECORD_STRUCT_NAME).getType()));
         } catch (IllegalStateException |
                 IllegalArgumentException | KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

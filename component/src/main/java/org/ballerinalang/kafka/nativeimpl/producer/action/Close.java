@@ -45,9 +45,9 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "close",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = PRODUCER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        returnType = {@ReturnType(type = TypeKind.STRUCT)},
+        returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class Close implements NativeCallableUnit {
 

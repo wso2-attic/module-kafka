@@ -46,10 +46,10 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "getSubscription",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRING),
-                @ReturnType(type = TypeKind.STRUCT)},
+                @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class GetSubscription implements NativeCallableUnit {
 
@@ -73,7 +73,7 @@ public class GetSubscription implements NativeCallableUnit {
             }
             context.setReturnValues(subscriptionArray);
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, 0, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
 

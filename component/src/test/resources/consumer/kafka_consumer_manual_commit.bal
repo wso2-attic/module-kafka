@@ -24,14 +24,14 @@ endpoint kafka:SimpleConsumer kafkaConsumer {
 };
 
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    endpoint kafka:SimpleConsumer kafkaConsumer {
+    endpoint kafka:SimpleConsumer simpleKafkaConsumer {
         bootstrapServers:"localhost:9094",
         groupId:"abcd",
         offsetReset:"earliest",
         autoCommit:false,
         topics:["test"]
     };
-    return kafkaConsumer;
+    return simpleKafkaConsumer;
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {

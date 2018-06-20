@@ -60,11 +60,11 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "commitConsumer",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = PRODUCER_STRUCT_NAME,
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "consumer",
-                        type = TypeKind.STRUCT, structType = CONSUMER_STRUCT_NAME,
+                        type = TypeKind.RECORD, structType = CONSUMER_STRUCT_NAME,
                         structPackage = KAFKA_NATIVE_PACKAGE)
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})

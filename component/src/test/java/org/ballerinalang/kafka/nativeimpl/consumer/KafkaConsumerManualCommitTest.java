@@ -23,14 +23,13 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
-import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -175,11 +174,9 @@ public class KafkaConsumerManualCommitTest {
 
     private BStruct createPartitionStruct(ProgramFile programFile) {
         PackageInfo kafkaPackageInfo = programFile.getPackageInfo(KAFKA_NATIVE_PACKAGE);
-        StructInfo consumerRecordStructInfo = kafkaPackageInfo
+        StructureTypeInfo consumerRecordStructInfo = kafkaPackageInfo
                 .getStructInfo(TOPIC_PARTITION_STRUCT_NAME);
-        BStructType structType = consumerRecordStructInfo.getType();
-        BStruct bStruct = new BStruct(structType);
-        return bStruct;
+        return new BStruct(consumerRecordStructInfo.getType());
     }
 
 }

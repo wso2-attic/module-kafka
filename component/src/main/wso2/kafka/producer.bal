@@ -46,7 +46,7 @@ documentation { value:"Struct which represents Kafka Producer configuration
     F{{transactionTimeout}} timeout fro transaction status update from the producer
     F{{enableIdempotence}} exactly one copy of each message is written in the stream when enabled
 }
-public type ProducerConfig {
+public type ProducerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks; // ACKS_CONFIG 1
     string? compressionType; // COMPRESSION_TYPE_CONFIG 2
@@ -82,20 +82,20 @@ public type ProducerConfig {
 documentation { Represent a Kafka producer endpoint
     E{{}}
     F{{producerActions}} handle all the actions related to the endpoint
-    F{{config}} used to store configurations related to a Kafka connection
+    F{{producerConfig}} used to store configurations related to a Kafka connection
 }
 public type SimpleProducer object {
 
     public {
         ProducerAction producerActions;
-        ProducerConfig config;
+        ProducerConfig producerConfig;
     }
 
     documentation { Initialize the producer endpoint
         P{{config}} configurations related to the endpoint
     }
     public function init(ProducerConfig config) {
-        self.config = config;
+        self.producerConfig = config;
         self.producerActions.init(config);
     }
 
