@@ -119,7 +119,7 @@ public class KafkaUtils {
     private static void validateRecordsParam(ParamDetail param) {
         if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
             BArrayType array = (BArrayType) param.getVarType();
-            if (array.getElementType().getTag() == TypeTags.OBJECT_TYPE_TAG) {
+            if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
                 BObjectType type = (BObjectType) array.getElementType();
                 if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
                     type.getName().equals(CONSUMER_RECORD_STRUCT_NAME)) {
@@ -134,7 +134,7 @@ public class KafkaUtils {
     private static void validateOffsetsParam(ParamDetail param) {
         if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
             BArrayType array = (BArrayType) param.getVarType();
-            if (array.getElementType().getTag() == TypeTags.OBJECT_TYPE_TAG) {
+            if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
                 BObjectType type = (BObjectType) array.getElementType();
                 if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
                     type.getName().equals(OFFSET_STRUCT_NAME)) {

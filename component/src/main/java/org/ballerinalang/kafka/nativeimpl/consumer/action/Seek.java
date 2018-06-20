@@ -50,10 +50,10 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "offset", type = TypeKind.OBJECT, structType = OFFSET_STRUCT_NAME,
+                @Argument(name = "offset", type = TypeKind.RECORD, structType = OFFSET_STRUCT_NAME,
                         structPackage = KAFKA_NATIVE_PACKAGE)
         },
-        returnType = { @ReturnType(type = TypeKind.OBJECT)},
+        returnType = { @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class Seek implements NativeCallableUnit {
 

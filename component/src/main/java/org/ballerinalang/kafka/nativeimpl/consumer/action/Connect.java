@@ -29,6 +29,7 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
+import org.ballerinalang.natives.annotations.ReturnType;
 
 import java.util.Objects;
 import java.util.Properties;
@@ -48,6 +49,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "connect",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
+        returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class Connect implements NativeCallableUnit {
 

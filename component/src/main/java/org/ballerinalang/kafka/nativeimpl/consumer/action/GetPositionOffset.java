@@ -51,10 +51,10 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "partition", type = TypeKind.OBJECT, structType = TOPIC_PARTITION_STRUCT_NAME,
+                @Argument(name = "partition", type = TypeKind.RECORD, structType = TOPIC_PARTITION_STRUCT_NAME,
                         structPackage = KAFKA_NATIVE_PACKAGE)
         },
-        returnType = { @ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.OBJECT)},
+        returnType = { @ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class GetPositionOffset implements NativeCallableUnit {
 

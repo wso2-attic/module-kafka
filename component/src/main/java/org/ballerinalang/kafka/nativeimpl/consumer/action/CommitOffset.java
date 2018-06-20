@@ -52,7 +52,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
+                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                         structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE)
         },
         isPublic = true)

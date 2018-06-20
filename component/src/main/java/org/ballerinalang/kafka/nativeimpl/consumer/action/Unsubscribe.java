@@ -46,7 +46,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "unsubscribe",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        returnType = {@ReturnType(type = TypeKind.OBJECT)},
+        returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class Unsubscribe implements NativeCallableUnit {
     @Override

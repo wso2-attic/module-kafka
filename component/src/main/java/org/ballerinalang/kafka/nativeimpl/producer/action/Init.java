@@ -55,9 +55,9 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "producerConfig", type = TypeKind.OBJECT, structType = PRODUCER_CONFIG_STRUCT_NAME)
+                @Argument(name = "producerConfig", type = TypeKind.RECORD, structType = PRODUCER_CONFIG_STRUCT_NAME)
         }
-       )
+)
 public class Init implements NativeCallableUnit {
 
     @Override

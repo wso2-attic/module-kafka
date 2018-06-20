@@ -61,7 +61,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
+                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                         structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
                 @Argument(name = "groupID", type = TypeKind.STRING)
         },

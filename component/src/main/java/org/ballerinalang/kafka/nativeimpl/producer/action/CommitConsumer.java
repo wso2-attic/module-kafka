@@ -64,7 +64,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "consumer",
-                        type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
+                        type = TypeKind.RECORD, structType = CONSUMER_STRUCT_NAME,
                         structPackage = KAFKA_NATIVE_PACKAGE)
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})

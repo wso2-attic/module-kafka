@@ -57,9 +57,9 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         args = {
                 @Argument(name = "timeout", type = TypeKind.INT)
         },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                 structPackage = KAFKA_NATIVE_PACKAGE, structType = CONSUMER_RECORD_STRUCT_NAME),
-                @ReturnType(type = TypeKind.OBJECT)},
+                @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class Poll implements NativeCallableUnit {
 

@@ -51,7 +51,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         args = {
                 @Argument(name = "regex", type = TypeKind.STRING)
         },
-        returnType = {@ReturnType(type = TypeKind.OBJECT)},
+        returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class SubscribeToPattern implements NativeCallableUnit {
     @Override

@@ -54,10 +54,10 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         functionName = "getPausedPartitions",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.OBJECT,
+        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                 structType = TOPIC_PARTITION_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-                @ReturnType(type = TypeKind.OBJECT)},
+                @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class GetPausedPartitions implements NativeCallableUnit {
 

@@ -53,7 +53,7 @@ documentation { Configuration related to consumer endpoint
     F{{excludeInternalTopics}} whether records from internal topics should be exposed to the consumer
     F{{decoupleProcessing}} decouples processing
 }
-public type ConsumerConfig {
+public type ConsumerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? groupId; // GROUP_ID_CONFIG 1
     string? offsetReset; // AUTO_OFFSET_RESET_CONFIG 2
@@ -104,7 +104,7 @@ documentation { Type related to consumer record
     F{{timestamp}} timestamp of the record, in milliseconds since epoch
     F{{topic}} topic of the record
 }
-public type ConsumerRecord {
+public type ConsumerRecord record {
     blob key;
     blob value;
     int offset;

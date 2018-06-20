@@ -53,7 +53,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         args = {
                 @Argument(name = "topics", type = TypeKind.ARRAY, elementType = TypeKind.STRING)
         },
-        returnType = {@ReturnType(type = TypeKind.OBJECT)},
+        returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class Subscribe implements NativeCallableUnit {
 

@@ -68,7 +68,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
                 @Argument(name = "onPartitionsRevoked", type = TypeKind.ANY),
                 @Argument(name = "onPartitionsAssigned", type = TypeKind.ANY)
         },
-        returnType = {@ReturnType(type = TypeKind.OBJECT)},
+        returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
     @Override
