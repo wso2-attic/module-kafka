@@ -373,24 +373,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>docerina-maven-plugin</artifactId>
-                <version>${docerina.maven.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>docerina</goal>
-                        </goals>
-                        <configuration>
-                            <outputDir>${project.build.directory}/docs</outputDir>
-                            <sourceRoot>${connectors.source.temp.dir}</sourceRoot>
-                            <orgName>wso2</orgName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
                 <version>1.0.0</version>
@@ -407,6 +389,24 @@
                                     <value>${project.build.directory}</value>
                                 </property>
                             </properties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>docerina-maven-plugin</artifactId>
+                <version>${docerina.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>docerina</goal>
+                        </goals>
+                        <configuration>
+                            <outputDir>${project.build.directory}/docs</outputDir>
+                            <sourceRoot>${connectors.source.temp.dir}</sourceRoot>
+                            <orgName>wso2</orgName>
                         </configuration>
                     </execution>
                 </executions>
