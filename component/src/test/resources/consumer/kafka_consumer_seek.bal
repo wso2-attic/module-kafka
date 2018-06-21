@@ -18,10 +18,10 @@ import wso2/kafka;
 
 function funcKafkaConnect() returns kafka:SimpleConsumer {
     endpoint kafka:SimpleConsumer kafkaConsumer {
-        bootstrapServers:"localhost:9094",
-        groupId:"test-group",
-        offsetReset:"earliest",
-        topics:["test"]
+        bootstrapServers: "localhost:9094",
+        groupId: "test-group",
+        offsetReset: "earliest",
+        topics: ["test"]
     };
     return kafkaConsumer;
 }
@@ -29,7 +29,7 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    var conErr = consumerEP -> close();
+    var conErr = consumerEP->close();
     return true;
 }
 
@@ -37,7 +37,7 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     kafka:ConsumerRecord[] records;
-    records = check consumerEP -> poll(1000);
+    records = check consumerEP->poll(1000);
     return lengthof records;
 }
 
@@ -45,44 +45,44 @@ function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPa
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     int offset;
-    offset = check consumerEP -> getPositionOffset(part);
+    offset = check consumerEP->getPositionOffset(part);
     return offset;
 }
 
 function funcKafkaSeekOffset(kafka:SimpleConsumer consumer, kafka:Offset offset) {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    check consumerEP -> seek(offset);
+    check consumerEP->seek(offset);
 }
 
 function funcKafkaSeekToBegin(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    check consumerEP -> seekToBeginning(partitions);
+    check consumerEP->seekToBeginning(partitions);
 }
 
 function funcKafkaSeekToEnd(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    check consumerEP -> seekToEnd(partitions);
+    check consumerEP->seekToEnd(partitions);
 }
 
 function funcKafkaBeginOffsets(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions)
-    returns kafka:Offset[] {
+             returns kafka:Offset[] {
 
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     kafka:Offset[] offsets;
-    offsets = check consumerEP -> getBeginningOffsets(partitions);
+    offsets = check consumerEP->getBeginningOffsets(partitions);
     return offsets;
 }
 
 function funcKafkaEndOffsets(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions)
-    returns kafka:Offset[] {
+             returns kafka:Offset[] {
 
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     kafka:Offset[] offsets;
-    offsets = check consumerEP -> getEndOffsets(partitions);
+    offsets = check consumerEP->getEndOffsets(partitions);
     return offsets;
 }
