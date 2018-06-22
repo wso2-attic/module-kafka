@@ -18,9 +18,9 @@ import wso2/kafka;
 
 endpoint kafka:SimpleProducer kafkaProducer {
     bootstrapServers: "localhost:9094",
-    clientID:"basic-producer",
-    acks:"all",
-    noRetries:3
+    clientID: "basic-producer",
+    acks: "all",
+    noRetries: 3
 };
 
 function funcTestKafkaProduce() {
@@ -34,5 +34,5 @@ function funcTestKafkaProduce() {
 }
 
 function kafkaProduce(blob value, string topic) {
-    kafkaProducer -> send(value, topic);
+    kafkaProducer->send(value, topic);
 }

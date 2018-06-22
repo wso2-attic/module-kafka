@@ -197,7 +197,7 @@ public type ConsumerAction object {
         ConsumerConfig config;
     }
 
-    native function connect() returns error?;
+    public native function connect() returns error?;
 
     documentation { Subscribes to consumer to external Kafka broker topic pattern
         P{{regex}} topic pattern to be subscribed

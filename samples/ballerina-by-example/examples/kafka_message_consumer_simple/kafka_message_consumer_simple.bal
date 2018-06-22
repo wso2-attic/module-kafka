@@ -31,10 +31,10 @@ function main(string... args) {
     match results {
         // returns records if exists
         kafka:ConsumerRecord[] records => {
-            foreach record in records {
+            foreach kafkaRecord in records {
                 // convert blob to string
-                string msg = record.value.toString("UTF-8");
-                io:println("Topic: " + record.topic + " Received Message: " + msg);
+                string msg = kafkaRecord.value.toString("UTF-8");
+                io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
             }
         }
         // returns error if something goes wrong

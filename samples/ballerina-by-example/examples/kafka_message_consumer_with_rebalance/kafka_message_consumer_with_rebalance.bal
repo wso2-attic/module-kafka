@@ -69,8 +69,8 @@ function poll() {
     match results {
         // returns records if exists
         kafka:ConsumerRecord[] records => {
-            foreach record in records {
-                processKafkaRecord(record);
+            foreach kafkaRecord in records {
+                processKafkaRecord(kafkaRecord);
             }
         }
         // returns error if something goes wrong
@@ -81,11 +81,11 @@ function poll() {
     consumer->commit();
 }
 
-function processKafkaRecord(kafka:ConsumerRecord record) {
-    blob serializedMsg = record.value;
+function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
+    blob serializedMsg = kafkaRecord.value;
     string msg = serializedMsg.toString("UTF-8");
     // Print the retrieved Kafka record.
-    io:println("Topic: " + record.topic + " Received Message: " + msg);
+    io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }
 
 function pollError(error e) {

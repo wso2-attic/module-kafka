@@ -18,10 +18,10 @@ import wso2/kafka;
 
 function funcKafkaConnect() returns kafka:SimpleConsumer {
     endpoint kafka:SimpleConsumer kafkaConsumer {
-        bootstrapServers:"localhost:9094",
-        groupId:"test-group",
-        offsetReset:"earliest",
-        topics:["test"]
+        bootstrapServers: "localhost:9094",
+        groupId: "test-group",
+        offsetReset: "earliest",
+        topics: ["test"]
     };
     return kafkaConsumer;
 }
@@ -29,7 +29,7 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    var conErr = consumerEP -> close();
+    var conErr = consumerEP->close();
     return true;
 }
 
@@ -37,7 +37,7 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     kafka:ConsumerRecord[] records;
-    records = check consumerEP -> poll(1000);
+    records = check consumerEP->poll(1000);
     return lengthof records;
 }
 
@@ -45,7 +45,7 @@ function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicP
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     kafka:Offset offset;
-    offset = check consumerEP -> getCommittedOffset(part);
+    offset = check consumerEP->getCommittedOffset(part);
     return offset;
 }
 
@@ -53,7 +53,7 @@ function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPa
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     int offset;
-    var result = consumerEP -> getPositionOffset(part);
+    var result = consumerEP->getPositionOffset(part);
     match result {
         int i => {
             return i;
@@ -67,5 +67,5 @@ function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPa
 function funcKafkaCommitOffsets(kafka:SimpleConsumer consumer, kafka:Offset[] offsets) {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    consumerEP -> commitOffset(offsets);
+    consumerEP->commitOffset(offsets);
 }
