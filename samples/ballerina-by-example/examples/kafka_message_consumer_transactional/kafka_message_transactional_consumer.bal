@@ -30,17 +30,17 @@ service<kafka:Consumer> kafkaService bind consumer {
 
     onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
-        foreach entry in records {
-            processKafkaRecord(entry);
+        foreach kafkaRecord in records {
+            processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
         consumerAction.commit();
     }
 }
 
-function processKafkaRecord(kafka:ConsumerRecord entry) {
-    blob serializedMsg = entry.value;
+function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
+    blob serializedMsg = kafkaRecord.value;
     string msg = serializedMsg.toString("UTF-8");
     // Print the retrieved Kafka record.
-    io:println("Topic: " + entry.topic + " Received Message: " + msg);
+    io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }
