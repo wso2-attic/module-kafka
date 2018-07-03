@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wso2-ballerina/package-kafka.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-kafka)
+
 # **Ballerina Kafka Connector**
 
 Ballerina Kafka Connector is used to connect Ballerina with Kafka Brokers. With this Kafka Connector, Ballerina can act as Kafka Consumers and Kafka Producers.
