@@ -182,7 +182,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>wso2-mongodb-package-${project.version}</finalName>
+                            <finalName>wso2-kafka-package-${project.version}</finalName>
                             <artifactSet>
                                 <includes>
                                     <include>org.ballerinalang:wso2-kafka</include>
@@ -393,7 +393,7 @@
                         </goals>
                         <configuration>
                             <outputDir>${project.build.directory}/docs</outputDir>
-                            <sourceRoot>${basedir}/src/main/ballerina</sourceRoot>
+                            <sourceRoot>${basedir}/src/main/wso2</sourceRoot>
                             <orgName>wso2</orgName>
                         </configuration>
                     </execution>
