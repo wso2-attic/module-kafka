@@ -24,7 +24,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>ballerina-kafka</artifactId>
+    <artifactId>wso2-kafka</artifactId>
     <packaging>jar</packaging>
     <name>Ballerina - Kafka Component</name>
     <url>http://ballerinalang.org</url>
@@ -111,17 +111,9 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>ballerina/**</exclude>
-                </excludes>
+                <filtering>true</filtering>
             </resource>
-
-            <!-- copy built-in ballerina sources to the jar -->
-            <resource>
-                <directory>${generated.ballerina.source.directory}</directory>
-                <targetPath>META-INF/wso2</targetPath>
-            </resource>
-    	</resources>
+        </resources>
         <plugins>
 
             <plugin>
@@ -175,6 +167,39 @@
                         <configuration>
                             <includeClassifiers>ballerina-binary-repo</includeClassifiers>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>wso2-mongodb-package-${project.version}</finalName>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.ballerinalang:wso2-kafka</include>
+                                    <include>org.apache.kafka:kafka-clients</include>
+                                </includes>
+                            </artifactSet>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resources>
+                                        <resource>installation-scripts/install.bat</resource>
+                                        <resource>installation-scripts/install.sh</resource>
+                                        <resource>installation-scripts/uninstall.bat</resource>
+                                        <resource>installation-scripts/uninstall.sh</resource>
+                                        <resource>installation-scripts/README.txt</resource>
+                                    </resources>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
@@ -318,57 +343,20 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>${maven.dependency.plugin.version}</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.kafka</groupId>
-                                    <artifactId>kafka-clients</artifactId>
-                                    <version>${apache.kafka.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}/distribution</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <useBaseVersion>true</useBaseVersion>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/dist.xml</descriptor>
-                    </descriptors>
-                    <finalName>ballerina-kafka-connector-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/dist.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -405,7 +393,7 @@
                         </goals>
                         <configuration>
                             <outputDir>${project.build.directory}/docs</outputDir>
-                            <sourceRoot>${connectors.source.temp.dir}</sourceRoot>
+                            <sourceRoot>${basedir}/src/main/ballerina</sourceRoot>
                             <orgName>wso2</orgName>
                         </configuration>
                     </execution>
