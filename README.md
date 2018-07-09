@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wso2-ballerina/package-kafka.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-kafka)
+
 # **Ballerina Kafka Client Endpoint**
 
 Ballerina Kafka Client Endpoint is used to connect Ballerina with Kafka Brokers. With this Kafka Client Endpoint, Ballerina can act as Kafka Consumers and Kafka Producers.
