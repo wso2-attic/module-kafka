@@ -59,7 +59,7 @@ function funcKafkaPause(kafka:SimpleConsumer consumer, kafka:TopicPartition[] pa
 function funcKafkaResume(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) returns error? {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    var result = consumerEP->pause(partitions);
+    var result = consumerEP->resume(partitions);
     match result {
         () => {
             // nothing to return

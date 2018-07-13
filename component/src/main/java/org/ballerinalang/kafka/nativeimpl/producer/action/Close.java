@@ -24,7 +24,7 @@ import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
@@ -53,10 +53,10 @@ public class Close implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct producerConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
-        BMap producerMap = (BMap) producerConnector.getRefField(0);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.get("producerHolder");
+        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
         KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
 

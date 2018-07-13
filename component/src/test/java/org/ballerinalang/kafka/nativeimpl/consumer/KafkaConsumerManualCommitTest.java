@@ -20,16 +20,17 @@ package org.ballerinalang.kafka.nativeimpl.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
+import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
+import org.ballerinalang.kafka.util.KafkaConstants;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BInteger;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -41,7 +42,6 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
-import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
 
 /**
  * Test cases for ballerina.net.kafka consumer ( with manual commit enabled ) manual offset commit
@@ -75,7 +75,7 @@ public class KafkaConsumerManualCommitTest {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
         // getting kafka endpoint
         BValue consumerEndpoint = returnBValues[0];
         inputBValues = new BValue[]{consumerEndpoint};
@@ -92,15 +92,16 @@ public class KafkaConsumerManualCommitTest {
         Assert.assertEquals(msgCount, 10);
 
         ProgramFile programFile = result.getProgFile();
-        BStruct part = createPartitionStruct(programFile);
-        part.setStringField(0, "test");
-        part.setIntField(0, 0);
+        BMap<String, BValue> part = createPartitionStruct(programFile);
+        part.put("topic", new BString("test"));
+        part.put("partition", new BInteger(0));
         inputBValues = new BValue[]{consumerEndpoint, part};
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetCommittedOffset", inputBValues);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
-        Assert.assertEquals(((BStruct) returnBValues[0]).getIntField(0), 0);
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
+        Assert.assertEquals(((BInteger) ((BMap<String, BValue>) returnBValues[0])
+                .get("offset")).value().intValue(), 0);
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
@@ -116,8 +117,9 @@ public class KafkaConsumerManualCommitTest {
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetCommittedOffset", inputBValues);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
-        Assert.assertEquals(((BStruct) returnBValues[0]).getIntField(0), 10);
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
+        Assert.assertEquals(((BInteger) ((BMap<String, BValue>) returnBValues[0])
+                .get("offset")).value().intValue(), 10);
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
@@ -125,8 +127,8 @@ public class KafkaConsumerManualCommitTest {
         Assert.assertTrue(returnBValues[0] instanceof BInteger);
         Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 10);
 
-        part.setStringField(0, "test_not");
-        part.setIntField(0, 100);
+        part.put("topic", new BString("test_not"));
+        part.put("partition", new BInteger(100));
         inputBValues = new BValue[]{consumerEndpoint, part};
 
         //test partition which is non existent
@@ -136,12 +138,12 @@ public class KafkaConsumerManualCommitTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
-        Assert.assertEquals(((BStruct) returnBValues[0]).getStringField(0),
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
+        Assert.assertEquals(((BMap) returnBValues[0]).get("message").stringValue(),
                 "You can only check the position for partitions assigned to this consumer.");
 
-        part.setStringField(0, "test");
-        part.setIntField(0, 0);
+        part.put("topic", new BString("test"));
+        part.put("partition", new BInteger(0));
         inputBValues = new BValue[]{consumerEndpoint};
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
@@ -172,11 +174,9 @@ public class KafkaConsumerManualCommitTest {
         return kafkaCluster;
     }
 
-    private BStruct createPartitionStruct(ProgramFile programFile) {
-        PackageInfo kafkaPackageInfo = programFile.getPackageInfo(KAFKA_NATIVE_PACKAGE);
-        StructureTypeInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(TOPIC_PARTITION_STRUCT_NAME);
-        return new BStruct(consumerRecordStructInfo.getType());
+    private BMap<String, BValue> createPartitionStruct(ProgramFile programFile) {
+        return BLangConnectorSPIUtil.createBStruct(programFile,
+                KAFKA_NATIVE_PACKAGE,
+                KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
     }
-
 }

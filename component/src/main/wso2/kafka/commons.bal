@@ -18,7 +18,7 @@ documentation { This type represents topic partition position in which consumed 
     F{{partition}} TopicPartition which record is related
     F{{offset}} offset in which record is stored in partition
 }
-public type Offset {
+public type Offset record {
     TopicPartition partition;
     int offset;
 };
@@ -27,7 +27,7 @@ documentation { This type represents a topic partition
     F{{topic}} topic which partition is related
     F{{partition}} index for the partition
 }
-public type TopicPartition {
+public type TopicPartition record {
     string topic;
     int partition;
 };

@@ -26,10 +26,11 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -70,10 +71,10 @@ public class CommitConsumerOffsets implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct producerConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
-        BMap producerMap = (BMap) producerConnector.getRefField(0);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.get("producerHolder");
+        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
         KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
 
@@ -87,25 +88,25 @@ public class CommitConsumerOffsets implements NativeCallableUnit {
         String groupID = context.getStringArgument(0);
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
 
-        BStruct offset;
-        BStruct partition;
+        BMap<String, BValue> offset;
+        BMap<String, BValue> partition;
         int offsetValue;
         String topic;
         int partitionValue;
 
         for (int counter = 0; counter < offsets.size(); counter++) {
-            offset = (BStruct) offsets.get(counter);
-            partition = (BStruct) offset.getRefField(0);
-            offsetValue = new Long(offset.getIntField(0)).intValue();
-            topic = partition.getStringField(0);
-            partitionValue = new Long(partition.getIntField(0)).intValue();
+            offset = (BMap<String, BValue>) offsets.get(counter);
+            partition = (BMap<String, BValue>) offset.get("partition");
+            offsetValue = ((BInteger) offset.get("offset")).value().intValue();
+            topic = partition.get("topic").stringValue();
+            partitionValue = ((BInteger) partition.get("partition")).value().intValue();
             partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
         }
 
         try {
             if (Objects.nonNull(producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG))
-                        && context.isInTransaction()) {
-                String connectorKey = producerConnector.getStringField(0);
+                    && context.isInTransaction()) {
+                String connectorKey = producerConnector.get("connectorID").stringValue();
                 LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
                 BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
                 if (Objects.isNull(regTxContext)) {

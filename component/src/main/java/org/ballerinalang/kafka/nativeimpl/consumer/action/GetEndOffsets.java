@@ -25,9 +25,12 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -69,7 +72,7 @@ public class GetEndOffsets implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct consumerStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue> ) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         if (Objects.isNull(kafkaConsumer)) {
@@ -81,15 +84,17 @@ public class GetEndOffsets implements NativeCallableUnit {
 
         try {
             Map<TopicPartition, Long> offsetMap = kafkaConsumer.endOffsets(partitionList);
-            List<BStruct> offsetList = new ArrayList<>();
+            List<BMap<String, BValue>> offsetList = new ArrayList<>();
             if (!offsetMap.entrySet().isEmpty()) {
                 offsetMap.entrySet().forEach(offset -> {
-                    BStruct offsetStruct = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
-                    BStruct partitionStruct = KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    partitionStruct.setStringField(0, offset.getKey().topic());
-                    partitionStruct.setIntField(0, offset.getKey().partition());
-                    offsetStruct.setRefField(0, partitionStruct);
-                    offsetStruct.setIntField(0, offset.getValue());
+                    BMap<String, BValue> offsetStruct = KafkaUtils.createKafkaPackageStruct(context,
+                            OFFSET_STRUCT_NAME);
+                    BMap<String, BValue> partitionStruct = KafkaUtils.createKafkaPackageStruct(context,
+                            TOPIC_PARTITION_STRUCT_NAME);
+                    partitionStruct.put("topic", new BString(offset.getKey().topic()));
+                    partitionStruct.put("partition", new BInteger(offset.getKey().partition()));
+                    offsetStruct.put("partition", partitionStruct);
+                    offsetStruct.put("offset", new BInteger(offset.getValue()));
                     offsetList.add(offsetStruct);
                 });
             }

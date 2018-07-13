@@ -28,7 +28,7 @@ import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -62,9 +62,9 @@ public class Init implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct producerConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
-        BStruct producerConf = (BStruct) context.getRefArgument(1);
+        BMap<String, BValue> producerConf = (BMap<String, BValue>) context.getRefArgument(1);
         Properties producerProperties = KafkaUtils.processKafkaProducerConfig(producerConf);
 
         try {
@@ -78,8 +78,8 @@ public class Init implements NativeCallableUnit {
                 kafkaProducer.initTransactions();
             }
 
-            BMap producerMap = (BMap) producerConnector.getRefField(0);
-            BStruct producerStruct = KafkaUtils.createKafkaPackageStruct(context, PRODUCER_STRUCT_NAME);
+            BMap producerMap = (BMap) producerConnector.get("producerHolder");
+            BMap<String, BValue> producerStruct = KafkaUtils.createKafkaPackageStruct(context, PRODUCER_STRUCT_NAME);
             producerStruct.addNativeData(NATIVE_PRODUCER, kafkaProducer);
             producerStruct.addNativeData(NATIVE_PRODUCER_CONFIG, producerProperties);
 

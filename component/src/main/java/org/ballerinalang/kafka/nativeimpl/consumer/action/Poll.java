@@ -25,9 +25,13 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BByteArray;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -65,7 +69,7 @@ public class Poll implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct consumerStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         if (Objects.isNull(kafkaConsumer)) {
@@ -73,20 +77,22 @@ public class Poll implements NativeCallableUnit {
         }
 
         long timeout = context.getIntArgument(0);
-        List<BStruct> recordsList = new ArrayList<>();
+        List<BMap<String, BValue>> recordsList = new ArrayList<>();
 
         try {
             ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(timeout);
             if (!recordsRetrieved.isEmpty()) {
                 recordsRetrieved.forEach(record -> {
-                    BStruct recordStruct = KafkaUtils.
+                    BMap<String, BValue> recordStruct = KafkaUtils.
                             createKafkaPackageStruct(context, CONSUMER_RECORD_STRUCT_NAME);
-                    recordStruct.setBlobField(0, record.key());
-                    recordStruct.setBlobField(1, record.value());
-                    recordStruct.setIntField(0, record.offset());
-                    recordStruct.setIntField(1, record.partition());
-                    recordStruct.setIntField(2, record.timestamp());
-                    recordStruct.setStringField(0, record.topic());
+                    if (record.key() != null) {
+                        recordStruct.put("key", new BByteArray(record.key()));
+                    }
+                    recordStruct.put("value", new BByteArray(record.value()));
+                    recordStruct.put("offset", new BInteger(record.offset()));
+                    recordStruct.put("partition", new BInteger(record.partition()));
+                    recordStruct.put("timestamp", new BInteger(record.timestamp()));
+                    recordStruct.put("topic", new BString(record.topic()));
                     recordsList.add(recordStruct);
                 });
             }

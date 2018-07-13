@@ -16,6 +16,7 @@
 
 import wso2/kafka;
 import ballerina/io;
+import ballerina/internal;
 
 endpoint kafka:SimpleProducer kafkaProducer {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
@@ -43,7 +44,7 @@ service<kafka:Consumer> kafkaService bind consumer {
             processKafkaRecord(kafkaRecord);
         }
         string msg = "Hello World Advanced Transaction";
-        blob serializedMsg = msg.toBlob("UTF-8");
+        byte[] serializedMsg = msg.toByteArray("UTF-8");
 
         kafkaTransactionalCTP(serializedMsg, consumerAction);
         // Please note we have omitted calling consumer.commit() ( enable.auto.commit = false ) now this is handled inside the
@@ -51,7 +52,7 @@ service<kafka:Consumer> kafkaService bind consumer {
     }
 }
 
-function kafkaTransactionalCTP(blob msg, kafka:ConsumerAction consumer) {
+function kafkaTransactionalCTP(byte[] msg, kafka:ConsumerAction consumer) {
     // Here we do several produces and consumer commit atomically.
     transaction with oncommit = onCommitFunction, onabort = onAbortFunction {
         kafkaProducer->send(msg, "test-kafka-topic", partition = 0);
@@ -61,8 +62,8 @@ function kafkaTransactionalCTP(blob msg, kafka:ConsumerAction consumer) {
 }
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
-    blob serializedMsg = kafkaRecord.value;
-    string msg = serializedMsg.toString("UTF-8");
+    byte[] serializedMsg = kafkaRecord.value;
+    string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }

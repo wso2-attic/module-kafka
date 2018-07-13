@@ -26,7 +26,9 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -64,25 +66,25 @@ public class GetCommittedOffset implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct consumerStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         if (Objects.isNull(kafkaConsumer)) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
 
-        BStruct partition = (BStruct) context.getRefArgument(1);
-        String topic = partition.getStringField(0);
-        int partitionValue = new Long(partition.getIntField(0)).intValue();
+        BMap<String, BValue> partition = (BMap<String, BValue>) context.getRefArgument(1);
+        String topic = partition.get("topic").stringValue();
+        int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
 
         try {
             OffsetAndMetadata offsetAndMetadata =
                     kafkaConsumer.committed(new TopicPartition(topic, partitionValue));
-            BStruct offset = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
-            offset.setRefField(0, (BStruct) partition.copy());
+            BMap<String, BValue> offset = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
+            offset.put("partition", partition.copy());
 
             if (Objects.nonNull(offsetAndMetadata)) {
-                offset.setIntField(0, offsetAndMetadata.offset());
+                offset.put("offset", new BInteger(offsetAndMetadata.offset()));
             }
             context.setReturnValues(offset);
         } catch (KafkaException e) {

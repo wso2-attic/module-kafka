@@ -25,11 +25,11 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BBlob;
+import org.ballerinalang.model.values.BByteArray;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -70,21 +70,21 @@ public class Send implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct producerConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
-        BMap producerMap = (BMap) producerConnector.getRefField(0);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.get("producerHolder");
+        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
         KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
         Properties producerProperties = (Properties) producerStruct.getNativeData(NATIVE_PRODUCER_CONFIG);
 
         String topic = context.getStringArgument(0);
-        byte[] value = context.getBlobArgument(0);
-        BBlob bKey = (BBlob) context.getNullableRefArgument(1);
-        BInteger bPartition = (BInteger) context.getNullableRefArgument(2);
-        BInteger bTimestamp = (BInteger) context.getNullableRefArgument(3);
+        byte[] value = ((BByteArray) context.getRefArgument(1)).getBytes();
+        BByteArray bKey = (BByteArray) context.getNullableRefArgument(2);
+        BInteger bPartition = (BInteger) context.getNullableRefArgument(3);
+        BInteger bTimestamp = (BInteger) context.getNullableRefArgument(4);
 
-        byte[] key = Objects.nonNull(bKey) ? bKey.blobValue() : null;
+        byte[] key = Objects.nonNull(bKey) ? bKey.getBytes() : null;
         Long partition = Objects.nonNull(bPartition) ? bPartition.value() : null;
         Long timestamp = Objects.nonNull(bTimestamp) ? bTimestamp.value() : null;
 
@@ -102,7 +102,7 @@ public class Send implements NativeCallableUnit {
         try {
             if (Objects.nonNull(producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG))
                         && context.isInTransaction()) {
-                String connectorKey = producerConnector.getStringField(0);
+                String connectorKey = producerConnector.get("connectorID").stringValue();
                 LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
                 BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
                 if (Objects.isNull(regTxContext)) {

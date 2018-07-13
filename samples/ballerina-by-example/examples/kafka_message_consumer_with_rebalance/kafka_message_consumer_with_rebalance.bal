@@ -17,6 +17,7 @@
 import ballerina/io;
 import ballerina/log;
 import ballerina/runtime;
+import ballerina/internal;
 import ballerina/task;
 import wso2/kafka;
 
@@ -82,8 +83,8 @@ function poll() {
 }
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
-    blob serializedMsg = kafkaRecord.value;
-    string msg = serializedMsg.toString("UTF-8");
+    byte[] serializedMsg = kafkaRecord.value;
+    string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }
