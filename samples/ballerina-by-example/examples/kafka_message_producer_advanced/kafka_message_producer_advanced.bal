@@ -27,7 +27,8 @@ endpoint kafka:SimpleProducer kafkaProducer {
 };
 
 function main (string... args) {
-    string msg = "Hello World Advance";
-    blob serializedMsg = msg.toBlob("UTF-8");
+    string msg = "Hello World Advanced";
+    byte[] serializedMsg = msg.toByteArray("UTF-8");
     kafkaProducer->send(serializedMsg, "test-kafka-topic", partition = 0);
+    kafkaProducer->flush();
 }

@@ -29,7 +29,7 @@ import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -72,10 +72,10 @@ public class CommitConsumer implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct producerConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
-        BMap producerMap = (BMap) producerConnector.getRefField(0);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.get("producerHolder");
+        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
         KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
 
@@ -85,7 +85,7 @@ public class CommitConsumer implements NativeCallableUnit {
 
         Properties producerProperties = (Properties) producerStruct.getNativeData(NATIVE_PRODUCER_CONFIG);
 
-        BStruct consumerStruct = (BStruct) context.getRefArgument(1);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(1);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
@@ -96,13 +96,13 @@ public class CommitConsumer implements NativeCallableUnit {
             partitionToMetadataMap.put(new TopicPartition(tp.topic(), tp.partition()), new OffsetAndMetadata(pos));
         });
 
-        BStruct consumerConfig = (BStruct) consumerStruct.getRefField(0);
-        String groupID = consumerConfig.getStringField(1);
+        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
+        String groupID = consumerConfig.get("groupId").stringValue();
 
         try {
             if (Objects.nonNull(producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG))
                 && context.isInTransaction()) {
-                String connectorKey = producerConnector.getStringField(0);
+                String connectorKey = producerConnector.get("connectorID").stringValue();
                 LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
                 BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
                 if (Objects.isNull(regTxContext)) {

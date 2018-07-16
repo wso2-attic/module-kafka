@@ -86,10 +86,8 @@ documentation { Represent a Kafka producer endpoint
 }
 public type SimpleProducer object {
 
-    public {
-        ProducerAction producerActions;
-        ProducerConfig producerConfig;
-    }
+    public ProducerAction producerActions;
+    public ProducerConfig producerConfig;
 
     documentation { Initialize the producer endpoint
         P{{config}} configurations related to the endpoint
@@ -124,10 +122,9 @@ public type SimpleProducer object {
 documentation { Kafka producer action handling object }
 public type ProducerAction object {
 
-    public {
-        map producerHolder;
-        string connectorID = system:uuid();
-    }
+    public map producerHolder;
+    public string connectorID = system:uuid();
+
     documentation { value:"Simple Send action which produce records to Kafka server
         P{{value}} record contents
         P{{topic}} topic the record will be appended to
@@ -135,7 +132,7 @@ public type ProducerAction object {
         P{{partition}} partition to which the record should be sent
         P{{timestamp}} timestamp of the record, in milliseconds since epoch
     }
-    public native function send(blob value, string topic, blob? key = (), int? partition = (), int? timestamp = ());
+    public native function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
 
     documentation { Flush action which flush batch of records }
     public native function flush();
@@ -164,4 +161,4 @@ public type ProducerAction object {
 
 };
 
-public type Producer {};
+public type Producer object {};

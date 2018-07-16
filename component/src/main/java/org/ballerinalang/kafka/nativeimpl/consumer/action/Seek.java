@@ -24,7 +24,9 @@ import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -59,18 +61,18 @@ public class Seek implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct consumerStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         if (Objects.isNull(kafkaConsumer)) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
 
-        BStruct offset = (BStruct)  context.getRefArgument(1);
-        BStruct partition = (BStruct) offset.getRefField(0);
-        long offsetValue = offset.getIntField(0);
-        String topic = partition.getStringField(0);
-        int partitionValue = new Long(partition.getIntField(0)).intValue();
+        BMap<String, BValue> offset = (BMap<String, BValue>) context.getRefArgument(1);
+        BMap<String, BValue> partition = (BMap<String, BValue>) offset.get("partition");
+        long offsetValue = ((BInteger) offset.get("offset")).intValue();
+        String topic = partition.get("topic").stringValue();
+        int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
 
         try {
             kafkaConsumer.seek(new TopicPartition(topic, partitionValue), offsetValue);

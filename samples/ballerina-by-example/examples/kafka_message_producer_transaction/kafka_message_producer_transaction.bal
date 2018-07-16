@@ -30,13 +30,13 @@ endpoint kafka:SimpleProducer kafkaProducer {
 
 function main(string... args) {
     string msg = "Hello World Transaction";
-    blob serializedMsg = msg.toBlob("UTF-8");
+    byte[] serializedMsg = msg.toByteArray("UTF-8");
 
     // Here we create a producer configs with optional parameter transactional.id - enable transactional message production.
     kafkaAdvancedTransactionalProduce(serializedMsg);
 }
 
-function kafkaAdvancedTransactionalProduce(blob msg) {
+function kafkaAdvancedTransactionalProduce(byte[] msg) {
     // Kafka transactions allows messages to be send multiple partition atomically on KafkaProducerClient. Kafka Local transactions can only be used
     // when you are sending multiple messages using the same KafkaProducerClient instance.
     boolean transactionSuccess = false;

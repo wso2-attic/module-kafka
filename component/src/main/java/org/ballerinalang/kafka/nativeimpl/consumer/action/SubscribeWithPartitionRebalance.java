@@ -28,10 +28,12 @@ import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BFunctionPointer;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
@@ -73,7 +75,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
 public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct consumerStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         BStringArray topicArray = (BStringArray) context.getRefArgument(1);
         ArrayList<String> topics = new ArrayList<String>();
         for (int counter = 0; counter < topicArray.size(); counter++) {
@@ -134,12 +136,12 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         private FunctionRefCPEntry onPartitionsRevoked;
         private FunctionRefCPEntry onPartitionsAssigned;
         private NativeCallableUnit function;
-        private BStruct consumerStruct;
+        private BMap<String, BValue> consumerStruct;
 
         KafkaRebalanceListener(Context context,
                                FunctionRefCPEntry onPartitionsRevoked,
                                FunctionRefCPEntry onPartitionsAssigned,
-                               BStruct consumerStruct) {
+                               BMap<String, BValue> consumerStruct) {
             this.context = context;
             this.onPartitionsRevoked = onPartitionsRevoked;
             this.onPartitionsAssigned = onPartitionsAssigned;
@@ -168,13 +170,13 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         }
 
         private BRefValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
-            List<BStruct> assignmentList = new ArrayList<>();
+            List<BMap<String, BValue>> assignmentList = new ArrayList<>();
             if (!partitions.isEmpty()) {
                 partitions.forEach(assignment -> {
-                    BStruct partitionStruct = KafkaUtils.
+                    BMap<String, BValue> partitionStruct = KafkaUtils.
                             createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    partitionStruct.setStringField(0, assignment.topic());
-                    partitionStruct.setIntField(0, assignment.partition());
+                    partitionStruct.put("topic", new BString(assignment.topic()));
+                    partitionStruct.put("partition", new BInteger(assignment.partition()));
                     assignmentList.add(partitionStruct);
                 });
             }

@@ -24,8 +24,10 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -60,7 +62,7 @@ public class CommitOffset implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct consumerStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(NATIVE_CONSUMER);
 
@@ -71,21 +73,21 @@ public class CommitOffset implements NativeCallableUnit {
         BRefValueArray offsets = ((BRefValueArray) context.getRefArgument(1));
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
 
-        BStruct offset;
-        BStruct partition;
+        BMap<String, BValue> offset;
+        BMap<String, BValue> partition;
         int offsetValue;
         String topic;
         int partitionValue;
 
         if (Objects.nonNull(offsets)) {
             for (int counter = 0; counter < offsets.size(); counter++) {
-                offset = (BStruct) offsets.get(counter);
-                partition = (BStruct) offset.getRefField(0);
-                offsetValue = new Long(offset.getIntField(0)).intValue();
-                topic = partition.getStringField(0);
-                partitionValue = new Long(partition.getIntField(0)).intValue();
+                offset = (BMap<String, BValue>) offsets.get(counter);
+                partition = (BMap<String, BValue>) offset.get("partition");
+                offsetValue = ((BInteger) offset.get("offset")).value().intValue();
+                topic = partition.get("topic").stringValue();
+                partitionValue = new Long(((BInteger) partition.get("partition")).intValue()).intValue();
                 partitionToMetadataMap.put(new TopicPartition(topic, partitionValue),
-                                           new OffsetAndMetadata(offsetValue));
+                        new OffsetAndMetadata(offsetValue));
             }
         }
 

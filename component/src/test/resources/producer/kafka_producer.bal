@@ -25,14 +25,14 @@ endpoint kafka:SimpleProducer kafkaProducer {
 
 function funcTestKafkaProduce() {
     string msg = "Hello World";
-    blob byteMsg = msg.toBlob("UTF-8");
+    byte[] byteMsg = msg.toByteArray("UTF-8");
     kafkaProduce(byteMsg, "test");
 
     msg = "Hello World 2";
-    byteMsg = msg.toBlob("UTF-8");
+    byteMsg = msg.toByteArray("UTF-8");
     kafkaProduce(byteMsg, "test");
 }
 
-function kafkaProduce(blob value, string topic) {
+function kafkaProduce(byte[] value, string topic) {
     kafkaProducer->send(value, topic);
 }

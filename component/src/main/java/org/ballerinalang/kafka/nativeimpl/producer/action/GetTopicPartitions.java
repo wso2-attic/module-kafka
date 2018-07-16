@@ -24,11 +24,12 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -65,11 +66,11 @@ public class GetTopicPartitions implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct producerConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String topic = context.getStringArgument(0);
 
-        BMap producerMap = (BMap) producerConnector.getRefField(0);
-        BStruct producerStruct = (BStruct) producerMap.get(new BString(NATIVE_PRODUCER));
+        BMap producerMap = (BMap) producerConnector.get("producerHolder");
+        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
         try {
             KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
@@ -79,19 +80,19 @@ public class GetTopicPartitions implements NativeCallableUnit {
             }
 
             List<PartitionInfo> partitionInfos = kafkaProducer.partitionsFor(topic);
-            List<BStruct> infoList = new ArrayList<>();
+            List<BMap<String, BValue>> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {
-                    BStruct infoStruct = KafkaUtils.
+                    BMap<String, BValue> infoStruct = KafkaUtils.
                             createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    infoStruct.setStringField(0, partitionInfo.topic());
-                    infoStruct.setIntField(0, partitionInfo.partition());
+                    infoStruct.put("topic", new BString(partitionInfo.topic()));
+                    infoStruct.put("partition", new BInteger(partitionInfo.partition()));
                     infoList.add(infoStruct);
                 });
                 context.setReturnValues(
                         new BRefValueArray(infoList.toArray(new BRefType[0]),
-                                           KafkaUtils.createKafkaPackageStruct(
-                                                           context, TOPIC_PARTITION_STRUCT_NAME).getType()));
+                                KafkaUtils.createKafkaPackageStruct(
+                                        context, TOPIC_PARTITION_STRUCT_NAME).getType()));
             }
         } catch (KafkaException e) {
             throw new BallerinaException("Failed to fetch partitions from the producer " + e.getMessage(), e, context);

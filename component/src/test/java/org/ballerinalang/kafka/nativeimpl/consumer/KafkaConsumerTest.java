@@ -26,8 +26,8 @@ import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BStringArray;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -68,7 +68,7 @@ public class KafkaConsumerTest {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
         // adding kafka endpoint as the input parameter
         inputBValues = new BValue[]{returnBValues[0]};
         int msgCount = 0;
@@ -93,7 +93,7 @@ public class KafkaConsumerTest {
 
         Assert.assertEquals(returnBValues.length, 2);
         Assert.assertEquals((returnBValues[0]).getType().getTag(), TypeTags.RECORD_TYPE_TAG);
-        Assert.assertEquals((((BStruct) returnBValues[0]).getStringField(0)), "test");
+        Assert.assertEquals(((BMap) returnBValues[0]).get("topic").stringValue(), "test");
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);

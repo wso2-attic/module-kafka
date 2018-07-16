@@ -34,15 +34,16 @@ import org.ballerinalang.model.types.BArrayType;
 import org.ballerinalang.model.types.BObjectType;
 import org.ballerinalang.model.types.BRecordType;
 import org.ballerinalang.model.types.TypeTags;
+import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BByteArray;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -170,32 +171,35 @@ public class KafkaUtils {
     private static BRefValueArray createRecordStructArray(Resource resource,
                                                           ConsumerRecords<byte[], byte[]> records) {
         // Create records struct array.
-        List<BStruct> recordsList = new ArrayList<>();
+        List<BMap<String, BValue>> recordsList = new ArrayList<>();
         ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
 
         records.forEach(record -> {
-            BStruct recordStruct = BLangConnectorSPIUtil.createBStruct(programFile,
-                                                                       KAFKA_NATIVE_PACKAGE,
-                                                                       CONSUMER_RECORD_STRUCT_NAME);
-            recordStruct.setBlobField(0, record.key());
-            recordStruct.setBlobField(1, record.value());
-            recordStruct.setIntField(0, record.offset());
-            recordStruct.setIntField(1, record.partition());
-            recordStruct.setIntField(2, record.timestamp());
-            recordStruct.setStringField(0, record.topic());
+            BMap<String, BValue> recordStruct = BLangConnectorSPIUtil.createBStruct(programFile,
+                    KAFKA_NATIVE_PACKAGE,
+                    CONSUMER_RECORD_STRUCT_NAME);
+            if (record.key() != null) {
+                recordStruct.put("key", new BByteArray(record.key()));
+            }
+            recordStruct.put("value", new BByteArray(record.value()));
+            recordStruct.put("offset", new BInteger(record.offset()));
+            recordStruct.put("partition", new BInteger(record.partition()));
+            recordStruct.put("timestamp", new BInteger(record.timestamp()));
+            recordStruct.put("topic", new BString(record.topic()));
             recordsList.add(recordStruct);
         });
 
-        BStruct consumerRecordStruct = BLangConnectorSPIUtil.createBStruct(programFile,
-                                                                           KAFKA_NATIVE_PACKAGE,
-                                                                           CONSUMER_RECORD_STRUCT_NAME);
+        BMap<String, BValue> consumerRecordStruct = BLangConnectorSPIUtil.createBStruct(programFile,
+                KAFKA_NATIVE_PACKAGE,
+                CONSUMER_RECORD_STRUCT_NAME);
         return new BRefValueArray(recordsList.toArray(new BRefType[0]), consumerRecordStruct.getType());
     }
 
-    private static BStruct createConsumerStruct(Resource resource, KafkaConsumer<byte[], byte[]> kafkaConsumer) {
+    private static BMap<String, BValue> createConsumerStruct(Resource resource,
+                                                             KafkaConsumer<byte[], byte[]> kafkaConsumer) {
         // Create consumer struct.
         ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
-        BStruct consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
+        BMap<String, BValue>  consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
                                                              CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
         return consumerStruct;
@@ -216,17 +220,17 @@ public class KafkaUtils {
         }
 
         ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
-        List<BStruct> offsetList = new ArrayList<>();
+        List<BMap<String, BValue>> offsetList = new ArrayList<>();
         partitionToMetadataMap.entrySet().forEach(offset -> {
-            BStruct offsetStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
+            BMap<String, BValue> offsetStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
                                                 OFFSET_STRUCT_NAME);
-            BStruct partitionStruct = BLangConnectorSPIUtil.createBStruct(programFile,
+            BMap<String, BValue> partitionStruct = BLangConnectorSPIUtil.createBStruct(programFile,
                                                                           KAFKA_NATIVE_PACKAGE,
                                                                           TOPIC_PARTITION_STRUCT_NAME);
-            partitionStruct.setStringField(0, offset.getKey().topic());
-            partitionStruct.setIntField(0, offset.getKey().partition());
-            offsetStruct.setRefField(0, partitionStruct);
-            offsetStruct.setIntField(0, offset.getValue().offset());
+            partitionStruct.put("topic", new BString(offset.getKey().topic()));
+            partitionStruct.put("partition", new BInteger(offset.getKey().partition()));
+            offsetStruct.put("partition", partitionStruct);
+            offsetStruct.put("offset", new BInteger(offset.getValue().offset()));
             offsetList.add(offsetStruct);
         });
 
@@ -235,21 +239,21 @@ public class KafkaUtils {
                                                                       OFFSET_STRUCT_NAME).getType());
     }
 
-    private static BStruct createConsumerStruct(Resource resource,
-                                                KafkaConsumer<byte[], byte[]> kafkaConsumer,
-                                                String groupId) {
+    private static BMap<String, BValue> createConsumerStruct(Resource resource,
+                                                             KafkaConsumer<byte[], byte[]> kafkaConsumer,
+                                                             String groupId) {
         // Create consumer struct.
         ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
-        BStruct consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
-                                                                     CONSUMER_STRUCT_NAME);
+        BMap<String, BValue> consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
+                CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
 
-        BStruct consumerConfigStruct = BLangConnectorSPIUtil.createBStruct(
+        BMap<String, BValue> consumerConfigStruct = BLangConnectorSPIUtil.createBStruct(
                 programFile, KAFKA_NATIVE_PACKAGE, CONSUMER_CONFIG_STRUCT_NAME);
 
-        consumerConfigStruct.setStringField(1, groupId);
+        consumerConfigStruct.put(KafkaConstants.CONSUMER_GROUP_ID_CONFIG, new BString(groupId));
 
-        consumerStruct.setRefField(0, consumerConfigStruct);
+        consumerStruct.put("config", consumerConfigStruct);
         return consumerStruct;
     }
 
@@ -279,55 +283,90 @@ public class KafkaUtils {
         return bValues;
     }
 
-    public static Properties processKafkaConsumerConfig(BStruct bStruct) {
+    public static Properties processKafkaConsumerConfig(BMap<String, BValue> bStruct) {
         Properties configParams = new Properties();
 
-        addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bStruct, configParams, 0);
-        addStringParamIfPresent(ConsumerConfig.GROUP_ID_CONFIG, bStruct, configParams, 1);
-        addStringParamIfPresent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, bStruct, configParams, 2);
-        addStringParamIfPresent(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, bStruct, configParams, 3);
-        addStringParamIfPresent(ConsumerConfig.METRICS_RECORDING_LEVEL_CONFIG, bStruct, configParams, 4);
-        addStringParamIfPresent(ConsumerConfig.METRIC_REPORTER_CLASSES_CONFIG, bStruct, configParams, 5);
-        addStringParamIfPresent(ConsumerConfig.CLIENT_ID_CONFIG, bStruct, configParams, 6);
-        addStringParamIfPresent(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, bStruct, configParams, 7);
-        addStringParamIfPresent(ConsumerConfig.ISOLATION_LEVEL_CONFIG, bStruct, configParams, 8);
+        addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_BOOTSTRAP_SERVERS_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.GROUP_ID_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_GROUP_ID_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_AUTO_OFFSET_RESET_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_PARTITION_ASSIGNMENT_STRATEGY_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.METRICS_RECORDING_LEVEL_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_METRICS_RECORDING_LEVEL_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.METRIC_REPORTER_CLASSES_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_METRIC_REPORTER_CLASSES_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.CLIENT_ID_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_CLIENT_ID_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_INTERCEPTOR_CLASSES_CONFIG);
+        addStringParamIfPresent(ConsumerConfig.ISOLATION_LEVEL_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_ISOLATION_LEVEL_CONFIG);
 
-        addStringArrayParamIfPresent(ALIAS_TOPICS, bStruct, configParams, 9);
-        addStringArrayParamIfPresent(PROPERTIES_ARRAY, bStruct, configParams, 10);
+        addStringArrayParamIfPresent(ALIAS_TOPICS, bStruct, configParams, ALIAS_TOPICS);
+        addStringArrayParamIfPresent(PROPERTIES_ARRAY, bStruct, configParams, PROPERTIES_ARRAY);
 
-        addIntParamIfPresent(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, bStruct, configParams, 0);
-        addIntParamIfPresent(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, bStruct, configParams, 1);
-        addIntParamIfPresent(ConsumerConfig.METADATA_MAX_AGE_CONFIG, bStruct, configParams, 2);
-        addIntParamIfPresent(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, bStruct, configParams, 3);
-        addIntParamIfPresent(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, bStruct, configParams, 4);
-        addIntParamIfPresent(ConsumerConfig.SEND_BUFFER_CONFIG, bStruct, configParams, 5);
-        addIntParamIfPresent(ConsumerConfig.RECEIVE_BUFFER_CONFIG, bStruct, configParams, 6);
-        addIntParamIfPresent(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, bStruct, configParams, 7);
-        addIntParamIfPresent(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, bStruct, configParams, 8);
-        addIntParamIfPresent(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, bStruct, configParams, 9);
-        addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MS_CONFIG, bStruct, configParams, 10);
-        addIntParamIfPresent(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, bStruct, configParams, 11);
-        addIntParamIfPresent(ConsumerConfig.METRICS_SAMPLE_WINDOW_MS_CONFIG, bStruct, configParams, 12);
-        addIntParamIfPresent(ConsumerConfig.METRICS_NUM_SAMPLES_CONFIG, bStruct, configParams, 13);
-        addIntParamIfPresent(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, bStruct, configParams, 14);
-        addIntParamIfPresent(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, bStruct, configParams, 15);
-        addIntParamIfPresent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, bStruct, configParams, 16);
-        addIntParamIfPresent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, bStruct, configParams, 17);
-        addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bStruct, configParams, 18);
-        addIntParamIfPresent(ALIAS_POLLING_TIMEOUT, bStruct, configParams, 19);
-        addIntParamIfPresent(ALIAS_POLLING_INTERVAL, bStruct, configParams, 20);
-        addIntParamIfPresent(ALIAS_CONCURRENT_CONSUMERS, bStruct, configParams, 21);
+        addIntParamIfPresent(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_SESSION_TIMEOUT_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_HEARTBEAT_INTERVAL_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.METADATA_MAX_AGE_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_METADATA_MAX_AGE_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_AUTO_COMMIT_INTERVAL_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_MAX_PARTITION_FETCH_BYTES_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.SEND_BUFFER_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_SEND_BUFFER_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.RECEIVE_BUFFER_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_RECEIVE_BUFFER_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_FETCH_MIN_BYTES_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_FETCH_MAX_BYTES_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_FETCH_MAX_WAIT_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_RECONNECT_BACKOFF_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_RETRY_BACKOFF_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.METRICS_SAMPLE_WINDOW_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_METRICS_SAMPLE_WINDOW_MS_CONFIG);
 
-        addBooleanParamIfPresent(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, bStruct, configParams, 0, true);
-        addBooleanParamIfPresent(ConsumerConfig.CHECK_CRCS_CONFIG, bStruct, configParams, 1, true);
-        addBooleanParamIfPresent(ConsumerConfig.EXCLUDE_INTERNAL_TOPICS_CONFIG, bStruct, configParams, 2, true);
-        addBooleanParamIfPresent(ALIAS_DECOUPLE_PROCESSING, bStruct, configParams, 3, false);
+        addIntParamIfPresent(ConsumerConfig.METRICS_NUM_SAMPLES_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_METRICS_NUM_SAMPLES_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_REQUEST_TIMEOUT_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_CONNECTIONS_MAX_IDLE_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_MAX_POLL_RECORDS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_MAX_POLL_INTERVAL_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_RECONNECT_BACKOFF_MAX_MS_CONFIG);
+
+        addIntParamIfPresent(ALIAS_POLLING_TIMEOUT, bStruct, configParams, ALIAS_POLLING_TIMEOUT);
+        addIntParamIfPresent(ALIAS_POLLING_INTERVAL, bStruct, configParams, ALIAS_POLLING_INTERVAL);
+        addIntParamIfPresent(ALIAS_CONCURRENT_CONSUMERS, bStruct, configParams, ALIAS_CONCURRENT_CONSUMERS);
+
+        addBooleanParamIfPresent(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_ENABLE_AUTO_COMMIT_CONFIG, true);
+        addBooleanParamIfPresent(ConsumerConfig.CHECK_CRCS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_CHECK_CRCS_CONFIG, true);
+        addBooleanParamIfPresent(ConsumerConfig.EXCLUDE_INTERNAL_TOPICS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_EXCLUDE_INTERNAL_TOPICS_CONFIG, true);
+
+        addBooleanParamIfPresent(ALIAS_DECOUPLE_PROCESSING, bStruct, configParams,
+                ALIAS_DECOUPLE_PROCESSING, false);
 
         processDefaultConsumerProperties(configParams);
         return configParams;
     }
 
-    public static Properties processKafkaProducerConfig(BStruct bStruct) {
+    public static Properties processKafkaProducerConfig(BMap<String, BValue> bStruct) {
         Properties configParams = new Properties();
 
         if (bStruct == null) {
@@ -335,36 +374,64 @@ public class KafkaUtils {
             return configParams;
         }
 
-        addStringParamIfPresent(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bStruct, configParams, 0);
-        addStringParamIfPresent(ProducerConfig.ACKS_CONFIG, bStruct, configParams, 1);
-        addStringParamIfPresent(ProducerConfig.COMPRESSION_TYPE_CONFIG, bStruct, configParams, 2);
-        addStringParamIfPresent(ProducerConfig.CLIENT_ID_CONFIG, bStruct, configParams, 3);
-        addStringParamIfPresent(ProducerConfig.METRICS_RECORDING_LEVEL_CONFIG, bStruct, configParams, 4);
-        addStringParamIfPresent(ProducerConfig.METRIC_REPORTER_CLASSES_CONFIG, bStruct, configParams, 5);
-        addStringParamIfPresent(ProducerConfig.PARTITIONER_CLASS_CONFIG, bStruct, configParams, 6);
-        addStringParamIfPresent(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, bStruct, configParams, 7);
-        addStringParamIfPresent(ProducerConfig.TRANSACTIONAL_ID_CONFIG, bStruct, configParams, 8);
+        addStringParamIfPresent(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_BOOTSTRAP_SERVERS_CONFIG);
+        addStringParamIfPresent(ProducerConfig.ACKS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_ACKS_CONFIG);
+        addStringParamIfPresent(ProducerConfig.COMPRESSION_TYPE_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_COMPRESSION_TYPE_CONFIG);
+        addStringParamIfPresent(ProducerConfig.CLIENT_ID_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_CLIENT_ID_CONFIG);
+        addStringParamIfPresent(ProducerConfig.METRICS_RECORDING_LEVEL_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_METRICS_RECORDING_LEVEL_CONFIG);
+        addStringParamIfPresent(ProducerConfig.METRIC_REPORTER_CLASSES_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_METRIC_REPORTER_CLASSES_CONFIG);
+        addStringParamIfPresent(ProducerConfig.PARTITIONER_CLASS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_PARTITIONER_CLASS_CONFIG);
+        addStringParamIfPresent(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_INTERCEPTOR_CLASSES_CONFIG);
+        addStringParamIfPresent(ProducerConfig.TRANSACTIONAL_ID_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_TRANSACTIONAL_ID_CONFIG);
 
-        addIntParamIfPresent(ProducerConfig.BUFFER_MEMORY_CONFIG, bStruct, configParams, 0);
-        addIntParamIfPresent(ProducerConfig.RETRIES_CONFIG, bStruct, configParams, 1);
-        addIntParamIfPresent(ProducerConfig.BATCH_SIZE_CONFIG, bStruct, configParams, 2);
-        addIntParamIfPresent(ProducerConfig.LINGER_MS_CONFIG, bStruct, configParams, 3);
-        addIntParamIfPresent(ProducerConfig.SEND_BUFFER_CONFIG, bStruct, configParams, 4);
-        addIntParamIfPresent(ProducerConfig.RECEIVE_BUFFER_CONFIG, bStruct, configParams, 5);
-        addIntParamIfPresent(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, bStruct, configParams, 6);
-        addIntParamIfPresent(ProducerConfig.RECONNECT_BACKOFF_MS_CONFIG, bStruct, configParams, 7);
-        addIntParamIfPresent(ProducerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bStruct, configParams, 8);
-        addIntParamIfPresent(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, bStruct, configParams, 9);
-        addIntParamIfPresent(ProducerConfig.MAX_BLOCK_MS_CONFIG, bStruct, configParams, 10);
-        addIntParamIfPresent(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, bStruct, configParams, 11);
-        addIntParamIfPresent(ProducerConfig.METADATA_MAX_AGE_CONFIG, bStruct, configParams, 12);
-        addIntParamIfPresent(ProducerConfig.METRICS_SAMPLE_WINDOW_MS_CONFIG, bStruct, configParams, 13);
-        addIntParamIfPresent(ProducerConfig.METRICS_NUM_SAMPLES_CONFIG, bStruct, configParams, 14);
-        addIntParamIfPresent(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, bStruct, configParams, 15);
-        addIntParamIfPresent(ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, bStruct, configParams, 16);
-        addIntParamIfPresent(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, bStruct, configParams, 17);
+        addIntParamIfPresent(ProducerConfig.BUFFER_MEMORY_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_BUFFER_MEMORY_CONFIG);
+        addIntParamIfPresent(ProducerConfig.RETRIES_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_RETRIES_CONFIG);
+        addIntParamIfPresent(ProducerConfig.BATCH_SIZE_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_BATCH_SIZE_CONFIG);
+        addIntParamIfPresent(ProducerConfig.LINGER_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_LINGER_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.SEND_BUFFER_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_SEND_BUFFER_CONFIG);
+        addIntParamIfPresent(ProducerConfig.RECEIVE_BUFFER_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_RECEIVE_BUFFER_CONFIG);
+        addIntParamIfPresent(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_MAX_REQUEST_SIZE_CONFIG);
+        addIntParamIfPresent(ProducerConfig.RECONNECT_BACKOFF_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_RECONNECT_BACKOFF_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_RECONNECT_BACKOFF_MAX_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_RETRY_BACKOFF_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.MAX_BLOCK_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_MAX_BLOCK_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_REQUEST_TIMEOUT_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.METADATA_MAX_AGE_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_METADATA_MAX_AGE_CONFIG);
+        addIntParamIfPresent(ProducerConfig.METRICS_SAMPLE_WINDOW_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_METRICS_SAMPLE_WINDOW_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.METRICS_NUM_SAMPLES_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_METRICS_NUM_SAMPLES_CONFIG);
+        addIntParamIfPresent(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, bStruct,
+                configParams, KafkaConstants.PRODUCER_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION);
+        addIntParamIfPresent(ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_CONNECTIONS_MAX_IDLE_MS_CONFIG);
+        addIntParamIfPresent(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_TRANSACTION_TIMEOUT_CONFIG);
 
-        addBooleanParamIfPresent(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, bStruct, configParams, 0, false);
+        addBooleanParamIfPresent(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, bStruct,
+                configParams, KafkaConstants.PRODUCER_ENABLE_IDEMPOTENCE_CONFIG, false);
 
         processDefaultProducerProperties(configParams);
         return configParams;
@@ -381,11 +448,11 @@ public class KafkaUtils {
     }
 
     private static void addStringParamIfPresent(String paramName,
-                                                BStruct bStruct,
+                                                BMap<String, BValue> bStruct,
                                                 Properties configParams,
-                                                int index) {
-        if (Objects.nonNull(bStruct.getRefField(index))) {
-            String value = ((BString) bStruct.getRefField(index)).value();
+                                                String key) {
+        if (Objects.nonNull(bStruct.get(key))) {
+            String value = ((BString) bStruct.get(key)).value();
             if (!(value == null || value.equals(""))) {
                 configParams.put(paramName, value);
             }
@@ -393,10 +460,10 @@ public class KafkaUtils {
     }
 
     private static void addStringArrayParamIfPresent(String paramName,
-                                                BStruct bStruct,
-                                                Properties configParams,
-                                                int index) {
-        BStringArray bArray = (BStringArray) bStruct.getRefField(index);
+                                                     BMap<String, BValue> bStruct,
+                                                     Properties configParams,
+                                                     String key) {
+        BStringArray bArray = (BStringArray) bStruct.get(key);
         List<String> values = new ArrayList<>();
         if (bArray != null && bArray.size() != 0) {
             for (int i = 0; i < bArray.size(); i++) {
@@ -407,41 +474,39 @@ public class KafkaUtils {
     }
 
     private static void addIntParamIfPresent(String paramName,
-                                             BStruct bStruct,
+                                             BMap<String, BValue> bStruct,
                                              Properties configParams,
-                                             int index) {
-        long value = bStruct.getIntField(index);
+                                             String key) {
+        long value = ((BInteger) bStruct.get(key)).intValue();
         if (value != -1) {
             configParams.put(paramName, new Long(value).intValue());
         }
     }
 
     private static void addBooleanParamIfPresent(String paramName,
-                                                 BStruct bStruct,
+                                                 BMap<String, BValue> bStruct,
                                                  Properties configParams,
-                                                 int index,
+                                                 String key,
                                                  boolean defaultValue) {
-        boolean value = bStruct.getBooleanField(index) == 1;
+        boolean value = ((BBoolean) bStruct.get(key)).value();
         if (value != defaultValue) {
             configParams.put(paramName, value);
         }
     }
 
-    public static BStruct createKafkaPackageStruct(Context context, String structName) {
-        PackageInfo kafkaPackageInfo = context.getProgramFile()
-                .getPackageInfo(KAFKA_NATIVE_PACKAGE);
-        StructureTypeInfo structInfo = kafkaPackageInfo
-                .getStructInfo(structName);
-        return new BStruct(structInfo.getType());
+    public static BMap<String, BValue> createKafkaPackageStruct(Context context, String structName) {
+        return BLangConnectorSPIUtil.createBStruct(context.getProgramFile(),
+                KAFKA_NATIVE_PACKAGE,
+                structName);
     }
 
     public static ArrayList<TopicPartition> getTopicPartitionList(BRefValueArray partitions) {
         ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
         if (partitions != null) {
             for (int counter = 0; counter < partitions.size(); counter++) {
-                BStruct partition = (BStruct) partitions.get(counter);
-                String topic = partition.getStringField(0);
-                int partitionValue = new Long(partition.getIntField(0)).intValue();
+                BMap<String, BValue> partition = (BMap<String, BValue>) partitions.get(counter);
+                String topic = partition.get("topic").stringValue();
+                int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
                 partitionList.add(new TopicPartition(topic, partitionValue));
             }
         }

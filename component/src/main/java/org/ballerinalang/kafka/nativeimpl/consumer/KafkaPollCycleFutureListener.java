@@ -19,7 +19,8 @@
 package org.ballerinalang.kafka.nativeimpl.consumer;
 
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public class KafkaPollCycleFutureListener implements CallableUnitCallback {
      * {@inheritDoc}
      */
     @Override
-    public void notifyFailure(BStruct bStruct) {
+    public void notifyFailure(BMap<String, BValue> bStruct) {
         sem.release();
         logger.error("Ballerina engine has completed resource invocation with exception for service " + serviceId +
                      ". Semaphore is released to continue next polling cycle.", bStruct);

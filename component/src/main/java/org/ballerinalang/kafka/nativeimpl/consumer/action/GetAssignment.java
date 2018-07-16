@@ -25,9 +25,12 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
@@ -63,7 +66,7 @@ public class GetAssignment implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BStruct consumerStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(NATIVE_CONSUMER);
 
@@ -73,13 +76,13 @@ public class GetAssignment implements NativeCallableUnit {
 
         try {
             Set<TopicPartition> assignments = kafkaConsumer.assignment();
-            List<BStruct> assignmentList = new ArrayList<>();
+            List<BMap<String, BValue>> assignmentList = new ArrayList<>();
             if (!assignments.isEmpty()) {
                 assignments.forEach(assignment -> {
-                    BStruct infoStruct = KafkaUtils.
+                    BMap<String, BValue> infoStruct = KafkaUtils.
                             createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    infoStruct.setStringField(0, assignment.topic());
-                    infoStruct.setIntField(0, assignment.partition());
+                    infoStruct.put("topic", new BString(assignment.topic()));
+                    infoStruct.put("partition", new BInteger(assignment.partition()));
                     assignmentList.add(infoStruct);
                 });
             }

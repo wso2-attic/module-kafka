@@ -16,6 +16,7 @@
 
 import wso2/kafka;
 import ballerina/io;
+import ballerina/internal;
 
 endpoint kafka:SimpleConsumer consumer {
     bootstrapServers:"localhost:9092",
@@ -35,8 +36,8 @@ service<kafka:Consumer> kafkaService bind consumer {
 }
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
-    blob serializedMsg = kafkaRecord.value;
-    string msg = serializedMsg.toString("UTF-8");
+    byte[] serializedMsg = kafkaRecord.value;
+    string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
     // Print the retrieved Kafka record.
-    io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
+    io:println("Topic: " + kafkaRecord.topic + " Partition: " + kafkaRecord.partition + " Received Message: " + msg);
 }

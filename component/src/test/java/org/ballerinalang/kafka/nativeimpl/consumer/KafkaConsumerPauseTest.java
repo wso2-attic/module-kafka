@@ -20,19 +20,19 @@ package org.ballerinalang.kafka.nativeimpl.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
+import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.kafka.util.KafkaConstants;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+
+import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
 /**
  * Test cases for ballerina.net.kafka consumer ( with Pause ) native functions.
@@ -75,7 +77,7 @@ public class KafkaConsumerPauseTest {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
         // getting kafka endpoint
         BValue consumerEndpoint = returnBValues[0];
         inputBValues = new BValue[]{consumerEndpoint};
@@ -91,11 +93,11 @@ public class KafkaConsumerPauseTest {
         }
         Assert.assertEquals(msgCount, 10);
         ProgramFile programFile = result.getProgFile();
-        BStruct part = createPartitionStruct(programFile);
-        part.setStringField(0, "test");
-        part.setIntField(0, 0);
+        BMap<String, BValue> part = createPartitionStruct(programFile);
+        part.put("topic", new BString("test"));
+        part.put("partition", new BInteger(0));
 
-        ArrayList<BStruct> structArray = new ArrayList<>();
+        ArrayList<BMap<String, BValue>> structArray = new ArrayList<>();
         structArray.add(part);
         BRefValueArray partitionArray = new BRefValueArray(structArray.toArray(new BRefType[0]),
                 createPartitionStruct(programFile).getType());
@@ -111,9 +113,9 @@ public class KafkaConsumerPauseTest {
         inputBValues = new BValue[]{consumerEndpoint};
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPausedPartitions", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        BStruct tpReturned = (BStruct) returnBValues[0];
-        Assert.assertEquals(tpReturned.getStringField(0), "test");
-        Assert.assertEquals(tpReturned.getIntField(0), 0);
+        BMap<String, BValue> tpReturned = (BMap<String, BValue>) returnBValues[0];
+        Assert.assertEquals(tpReturned.get("topic").stringValue(), "test");
+        Assert.assertEquals(((BInteger) tpReturned.get("partition")).value().intValue(), 0);
 
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
         returnBValues = BRunUtil.invoke(result, "funcKafkaResume", inputBValues);
@@ -122,26 +124,26 @@ public class KafkaConsumerPauseTest {
 
         inputBValues = new BValue[]{consumerEndpoint};
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPausedPartitions", inputBValues);
-        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertEquals(returnBValues.length, 0);
 
         //negative tests for pausing and resuming non existing partitions
-        part.setStringField(0, "test_not");
-        part.setIntField(0, 100);
+        part.put("topic", new BString("test_not"));
+        part.put("partition", new BInteger(100));
 
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
         returnBValues = BRunUtil.invoke(result, "funcKafkaPause", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
-        Assert.assertEquals(((BStruct) returnBValues[0]).getStringField(0),
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
+        Assert.assertEquals(((BMap) returnBValues[0]).get("message").stringValue(),
                 "No current assignment for partition test_not-100");
 
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
         returnBValues = BRunUtil.invoke(result, "funcKafkaResume", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BStruct);
-        Assert.assertEquals(((BStruct) returnBValues[0]).getStringField(0),
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
+        Assert.assertEquals(((BMap) returnBValues[0]).get("message").stringValue(),
                 "No current assignment for partition test_not-100");
 
         inputBValues = new BValue[]{consumerEndpoint};
@@ -173,11 +175,10 @@ public class KafkaConsumerPauseTest {
         return kafkaCluster;
     }
 
-    private BStruct createPartitionStruct(ProgramFile programFile) {
-        PackageInfo kafkaPackageInfo = programFile.getPackageInfo(KafkaConstants.KAFKA_NATIVE_PACKAGE);
-        StructureTypeInfo consumerRecordStructInfo = kafkaPackageInfo
-                .getStructInfo(KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
-        return new BStruct(consumerRecordStructInfo.getType());
+    private BMap<String, BValue> createPartitionStruct(ProgramFile programFile) {
+        return BLangConnectorSPIUtil.createBStruct(programFile,
+                KAFKA_NATIVE_PACKAGE,
+                KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
     }
 
 }

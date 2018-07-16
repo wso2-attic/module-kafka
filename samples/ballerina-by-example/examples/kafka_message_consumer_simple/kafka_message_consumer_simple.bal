@@ -17,6 +17,7 @@
 import wso2/kafka;
 import ballerina/io;
 import ballerina/log;
+import ballerina/internal;
 
 endpoint kafka:SimpleConsumer consumer {
     bootstrapServers:"localhost:9092",
@@ -32,8 +33,9 @@ function main(string... args) {
         // returns records if exists
         kafka:ConsumerRecord[] records => {
             foreach kafkaRecord in records {
-                // convert blob to string
-                string msg = kafkaRecord.value.toString("UTF-8");
+                // convert byte[] to string
+                byte[] serializedMsg = kafkaRecord.value;
+                string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
                 io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
             }
         }

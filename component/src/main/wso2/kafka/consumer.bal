@@ -105,8 +105,8 @@ documentation { Type related to consumer record
     F{{topic}} topic of the record
 }
 public type ConsumerRecord record {
-    blob key;
-    blob value;
+    byte[] key;
+    byte[] value;
     int offset;
     int partition;
     int timestamp;
@@ -132,10 +132,8 @@ documentation { Represent a Kafka consumer endpoint
 }
 public type SimpleConsumer object {
 
-    public {
-        ConsumerAction consumerActions;
-        ConsumerConfig consumerConfig;
-    }
+    public ConsumerAction consumerActions;
+    public ConsumerConfig consumerConfig;
 
     documentation { Initialize the consumer endpoint
         P{{config}} configurations related to the endpoint
@@ -193,9 +191,7 @@ public type SimpleConsumer object {
 documentation { Kafka consumer action handling object }
 public type ConsumerAction object {
 
-    public {
-        ConsumerConfig config;
-    }
+    public ConsumerConfig config;
 
     public native function connect() returns error?;
 

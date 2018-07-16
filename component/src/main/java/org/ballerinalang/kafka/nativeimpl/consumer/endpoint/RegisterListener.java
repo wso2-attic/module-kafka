@@ -29,7 +29,8 @@ import org.ballerinalang.kafka.impl.KafkaServerConnectorImpl;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -57,8 +58,8 @@ public class RegisterListener implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         Service service = BLangConnectorSPIUtil.getServiceRegistered(context);
-        BStruct consumerEndpoint = (BStruct) context.getRefArgument(0);
-        BStruct consumerConfig = (BStruct) consumerEndpoint.getRefField(1);
+        BMap<String, BValue> consumerEndpoint = (BMap<String, BValue>) context.getRefArgument(0);
+        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerEndpoint.get("consumerConfig");
 
         Properties configParams = KafkaUtils.processKafkaConsumerConfig(consumerConfig);
         String serviceId = service.getName();
