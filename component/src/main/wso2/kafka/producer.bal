@@ -132,32 +132,32 @@ public type ProducerAction object {
         P{{partition}} partition to which the record should be sent
         P{{timestamp}} timestamp of the record, in milliseconds since epoch
     }
-    public native function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
+    public extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
 
     documentation { Flush action which flush batch of records }
-    public native function flush();
+    public extern function flush();
 
     documentation { Close action which closes Kafka producer }
-    public native function close();
+    public extern function close();
 
     documentation { GetTopicPartitions action which returns given topic partition information
         P{{topic}} topic which partition information is given
         R{{}} partition for given topic
     }
-    public native function getTopicPartitions(string topic) returns TopicPartition[];
+    public extern function getTopicPartitions(string topic) returns TopicPartition[];
 
     documentation { CommitConsumer action which commits consumer consumed offsets to offset topic
         P{{consumer}} consumer which needs offsets to be committed
     }
-    public native function commitConsumer(ConsumerAction consumer);
+    public extern function commitConsumer(ConsumerAction consumer);
 
     documentation { CommitConsumerOffsets action which commits consumer offsets in given transaction
         P{{offsets}} consumer offsets to commit for given transaction
         P{{groupID}} consumer group id
     }
-    public native function commitConsumerOffsets(Offset[] offsets, string groupID);
+    public extern function commitConsumerOffsets(Offset[] offsets, string groupID);
 
-    native function init(ProducerConfig config);
+    extern function init(ProducerConfig config);
 
 };
 
