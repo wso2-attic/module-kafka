@@ -184,7 +184,7 @@ public type SimpleConsumer object {
         }
     }
 
-    native function registerListener(typedesc serviceType);
+    extern function registerListener(typedesc serviceType);
 
 };
 
@@ -193,120 +193,120 @@ public type ConsumerAction object {
 
     public ConsumerConfig config;
 
-    public native function connect() returns error?;
+    public extern function connect() returns error?;
 
     documentation { Subscribes to consumer to external Kafka broker topic pattern
         P{{regex}} topic pattern to be subscribed
     }
-    public native function subscribeToPattern(string regex) returns error?;
+    public extern function subscribeToPattern(string regex) returns error?;
 
     documentation { Subscribes to consumer to external Kafka broker topic array
         P{{topics}}tTopic array to be subscribed
     }
-    public native function subscribe(string[] topics) returns error?;
+    public extern function subscribe(string[] topics) returns error?;
 
     documentation { Subscribes to consumer to external Kafka broker topic with rebalance listening is enabled
         P{{topics}} topic array to be subscribed
         P{{onPartitionsRevoked}} function will be executed if partitions are revoked from this consumer
         P{{onPartitionsAssigned}} function will be executed if partitions are assigned this consumer
     }
-    public native function subscribeWithPartitionRebalance(string[] topics,
+    public extern function subscribeWithPartitionRebalance(string[] topics,
     function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsRevoked,
     function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsAssigned) returns error?;
 
     documentation { Assign consumer to external Kafka broker set of topic partitions
         P{{partitions}} topic partitions to be assigned
     }
-    public native function assign(TopicPartition[] partitions) returns error?;
+    public extern function assign(TopicPartition[] partitions) returns error?;
 
     documentation { Returns current offset position in which consumer is at
         P{{partition}} topic partitions in which the position is required
         R{{}} position in which the consumer is at in given Topic partition
     }
-    public native function getPositionOffset(TopicPartition partition) returns int|error;
+    public extern function getPositionOffset(TopicPartition partition) returns int|error;
 
     documentation { Returns current assignment of partitions for a consumer
         R{{}} Assigned partitions array for consumer
     }
-    public native function getAssignment() returns TopicPartition[]|error;
+    public extern function getAssignment() returns TopicPartition[]|error;
 
     documentation { Returns current subscription of topics for a consumer
         R{{}} subscribed topic array for consumer
     }
-    public native function getSubscription() returns string[]|error;
+    public extern function getSubscription() returns string[]|error;
 
     documentation { Returns current subscription of topics for a consumer
         P{{partition}} partition in which offset is returned for consumer
         R{{}} committed offset for consumer for given partition
     }
-    public native function getCommittedOffset(TopicPartition partition) returns Offset|error;
+    public extern function getCommittedOffset(TopicPartition partition) returns Offset|error;
 
     documentation { Poll the consumer for external broker for records
         P{{timeoutValue}} polling time in milliseconds
         R{{}} consumer record array
     }
-    public native function poll(int timeoutValue) returns ConsumerRecord[]|error;
+    public extern function poll(int timeoutValue) returns ConsumerRecord[]|error;
 
     documentation { Commits current consumed offsets for consumer }
-    public native function commit();
+    public extern function commit();
 
     documentation { Commits given offsets for consumer
         P{{offsets}} offsets to be commited
     }
-    public native function commitOffset(Offset[] offsets);
+    public extern function commitOffset(Offset[] offsets);
 
     documentation { Seek consumer for given offset in a topic partition
         P{{offset}} given offset to seek
     }
-    public native function seek(Offset offset) returns error?;
+    public extern function seek(Offset offset) returns error?;
 
     documentation { Seek consumer for beginning offsets for set of topic partitions
         P{{partitions}} set of partitions to seek
     }
-    public native function seekToBeginning(TopicPartition[] partitions) returns error?;
+    public extern function seekToBeginning(TopicPartition[] partitions) returns error?;
 
     documentation { Seek consumer for end offsets for set of topic partitions
         P{{partitions}} set of partitions to seek
     }
-    public native function seekToEnd(TopicPartition[] partitions) returns error?;
+    public extern function seekToEnd(TopicPartition[] partitions) returns error?;
 
     documentation { Retrieve the set of partitions which topic belongs
         P{{topic}} given topic for partition information is needed
         R{{}} partition array for given topic
     }
-    public native function getTopicPartitions(string topic) returns TopicPartition[]|error;
+    public extern function getTopicPartitions(string topic) returns TopicPartition[]|error;
 
     documentation { Un-subscribe consumer from all external broaker topic subscription }
-    public native function unsubscribe() returns error?;
+    public extern function unsubscribe() returns error?;
 
     documentation { Closes consumer connection to external Kafka broker }
-    public native function close() returns error?;
+    public extern function close() returns error?;
 
     documentation { Pause consumer retrieving messages from set of partitions
         P{{partitions}} Set of partitions to pause messages retrieval
     }
-    public native function pause(TopicPartition[] partitions) returns error?;
+    public extern function pause(TopicPartition[] partitions) returns error?;
 
     documentation { Resume consumer retrieving messages from set of partitions which were paused earlier
         P{{partitions}} Set of partitions to resume messages retrieval
     }
-    public native function resume(TopicPartition[] partitions) returns error?;
+    public extern function resume(TopicPartition[] partitions) returns error?;
 
     documentation { Returns partitions in which the consumer is paused retrieving messages
         R{{}} Set of partitions paused from message retrieval
     }
-    public native function getPausedPartitions() returns TopicPartition[]|error;
+    public extern function getPausedPartitions() returns TopicPartition[]|error;
 
     documentation { Returns start offsets for given set of partitions
         P{{partitions}} Set of partitions to return start offsets
         R{{}} Start offsets for partitions
     }
-    public native function getBeginningOffsets(TopicPartition[] partitions) returns Offset[]|error;
+    public extern function getBeginningOffsets(TopicPartition[] partitions) returns Offset[]|error;
 
     documentation { Returns last offsets for given set of partitions
         P{{partitions}} Set of partitions to return last offsets
         R{{}} Last offsets for partitions
     }
-    public native function getEndOffsets(TopicPartition[] partitions) returns Offset[]|error;
+    public extern function getEndOffsets(TopicPartition[] partitions) returns Offset[]|error;
 
 };
