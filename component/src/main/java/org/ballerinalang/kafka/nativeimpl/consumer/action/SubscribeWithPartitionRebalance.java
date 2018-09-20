@@ -39,7 +39,7 @@ import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.util.codegen.cpentries.FunctionRefCPEntry;
+import org.ballerinalang.util.codegen.FunctionInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.program.BLangFunctions;
 
@@ -82,8 +82,8 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
             topics.add(topicArray.get(counter));
         }
 
-        FunctionRefCPEntry onPartitionsRevoked = null;
-        FunctionRefCPEntry onPartitionsAssigned = null;
+        FunctionInfo onPartitionsRevoked = null;
+        FunctionInfo onPartitionsAssigned = null;
         BValue partitionsRevoked = context.getRefArgument(2);
         BValue partitionsAssigned = context.getRefArgument(3);
 
@@ -133,14 +133,14 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
     class KafkaRebalanceListener implements ConsumerRebalanceListener {
 
         private Context context;
-        private FunctionRefCPEntry onPartitionsRevoked;
-        private FunctionRefCPEntry onPartitionsAssigned;
+        private FunctionInfo onPartitionsRevoked;
+        private FunctionInfo onPartitionsAssigned;
         private NativeCallableUnit function;
         private BMap<String, BValue> consumerStruct;
 
         KafkaRebalanceListener(Context context,
-                               FunctionRefCPEntry onPartitionsRevoked,
-                               FunctionRefCPEntry onPartitionsAssigned,
+                               FunctionInfo onPartitionsRevoked,
+                               FunctionInfo onPartitionsAssigned,
                                BMap<String, BValue> consumerStruct) {
             this.context = context;
             this.onPartitionsRevoked = onPartitionsRevoked;
@@ -154,7 +154,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         @Override
         public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
             BLangFunctions
-                    .invokeCallable(onPartitionsRevoked.getFunctionInfo(),
+                    .invokeCallable(onPartitionsRevoked,
                                     new BValue[] {consumerStruct, getPartitionsArray(partitions)});
 
         }
@@ -164,7 +164,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
          */
         @Override
         public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-            BLangFunctions.invokeCallable(onPartitionsAssigned.getFunctionInfo(),
+            BLangFunctions.invokeCallable(onPartitionsAssigned,
                                           new BValue[] {consumerStruct, getPartitionsArray(partitions)});
 
         }
