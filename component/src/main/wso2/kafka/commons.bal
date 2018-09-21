@@ -14,20 +14,22 @@
 // specific language governing permissions and limitations
 // under the License.
 
-documentation { This type represents topic partition position in which consumed record is stored
-    F{{partition}} TopicPartition which record is related
-    F{{offset}} offset in which record is stored in partition
-}
+# This type represents topic partition position in which consumed record is stored.
+#
+# + partition - TopicPartition which record is related.
+# + offset - offset in which record is stored in partition.
 public type Offset record {
     TopicPartition partition;
     int offset;
+    !...
 };
 
-documentation { This type represents a topic partition
-    F{{topic}} topic which partition is related
-    F{{partition}} index for the partition
-}
+# This type represents a topic partition.
+#
+# + topic - topic which partition is related.
+# + partition - index for the partition.
 public type TopicPartition record {
     string topic;
     int partition;
+    !...
 };
