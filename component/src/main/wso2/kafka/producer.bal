@@ -108,7 +108,7 @@ public type SimpleProducer object {
 
     # Returns the action object of ProducerAction.
     #
-    # + returns - Producer actions.
+    # + return - Producer actions.
     public function getCallerActions () returns ProducerAction {
         return producerActions;
     }
@@ -146,7 +146,7 @@ public type ProducerAction object {
 
     # GetTopicPartitions action which returns given topic partition information.
     # + topic - topic which partition information is given.
-    # + returns - partition(s) for the given topic.
+    # + return - partition(s) for the given topic.
     public extern function getTopicPartitions(string topic) returns TopicPartition[];
 
     # CommitConsumer action which commits consumer consumed offsets to offset topic.
