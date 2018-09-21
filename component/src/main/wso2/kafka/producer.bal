@@ -132,7 +132,7 @@ public type ProducerAction object {
     # Simple Send action which produce records to Kafka server.
     #
     # + value - record contents.
-    # + topic - topic the record will be appended to.
+    # + topic - topic to which the record will be appended.
     # + key - key that will be included in the record.
     # + partition - partition to which the record should be sent.
     # + timestamp - timestamp of the record, in milliseconds since epoch.
@@ -146,7 +146,7 @@ public type ProducerAction object {
 
     # GetTopicPartitions action which returns given topic partition information.
     # + topic - topic which partition information is given.
-    # + returns - partition for given topic.
+    # + returns - partition(s) for the given topic.
     public extern function getTopicPartitions(string topic) returns TopicPartition[];
 
     # CommitConsumer action which commits consumer consumed offsets to offset topic.
