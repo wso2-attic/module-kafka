@@ -98,10 +98,6 @@
         </dependency>
         <dependency>
             <groupId>org.ballerinalang</groupId>
-            <artifactId>ballerina-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-log-api</artifactId>
         </dependency>
         <dependency>
@@ -160,7 +156,7 @@
             </exclusions>
         </dependency>
     </dependencies>
-    
+
     <build>
         <resources>
             <resource>
@@ -457,6 +453,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>${maven.remote.resources.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -472,7 +469,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <properties>
         <generated.ballerina.source.directory>${project.build.directory}/../src/main/wso2</generated.ballerina.source.directory>
     </properties>
