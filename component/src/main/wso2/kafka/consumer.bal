@@ -204,13 +204,13 @@ public type ConsumerAction object {
     # + returns - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribeToPattern(string regex) returns error?;
 
-    # Subscribes to consumer to external Kafka broker topic array.
+    # Subscribe the consumer to external Kafka broker topic array.
     #
     # + topics - tTopic array to be subscribed.
     # + returns - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribe(string[] topics) returns error?;
 
-    # Subscribes to consumer to external Kafka broker topic with rebalance listening is enabled.
+    # Subscribe the consumer to external Kafka broker topic with rebalance listening is enabled.
     #
     # + topics - topic array to be subscribed.
     # + onPartitionsRevoked - function will be executed if partitions are revoked from this consumer.
@@ -242,7 +242,7 @@ public type ConsumerAction object {
     # + return - subscribed topic array for consumer if executes successfully, error otherwise.
     public extern function getSubscription() returns string[]|error;
 
-    # Returns current subscription of topics for a consumer.
+    # Returns committed offset of a consumer, for a given partition.
     #
     # + partition - partition in which offset is returned for consumer.
     # + return - committed offset for consumer for given partition if executes successfully, error otherwise.
