@@ -156,6 +156,8 @@ public type SimpleConsumer object {
     public function start() {}
 
     # Returns the action object of ConsumerAction.
+    #
+    # + return - ConsumerAction object of the Caller
     public function getCallerActions() returns ConsumerAction {
         return consumerActions;
     }
@@ -201,13 +203,13 @@ public type ConsumerAction object {
     # Subscribes to consumer to external Kafka broker topic pattern.
     #
     # + regex - topic pattern to be subscribed.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribeToPattern(string regex) returns error?;
 
     # Subscribes to consumer to external Kafka broker topic array.
     #
     # + topics - tTopic array to be subscribed.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribe(string[] topics) returns error?;
 
     # Subscribes to consumer to external Kafka broker topic with rebalance listening is enabled.
@@ -215,7 +217,7 @@ public type ConsumerAction object {
     # + topics - topic array to be subscribed.
     # + onPartitionsRevoked - function will be executed if partitions are revoked from this consumer.
     # + onPartitionsAssigned - function will be executed if partitions are assigned this consumer.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribeWithPartitionRebalance(string[] topics,
     function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsRevoked,
     function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsAssigned) returns error?;
@@ -223,7 +225,7 @@ public type ConsumerAction object {
     # Assign consumer to external Kafka broker set of topic partitions.
     #
     # + partitions - topic partitions to be assigned.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function assign(TopicPartition[] partitions) returns error?;
 
     # Returns current offset position in which consumer is at.
@@ -265,19 +267,19 @@ public type ConsumerAction object {
     # Seek consumer for given offset in a topic partition.
     #
     # + offset - given offset to seek.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function seek(Offset offset) returns error?;
 
     # Seek consumer for beginning offsets for set of topic partitions.
     #
     # + partitions - set of partitions to seek.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function seekToBeginning(TopicPartition[] partitions) returns error?;
 
     # Seek consumer for end offsets for set of topic partitions.
     #
     # + partitions - set of partitions to seek.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function seekToEnd(TopicPartition[] partitions) returns error?;
 
     # Retrieve the set of partitions which topic belongs.
@@ -288,18 +290,18 @@ public type ConsumerAction object {
 
     # Un-subscribe consumer from all external broaker topic subscription.
     #
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function unsubscribe() returns error?;
 
     # Closes consumer connection to external Kafka broker.
     #
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function close() returns error?;
 
     # Pause consumer retrieving messages from set of partitions.
     #
     # + partitions - Set of partitions to pause messages retrieval.
-    # + returns - Returns an error if encounters an error, returns nil otherwise.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function pause(TopicPartition[] partitions) returns error?;
 
     # Resume consumer retrieving messages from set of partitions which were paused earlier.
