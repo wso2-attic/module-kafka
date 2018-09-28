@@ -74,14 +74,6 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
      * {@inheritDoc}
      */
     @Override
-    public void done() {
-        // Not required for Kafka Transactions.
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public XAResource getXAResource() {
         return null;
     }
