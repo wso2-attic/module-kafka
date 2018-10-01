@@ -122,8 +122,8 @@ public type SimpleProducer object {
 
 # Kafka producer action handling object.
 #
-# + producerHolder -
-# + connectorID -
+# + producerHolder - List of producers available.
+# + connectorID - Unique ID for a particular connector.
 public type ProducerAction object {
 
     public map producerHolder;
