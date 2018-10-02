@@ -16,36 +16,36 @@
 
 import ballerina/system;
 
-documentation { value:"Struct which represents Kafka Producer configuration
-    F{{bootstrapServers}} list of remote server endpoints
-    F{{acks}} number of acknowledgments
-    F{{compressionType}} compression type to be used for
-    F{{clientID}} id to be used for server side logging
-    F{{metricsRecordingLevel}} metrics recording level
-    F{{metricReporterClasses}} metrics reporter classes
-    F{{partitionerClass}} partitioner class to be used to select partition the message is sent
-    F{{interceptorClasses}} interceptor classes to be used before sending records
-    F{{transactionalID}} transactionalId to use for transactional delivery
-    F{{bufferMemory}} total bytes of memory the producer can use to buffer records
-    F{{noRetries}} number of retries to resend a record
-    F{{batchSize}} number of records to be batched for a single request
-    F{{linger}} delay to allow other records to be batched
-    F{{sendBuffer}} size of the TCP send buffer (SO_SNDBUF)
-    F{{receiveBuffer}} size of the TCP receive buffer (SO_RCVBUF)
-    F{{maxRequestSize}} the maximum size of a request in bytes
-    F{{reconnectBackoff}} time to wait before attempting to reconnect
-    F{{reconnectBackoffMax}} maximum amount of time in milliseconds to wait when reconnecting
-    F{{retryBackoff}} time to wait before attempting to retry a failed request
-    F{{maxBlock}} max block time which the send is blocked if buffer is full
-    F{{requestTimeout}} wait time for response of a request
-    F{{metadataMaxAge}} max time to force a refresh of metadata
-    F{{metricsSampleWindow}} window of time a metrics sample is computed over
-    F{{metricsNumSamples}} number of samples maintained to compute metrics
-    F{{maxInFlightRequestsPerConnection}} maximum number of unacknowledged requests on a single connection
-    F{{connectionsMaxIdle}} close idle connections after the number of milliseconds
-    F{{transactionTimeout}} timeout fro transaction status update from the producer
-    F{{enableIdempotence}} exactly one copy of each message is written in the stream when enabled
-}
+# Struct which represents Kafka Producer configuration.
+#
+# + bootstrapServers - list of remote server endpoints
+# + acks - number of acknowledgments
+# + compressionType - compression type to be used for
+# + clientID - id to be used for server side logging
+# + metricsRecordingLevel - metrics recording level
+# + metricReporterClasses - metrics reporter classes
+# + partitionerClass - partitioner class to be used to select partition the message is sent
+# + interceptorClasses - interceptor classes to be used before sending records
+# + transactionalID - transactionalId to use for transactional delivery
+# + bufferMemory - total bytes of memory the producer can use to buffer records
+# + noRetries - number of retries to resend a record
+# + batchSize - number of records to be batched for a single request
+# + linger - delay to allow other records to be batched
+# + sendBuffer - size of the TCP send buffer (SO_SNDBUF)
+# + receiveBuffer - size of the TCP receive buffer (SO_RCVBUF)
+# + maxRequestSize - the maximum size of a request in bytes
+# + reconnectBackoff - time to wait before attempting to reconnect
+# + reconnectBackoffMax - maximum amount of time in milliseconds to wait when reconnecting
+# + retryBackoff - time to wait before attempting to retry a failed request
+# + maxBlock - max block time which the send is blocked if buffer is full
+# + requestTimeout - wait time for response of a request
+# + metadataMaxAge - max time to force a refresh of metadata
+# + metricsSampleWindow - window of time a metrics sample is computed over
+# + metricsNumSamples - number of samples maintained to compute metrics
+# + maxInFlightRequestsPerConnection - maximum number of unacknowledged requests on a single connection
+# + connectionsMaxIdle - close idle connections after the number of milliseconds
+# + transactionTimeout - timeout fro transaction status update from the producer
+# + enableIdempotence - exactly one copy of each message is written in the stream when enabled
 public type ProducerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks; // ACKS_CONFIG 1
@@ -79,82 +79,83 @@ public type ProducerConfig record {
     boolean enableIdempotence = false;          // ENABLE_IDEMPOTENCE_CONFIG 0
 };
 
-documentation { Represent a Kafka producer endpoint
-    E{{}}
-    F{{producerActions}} handle all the actions related to the endpoint
-    F{{producerConfig}} used to store configurations related to a Kafka connection
-}
+# Represent a Kafka producer endpoint.
+#
+# + producerActions - handle all the actions related to the endpoint
+# + producerConfig - used to store configurations related to a Kafka connection
 public type SimpleProducer object {
 
     public ProducerAction producerActions;
     public ProducerConfig producerConfig;
 
-    documentation { Initialize the producer endpoint
-        P{{config}} configurations related to the endpoint
-    }
+    # Initialize the producer endpoint.
+    #
+    # + config - configurations related to the endpoint.
     public function init(ProducerConfig config) {
         self.producerConfig = config;
         self.producerActions.init(config);
     }
 
-    documentation { Registers producer endpoint in the service
-        P{{serviceType}} type descriptor of the service
-    }
+    # Registers producer endpoint in the service.
+    #
+    # + serviceType - type descriptor of the service.
     public function register (typedesc serviceType) {
 
     }
 
-    documentation { Starts the consumer endpoint }
+    # Starts the consumer endpoint.
     public function start () {}
 
-    documentation { Returns the action object of ProducerAction }
-    public function getCallerActions () returns (ProducerAction) {
+    # Returns the action object of ProducerAction.
+    #
+    # + return - Producer actions.
+    public function getCallerActions () returns ProducerAction {
         return producerActions;
     }
 
-    documentation { Stops the consumer endpoint }
+    # Stops the consumer endpoint.
     public function stop () {
         self.producerActions.close();
     }
 
 };
 
-documentation { Kafka producer action handling object }
+# Kafka producer action handling object.
+#
+# + producerHolder - List of producers available.
+# + connectorID - Unique ID for a particular connector.
 public type ProducerAction object {
 
     public map producerHolder;
     public string connectorID = system:uuid();
 
-    documentation { value:"Simple Send action which produce records to Kafka server
-        P{{value}} record contents
-        P{{topic}} topic the record will be appended to
-        P{{key}} key that will be included in the record
-        P{{partition}} partition to which the record should be sent
-        P{{timestamp}} timestamp of the record, in milliseconds since epoch
-    }
+    # Simple Send action which produce records to Kafka server.
+    #
+    # + value - record contents.
+    # + topic - topic the record will be appended to.
+    # + key - key that will be included in the record.
+    # + partition - partition to which the record should be sent.
+    # + timestamp - timestamp of the record, in milliseconds since epoch.
     public extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
 
-    documentation { Flush action which flush batch of records }
+    # Flush action which flush batch of records.
     public extern function flush();
 
-    documentation { Close action which closes Kafka producer }
+    # Close action which closes Kafka producer.
     public extern function close();
 
-    documentation { GetTopicPartitions action which returns given topic partition information
-        P{{topic}} topic which partition information is given
-        R{{}} partition for given topic
-    }
+    # GetTopicPartitions action which returns given topic partition information.
+    # + topic - topic which partition information is given.
+    # + return - partition for given topic.
     public extern function getTopicPartitions(string topic) returns TopicPartition[];
 
-    documentation { CommitConsumer action which commits consumer consumed offsets to offset topic
-        P{{consumer}} consumer which needs offsets to be committed
-    }
+    # CommitConsumer action which commits consumer consumed offsets to offset topic.
+    # + consumer - consumer which needs offsets to be committed.
     public extern function commitConsumer(ConsumerAction consumer);
 
-    documentation { CommitConsumerOffsets action which commits consumer offsets in given transaction
-        P{{offsets}} consumer offsets to commit for given transaction
-        P{{groupID}} consumer group id
-    }
+    # CommitConsumerOffsets action which commits consumer offsets in given transaction.
+    # + offsets - consumer offsets to commit for given transaction.
+    # + groupID - consumer group id.
     public extern function commitConsumerOffsets(Offset[] offsets, string groupID);
 
     extern function init(ProducerConfig config);
