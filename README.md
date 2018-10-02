@@ -30,6 +30,7 @@ by setting property `autoCommit: false` at endpoint parameter.
 ```ballerina
 import wso2/kafka;
 import ballerina/io;
+import ballerina/internal;
 
 endpoint kafka:SimpleConsumer consumer {
     bootstrapServers:"localhost:9092",
