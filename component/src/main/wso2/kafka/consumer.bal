@@ -208,7 +208,7 @@ public type ConsumerAction object {
 
     # Subscribes to consumer to external Kafka broker topic array.
     #
-    # + topics - tTopic array to be subscribed.
+    # + topics - Topic array to be subscribed.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribe(string[] topics) returns error?;
 
