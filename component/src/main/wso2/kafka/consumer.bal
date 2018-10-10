@@ -198,6 +198,9 @@ public type ConsumerAction object {
 
     public ConsumerConfig config;
 
+    # Connects consumer to the provided host in the consumer configs
+    #
+    # + return - Returns an error if encounters an error, returns nill otherwise
     public extern function connect() returns error?;
 
     # Subscribes to consumer to external Kafka broker topic pattern.
