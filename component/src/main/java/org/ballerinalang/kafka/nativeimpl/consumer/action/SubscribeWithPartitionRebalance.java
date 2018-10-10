@@ -135,7 +135,6 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         private Context context;
         private FunctionInfo onPartitionsRevoked;
         private FunctionInfo onPartitionsAssigned;
-        private NativeCallableUnit function;
         private BMap<String, BValue> consumerStruct;
 
         KafkaRebalanceListener(Context context,
