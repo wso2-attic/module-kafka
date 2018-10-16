@@ -38,6 +38,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,9 +79,10 @@ public class Poll implements NativeCallableUnit {
 
         long timeout = context.getIntArgument(0);
         List<BMap<String, BValue>> recordsList = new ArrayList<>();
+        Duration duration = Duration.ofMillis(timeout);
 
         try {
-            ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(timeout);
+            ConsumerRecords<byte[], byte[]> recordsRetrieved = kafkaConsumer.poll(duration);
             if (!recordsRetrieved.isEmpty()) {
                 recordsRetrieved.forEach(record -> {
                     BMap<String, BValue> recordStruct = KafkaUtils.
