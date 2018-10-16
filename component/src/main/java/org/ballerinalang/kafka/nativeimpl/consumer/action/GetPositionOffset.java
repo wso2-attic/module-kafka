@@ -75,7 +75,7 @@ public class GetPositionOffset implements NativeCallableUnit {
         try {
             long position = kafkaConsumer.position(new TopicPartition(topic, partitionValue));
             context.setReturnValues(new BInteger(position));
-        } catch (IllegalArgumentException | KafkaException e) {
+        } catch (IllegalStateException | KafkaException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
     }
