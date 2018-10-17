@@ -16,43 +16,43 @@
 
 # Configuration related to consumer endpoint.
 #
-# + bootstrapServers - list of remote server endpoints
-# + groupId - unique string that identifies the consumer
-# + offsetReset - offset reset strategy if no initial offset
-# + partitionAssignmentStrategy - strategy class for handle partition assignment among consumers
-# + metricsRecordingLevel - metrics recording level
-# + metricsReporterClasses - metrics reporter classes
-# + clientId - id to be used for server side logging
-# + interceptorClasses - interceptor classes to be used before sending records
-# + isolationLevel - how the transactional messages are read
-# + topics - topics to be subscribed
-# + properties - additional properties if required
-# + sessionTimeout - timeout used to detect consumer failures when heartbeat threshold is reached
-# + heartBeatInterval - expected time between heartbeats
-# + metadataMaxAge - max time to force a refresh of metadata
-# + autoCommitInterval - offset committing interval
-# + maxPartitionFetchBytes - the max amount of data per-partition the server return
-# + sendBuffer - size of the TCP send buffer (SO_SNDBUF)
-# + receiveBuffer - size of the TCP receive buffer (SO_RCVBUF)
-# + fetchMinBytes - minimum amount of data the server should return for a fetch request
-# + fetchMaxBytes - maximum amount of data the server should return for a fetch request
-# + fetchMaxWait - maximum amount of time the server will block before answering the fetch request
-# + reconnectBackoffMax - maximum amount of time in milliseconds to wait when reconnecting
-# + retryBackoff - time to wait before attempting to retry a failed request
-# + metricsSampleWindow - window of time a metrics sample is computed over
-# + metricsNumSamples - number of samples maintained to compute metrics
-# + requestTimeout - wait time for response of a request
-# + connectionMaxIdle - close idle connections after the number of milliseconds
-# + maxPollRecords - maximum number of records returned in a single call to poll
-# + maxPollInterval - maximum delay between invocations of poll
-# + reconnectBackoff - time to wait before attempting to reconnect
-# + pollingTimeout - time out interval of polling
-# + pollingInterval - polling interval
-# + concurrentConsumers - number of concurrent consumers
-# + autoCommit - enables auto commit offsets
-# + checkCRCS - check the CRC32 of the records consumed
-# + excludeInternalTopics - whether records from internal topics should be exposed to the consumer
-# + decoupleProcessing - decouples processing
+# + bootstrapServers - List of remote server endpoints
+# + groupId - Unique string that identifies the consumer
+# + offsetReset - Offset reset strategy if no initial offset
+# + partitionAssignmentStrategy - Strategy class for handle partition assignment among consumers
+# + metricsRecordingLevel - Metrics recording level
+# + metricsReporterClasses - Metrics reporter classes
+# + clientId - Id to be used for server side logging
+# + interceptorClasses - Interceptor classes to be used before sending records
+# + isolationLevel - How the transactional messages are read
+# + topics - Topics to be subscribed
+# + properties - Additional properties if required
+# + sessionTimeout - Timeout used to detect consumer failures when heartbeat threshold is reached
+# + heartBeatInterval - Expected time between heartbeats
+# + metadataMaxAge - Max time to force a refresh of metadata
+# + autoCommitInterval - Offset committing interval
+# + maxPartitionFetchBytes - The max amount of data per-partition the server return
+# + sendBuffer - Size of the TCP send buffer (SO_SNDBUF)
+# + receiveBuffer - Size of the TCP receive buffer (SO_RCVBUF)
+# + fetchMinBytes - Minimum amount of data the server should return for a fetch request
+# + fetchMaxBytes - Maximum amount of data the server should return for a fetch request
+# + fetchMaxWait - Maximum amount of time the server will block before answering the fetch request
+# + reconnectBackoffMax - Maximum amount of time in milliseconds to wait when reconnecting
+# + retryBackoff - Time to wait before attempting to retry a failed request
+# + metricsSampleWindow - Window of time a metrics sample is computed over
+# + metricsNumSamples - Number of samples maintained to compute metrics
+# + requestTimeout - Wait time for response of a request
+# + connectionMaxIdle - Close idle connections after the number of milliseconds
+# + maxPollRecords - Maximum number of records returned in a single call to poll
+# + maxPollInterval - Maximum delay between invocations of poll
+# + reconnectBackoff - Time to wait before attempting to reconnect
+# + pollingTimeout - Time out interval of polling
+# + pollingInterval - Polling interval
+# + concurrentConsumers - Number of concurrent consumers
+# + autoCommit - Enables auto commit offsets
+# + checkCRCS - Check the CRC32 of the records consumed
+# + excludeInternalTopics - Whether records from internal topics should be exposed to the consumer
+# + decoupleProcessing - Decouples processing
 public type ConsumerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? groupId; // GROUP_ID_CONFIG 1
