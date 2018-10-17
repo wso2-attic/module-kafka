@@ -18,34 +18,34 @@ import ballerina/system;
 
 # Struct which represents Kafka Producer configuration.
 #
-# + bootstrapServers - list of remote server endpoints
-# + acks - number of acknowledgments
-# + compressionType - compression type to be used for
-# + clientID - id to be used for server side logging
-# + metricsRecordingLevel - metrics recording level
-# + metricReporterClasses - metrics reporter classes
-# + partitionerClass - partitioner class to be used to select partition the message is sent
-# + interceptorClasses - interceptor classes to be used before sending records
-# + transactionalID - transactionalId to use for transactional delivery
-# + bufferMemory - total bytes of memory the producer can use to buffer records
-# + noRetries - number of retries to resend a record
-# + batchSize - number of records to be batched for a single request
-# + linger - delay to allow other records to be batched
-# + sendBuffer - size of the TCP send buffer (SO_SNDBUF)
-# + receiveBuffer - size of the TCP receive buffer (SO_RCVBUF)
-# + maxRequestSize - the maximum size of a request in bytes
-# + reconnectBackoff - time to wait before attempting to reconnect
-# + reconnectBackoffMax - maximum amount of time in milliseconds to wait when reconnecting
-# + retryBackoff - time to wait before attempting to retry a failed request
-# + maxBlock - max block time which the send is blocked if buffer is full
-# + requestTimeout - wait time for response of a request
-# + metadataMaxAge - max time to force a refresh of metadata
-# + metricsSampleWindow - window of time a metrics sample is computed over
-# + metricsNumSamples - number of samples maintained to compute metrics
-# + maxInFlightRequestsPerConnection - maximum number of unacknowledged requests on a single connection
-# + connectionsMaxIdle - close idle connections after the number of milliseconds
-# + transactionTimeout - timeout fro transaction status update from the producer
-# + enableIdempotence - exactly one copy of each message is written in the stream when enabled
+# + bootstrapServers - List of remote server endpoints
+# + acks - Number of acknowledgments
+# + compressionType - Compression type to be used for
+# + clientID - Id to be used for server side logging
+# + metricsRecordingLevel - Metrics recording level
+# + metricReporterClasses - Metrics reporter classes
+# + partitionerClass - Partitioner class to be used to select partition the message is sent
+# + interceptorClasses - Interceptor classes to be used before sending records
+# + transactionalID - TransactionalId to use for transactional delivery
+# + bufferMemory - Total bytes of memory the producer can use to buffer records
+# + noRetries - Number of retries to resend a record
+# + batchSize - Number of records to be batched for a single request
+# + linger - Delay to allow other records to be batched
+# + sendBuffer - Size of the TCP send buffer (SO_SNDBUF)
+# + receiveBuffer - Size of the TCP receive buffer (SO_RCVBUF)
+# + maxRequestSize - The maximum size of a request in bytes
+# + reconnectBackoff - Time to wait before attempting to reconnect
+# + reconnectBackoffMax - Maximum amount of time in milliseconds to wait when reconnecting
+# + retryBackoff - Time to wait before attempting to retry a failed request
+# + maxBlock - Max block time which the send is blocked if buffer is full
+# + requestTimeout - Wait time for response of a request
+# + metadataMaxAge - Max time to force a refresh of metadata
+# + metricsSampleWindow - Window of time a metrics sample is computed over
+# + metricsNumSamples - Number of samples maintained to compute metrics
+# + maxInFlightRequestsPerConnection - Maximum number of unacknowledged requests on a single connection
+# + connectionsMaxIdle - Close idle connections after the number of milliseconds
+# + transactionTimeout - Timeout fro transaction status update from the producer
+# + enableIdempotence - Exactly one copy of each message is written in the stream when enabled
 public type ProducerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks; // ACKS_CONFIG 1
@@ -81,8 +81,8 @@ public type ProducerConfig record {
 
 # Represent a Kafka producer endpoint.
 #
-# + producerActions - handle all the actions related to the endpoint
-# + producerConfig - used to store configurations related to a Kafka connection
+# + producerActions - Handle all the actions related to the endpoint.
+# + producerConfig - Used to store configurations related to a Kafka connection.
 public type SimpleProducer object {
 
     public ProducerAction producerActions;
@@ -129,37 +129,39 @@ public type ProducerAction object {
     public map producerHolder;
     public string connectorID = system:uuid();
 
-    # Simple Send action which produce records to Kafka server.
+    # Closes producer connection to the external Kafka broker.
+    public extern function close();
+
+    # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
-    # + value - record contents.
-    # + topic - topic the record will be appended to.
-    # + key - key that will be included in the record.
-    # + partition - partition to which the record should be sent.
-    # + timestamp - timestamp of the record, in milliseconds since epoch.
-    public extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
+    # + consumer - Consumer which needs offsets to be committed.
+    public extern function commitConsumer(ConsumerAction consumer);
+
+    # CommitConsumerOffsets action which commits consumer offsets in given transaction.
+    #
+    # + offsets - Consumer offsets to commit for given transaction.
+    # + groupID - Consumer group id.
+    public extern function commitConsumerOffsets(Offset[] offsets, string groupID);
 
     # Flush action which flush batch of records.
     public extern function flush();
 
-    # Close action which closes Kafka producer.
-    public extern function close();
-
     # GetTopicPartitions action which returns given topic partition information.
-    # + topic - topic which partition information is given.
-    # + return - partition for given topic.
+    #
+    # + topic - Topic which the partition information is given.
+    # + return - Partitions for the given topic.
     public extern function getTopicPartitions(string topic) returns TopicPartition[];
-
-    # CommitConsumer action which commits consumer consumed offsets to offset topic.
-    # + consumer - consumer which needs offsets to be committed.
-    public extern function commitConsumer(ConsumerAction consumer);
-
-    # CommitConsumerOffsets action which commits consumer offsets in given transaction.
-    # + offsets - consumer offsets to commit for given transaction.
-    # + groupID - consumer group id.
-    public extern function commitConsumerOffsets(Offset[] offsets, string groupID);
 
     extern function init(ProducerConfig config);
 
+    # Simple Send action which produce records to Kafka server.
+    #
+    # + value - Record contents.
+    # + topic - Topic to which the record will be appended to.
+    # + key - Key that will be included in the record.
+    # + partition - Partition to which the record should be sent.
+    # + timestamp - Timestamp of the record, in milliseconds since epoch.
+    public extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
 };
 
 public type Producer object {};
