@@ -3,6 +3,7 @@
 # **Ballerina Kafka Client Endpoint**
 
 Ballerina Kafka Client Endpoint is used to connect Ballerina with Kafka Brokers. With this Kafka Client Endpoint, Ballerina can act as Kafka Consumers and Kafka Producers.
+This connector is compatible with Kafka 1.x and Kafka 2.0.0 versions.
 
 Steps to Configure
 ==================================
