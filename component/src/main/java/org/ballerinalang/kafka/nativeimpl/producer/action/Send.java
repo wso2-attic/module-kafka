@@ -47,7 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
-
+import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
 
 /**
  * Native action produces blob value to given string topic.
@@ -100,8 +100,7 @@ public class Send implements NativeCallableUnit {
         }
 
         try {
-            if (Objects.nonNull(producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG))
-                        && context.isInTransaction()) {
+            if (isTransactionalProducer(context, producerProperties)) {
                 String connectorKey = producerConnector.get("connectorID").stringValue();
                 LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
                 BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);

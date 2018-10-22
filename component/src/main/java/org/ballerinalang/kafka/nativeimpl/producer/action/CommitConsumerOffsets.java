@@ -18,7 +18,6 @@ package org.ballerinalang.kafka.nativeimpl.producer.action;
 
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
@@ -51,6 +50,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
 
 /**
  * Native action commits the consumer fir given offsets in transaction.
@@ -104,8 +104,7 @@ public class CommitConsumerOffsets implements NativeCallableUnit {
         }
 
         try {
-            if (Objects.nonNull(producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG))
-                    && context.isInTransaction()) {
+            if (isTransactionalProducer(context, producerProperties)) {
                 String connectorKey = producerConnector.get("connectorID").stringValue();
                 LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
                 BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
