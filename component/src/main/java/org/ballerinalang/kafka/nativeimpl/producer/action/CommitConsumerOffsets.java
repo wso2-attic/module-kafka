@@ -98,7 +98,12 @@ public class CommitConsumerOffsets extends AbstractCommitConsumer {
             partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
         }
 
-        super.commitConsumer(context, producerProperties, producerConnector, kafkaProducer, partitionToMetadataMap, groupID);
+        super.commitConsumer(context,
+                producerProperties,
+                producerConnector,
+                kafkaProducer,
+                partitionToMetadataMap,
+                groupID);
         callableUnitCallback.notifySuccess();
     }
 

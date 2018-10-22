@@ -94,13 +94,17 @@ public class CommitConsumer extends AbstractCommitConsumer {
         BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
         String groupID = consumerConfig.get("groupId").stringValue();
 
-        super.commitConsumer(context, producerProperties, producerConnector, kafkaProducer, partitionToMetadataMap, groupID);
+        super.commitConsumer(context,
+                producerProperties,
+                producerConnector,
+                kafkaProducer,
+                partitionToMetadataMap,
+                groupID);
         callableUnitCallback.notifySuccess();
     }
 
     @Override
     public boolean isBlocking() {
-
         return false;
     }
 }
