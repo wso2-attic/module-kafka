@@ -47,7 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
 
 /**
- * Native action commits the consumer fir given offsets in transaction.
+ * Native action commits the consumer for given offsets in transaction.
  */
 @BallerinaFunction(
         orgName = ORG_NAME,
