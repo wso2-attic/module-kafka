@@ -47,6 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.beginTransaction;
 import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
 
 /**
@@ -70,6 +71,7 @@ public class Send implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
@@ -101,19 +103,12 @@ public class Send implements NativeCallableUnit {
 
         try {
             if (isTransactionalProducer(context, producerProperties)) {
-                String connectorKey = producerConnector.get("connectorID").stringValue();
-                LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
-                BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
-                if (Objects.isNull(regTxContext)) {
-                    KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
-                    localTransactionInfo.registerTransactionContext(connectorKey, txContext);
-                    kafkaProducer.beginTransaction();
-                }
+                beginTransaction(context, producerConnector, kafkaProducer);
             }
             kafkaProducer.send(kafkaRecord, (metadata, exception) -> {
                 if (Objects.nonNull(exception)) {
                     throw new BallerinaException("Failed to send message. " +
-                                                 exception.getMessage(), exception, context);
+                            exception.getMessage(), exception, context);
                 }
                 //kafkaProducer.flush();
                 callableUnitCallback.notifySuccess();

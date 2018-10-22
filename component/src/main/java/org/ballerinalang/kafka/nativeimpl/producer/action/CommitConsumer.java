@@ -51,6 +51,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.beginTransaction;
 import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
 
 /**
@@ -72,6 +73,7 @@ public class CommitConsumer implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
@@ -101,14 +103,7 @@ public class CommitConsumer implements NativeCallableUnit {
 
         try {
             if (isTransactionalProducer(context, producerProperties)) {
-                String connectorKey = producerConnector.get("connectorID").stringValue();
-                LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
-                BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
-                if (Objects.isNull(regTxContext)) {
-                    KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
-                    localTransactionInfo.registerTransactionContext(connectorKey, txContext);
-                    kafkaProducer.beginTransaction();
-                }
+                beginTransaction(context, producerConnector, kafkaProducer);
             }
             kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
         } catch (IllegalStateException | KafkaException e) {
@@ -119,6 +114,7 @@ public class CommitConsumer implements NativeCallableUnit {
 
     @Override
     public boolean isBlocking() {
+
         return false;
     }
 }

@@ -520,4 +520,23 @@ public class KafkaUtils {
     public static boolean isTransactionalProducer(Context context, Properties properties) {
         return Objects.nonNull(properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG)) && context.isInTransaction();
     }
+
+    private static void beginTransaction(LocalTransactionInfo localTransactionInfo,
+                                        String connectorKey,
+                                        KafkaProducer kafkaProducer) {
+        KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
+        localTransactionInfo.registerTransactionContext(connectorKey, txContext);
+        kafkaProducer.beginTransaction();
+    }
+
+    public static void beginTransaction(Context context,
+                                        BMap<String, BValue> producerConnector,
+                                        KafkaProducer kafkaProducer) {
+        String connectorKey = producerConnector.get("connectorID").stringValue();
+        LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
+        BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
+        if (Objects.isNull(regTxContext)) {
+            beginTransaction(localTransactionInfo, connectorKey, kafkaProducer);
+        }
+    }
 }
