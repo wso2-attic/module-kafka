@@ -16,6 +16,9 @@ import java.util.Properties;
 import static org.ballerinalang.kafka.util.KafkaUtils.beginTransaction;
 import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
 
+/**
+ * {@code AbstractCommitConsumer} is the base class for commit consumers.
+ */
 public abstract class AbstractCommitConsumer implements NativeCallableUnit {
 
     public static void commitConsumer(Context context,
@@ -32,5 +35,10 @@ public abstract class AbstractCommitConsumer implements NativeCallableUnit {
         } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
         }
+    }
+
+    @Override
+    public boolean isBlocking() {
+        return false;
     }
 }
