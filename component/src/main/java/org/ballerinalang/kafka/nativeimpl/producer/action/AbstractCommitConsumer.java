@@ -22,11 +22,12 @@ import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
 public abstract class AbstractCommitConsumer implements NativeCallableUnit {
 
     public static void commitConsumer(Context context,
-                                       Properties producerProperties,
-                                       BMap<String, BValue> producerConnector,
-                                       KafkaProducer kafkaProducer,
-                                       Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
-                                       String groupID) {
+                                      Properties producerProperties,
+                                      BMap<String, BValue> producerConnector,
+                                      KafkaProducer kafkaProducer,
+                                      Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
+                                      String groupID) {
+
         try {
             if (isTransactionalProducer(context, producerProperties)) {
                 beginTransaction(context, producerConnector, kafkaProducer);
@@ -39,6 +40,7 @@ public abstract class AbstractCommitConsumer implements NativeCallableUnit {
 
     @Override
     public boolean isBlocking() {
+
         return false;
     }
 }
