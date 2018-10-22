@@ -18,12 +18,9 @@ package org.ballerinalang.kafka.nativeimpl.producer.action;
 
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.kafka.transaction.KafkaTransactionContext;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -35,8 +32,6 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.ballerinalang.util.transactions.BallerinaTransactionContext;
-import org.ballerinalang.util.transactions.LocalTransactionInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,8 +45,6 @@ import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
-import static org.ballerinalang.kafka.util.KafkaUtils.beginTransaction;
-import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
 
 /**
  * Native action commits the consumer fir given offsets in transaction.
@@ -68,7 +61,7 @@ import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
                 @Argument(name = "groupID", type = TypeKind.STRING)
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})
-public class CommitConsumerOffsets implements NativeCallableUnit {
+public class CommitConsumerOffsets extends AbstractCommitConsumer {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
@@ -105,20 +98,12 @@ public class CommitConsumerOffsets implements NativeCallableUnit {
             partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
         }
 
-        try {
-            if (isTransactionalProducer(context, producerProperties)) {
-                beginTransaction(context, producerConnector, kafkaProducer);
-            }
-            kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
-        } catch (IllegalStateException | KafkaException e) {
-            throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
-        }
+        super.commitConsumer(context, producerProperties, producerConnector, kafkaProducer, partitionToMetadataMap, groupID);
         callableUnitCallback.notifySuccess();
     }
 
     @Override
     public boolean isBlocking() {
-
         return false;
     }
 }
