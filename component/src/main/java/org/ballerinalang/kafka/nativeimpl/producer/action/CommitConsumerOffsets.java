@@ -106,10 +106,5 @@ public class CommitConsumerOffsets extends AbstractCommitConsumer {
                 groupID);
         callableUnitCallback.notifySuccess();
     }
-
-    @Override
-    public boolean isBlocking() {
-        return false;
-    }
 }
 

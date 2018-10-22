@@ -102,9 +102,4 @@ public class CommitConsumer extends AbstractCommitConsumer {
                 groupID);
         callableUnitCallback.notifySuccess();
     }
-
-    @Override
-    public boolean isBlocking() {
-        return false;
-    }
 }
