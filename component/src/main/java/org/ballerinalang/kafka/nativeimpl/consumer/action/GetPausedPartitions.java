@@ -25,11 +25,9 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -47,7 +45,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
-import static org.ballerinalang.kafka.util.KafkaUtils.getTopicPartitionList;
+import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
 
 /**
  * Native function returns paused partitions for given consumer.
@@ -77,7 +75,7 @@ public class GetPausedPartitions implements NativeCallableUnit {
 
         try {
             Set<TopicPartition> assignments = kafkaConsumer.paused();
-            List<BMap<String, BValue>> assignmentList = getTopicPartitionList(context, assignments);
+            List<BMap<String, BValue>> assignmentList = createPartitionList(context, assignments);
             context.setReturnValues(
                     new BRefValueArray(
                             assignmentList.toArray(new BRefType[0]),
