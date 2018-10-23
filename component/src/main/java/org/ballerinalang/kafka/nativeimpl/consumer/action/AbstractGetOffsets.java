@@ -55,7 +55,8 @@ public abstract class AbstractGetOffsets implements NativeCallableUnit {
         return partitionStruct;
     }
 
-    private BMap<String, BValue> getOffsetStruct(BMap partitionStruct, Map.Entry<TopicPartition, Long> offset) {
+    private BMap<String, BValue> getOffsetStruct(BMap<String, BValue> partitionStruct,
+                                                 Map.Entry<TopicPartition, Long> offset) {
 
         BMap<String, BValue> offsetStruct = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
         offsetStruct.put("partition", partitionStruct);
