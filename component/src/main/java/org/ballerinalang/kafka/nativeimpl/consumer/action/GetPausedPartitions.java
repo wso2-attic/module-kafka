@@ -47,6 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.getTopicPartitionList;
 
 /**
  * Native function returns paused partitions for given consumer.
@@ -76,16 +77,7 @@ public class GetPausedPartitions implements NativeCallableUnit {
 
         try {
             Set<TopicPartition> assignments = kafkaConsumer.paused();
-            List<BMap<String, BValue>> assignmentList = new ArrayList<>();
-            if (!assignments.isEmpty()) {
-                assignments.forEach(assignment -> {
-                    BMap<String, BValue> partitionStruct = KafkaUtils.
-                            createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    partitionStruct.put("topic", new BString(assignment.topic()));
-                    partitionStruct.put("partition", new BInteger(assignment.partition()));
-                    assignmentList.add(partitionStruct);
-                });
-            }
+            List<BMap<String, BValue>> assignmentList = getTopicPartitionList(context, assignments);
             context.setReturnValues(
                     new BRefValueArray(
                             assignmentList.toArray(new BRefType[0]),

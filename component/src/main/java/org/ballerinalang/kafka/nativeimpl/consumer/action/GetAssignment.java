@@ -47,6 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.getTopicPartitionList;
 
 /**
  * Native function returns given partition assignment for consumer.
@@ -76,16 +77,7 @@ public class GetAssignment implements NativeCallableUnit {
 
         try {
             Set<TopicPartition> assignments = kafkaConsumer.assignment();
-            List<BMap<String, BValue>> assignmentList = new ArrayList<>();
-            if (!assignments.isEmpty()) {
-                assignments.forEach(assignment -> {
-                    BMap<String, BValue> infoStruct = KafkaUtils.
-                            createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    infoStruct.put("topic", new BString(assignment.topic()));
-                    infoStruct.put("partition", new BInteger(assignment.partition()));
-                    assignmentList.add(infoStruct);
-                });
-            }
+            List<BMap<String, BValue>> assignmentList = getTopicPartitionList(context, assignments);
             context.setReturnValues(
                     new BRefValueArray(
                             assignmentList.toArray(new BRefType[0]),
