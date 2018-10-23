@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_CONCURRENT_CONSUMERS;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_DECOUPLE_PROCESSING;
@@ -511,6 +512,20 @@ public class KafkaUtils {
             }
         }
         return partitionList;
+    }
+
+    public static List<BMap<String, BValue>> getTopicPartitionList(Context context, Set<TopicPartition> partitions) {
+        List<BMap<String, BValue>> topicPartitionList = new ArrayList<>();
+        if (!partitions.isEmpty()) {
+            partitions.forEach(assignment -> {
+                BMap<String, BValue> partitionStruct = KafkaUtils.
+                        createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
+                partitionStruct.put("topic", new BString(assignment.topic()));
+                partitionStruct.put("partition", new BInteger(assignment.partition()));
+                topicPartitionList.add(partitionStruct);
+            });
+        }
+        return topicPartitionList;
     }
 
 }
