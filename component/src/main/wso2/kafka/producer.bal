@@ -141,7 +141,7 @@ public type ProducerAction object {
     #
     # + offsets - Consumer offsets to commit for given transaction.
     # + groupID - Consumer group id.
-    public extern function commitConsumerOffsets(Offset[] offsets, string groupID);
+    public extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
 
     # Flush action which flush batch of records.
     public extern function flush();

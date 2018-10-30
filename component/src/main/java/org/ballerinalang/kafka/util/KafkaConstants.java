@@ -35,7 +35,7 @@ public class KafkaConstants {
     public static final String NATIVE_PRODUCER_CONFIG = "KafkaProducerConfig";
 
     public static final String TOPIC_PARTITION_STRUCT_NAME = "TopicPartition";
-    public static final String OFFSET_STRUCT_NAME = "Offset";
+    public static final String OFFSET_STRUCT_NAME = "PartitionOffset";
 
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
     public static final String CONSUMER_STRUCT_NAME = "ConsumerAction";

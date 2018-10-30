@@ -18,7 +18,7 @@
 #
 # + partition - TopicPartition which record is related.
 # + offset - offset in which record is stored in partition.
-public type Offset record {
+public type PartitionOffset record {
     TopicPartition partition;
     int offset;
     !...

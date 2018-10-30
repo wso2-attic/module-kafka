@@ -49,10 +49,10 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int {
     return lengthof records;
 }
 
-function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns kafka:Offset {
+function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns kafka:PartitionOffset {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    kafka:Offset offset;
+    kafka:PartitionOffset offset;
     error e;
     offset = check consumerEP->getCommittedOffset(part);
     return offset;

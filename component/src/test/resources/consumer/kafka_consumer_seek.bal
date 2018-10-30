@@ -49,7 +49,7 @@ function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPa
     return offset;
 }
 
-function funcKafkaSeekOffset(kafka:SimpleConsumer consumer, kafka:Offset offset) {
+function funcKafkaSeekOffset(kafka:SimpleConsumer consumer, kafka:PartitionOffset offset) {
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
     check consumerEP->seek(offset);
@@ -68,21 +68,21 @@ function funcKafkaSeekToEnd(kafka:SimpleConsumer consumer, kafka:TopicPartition[
 }
 
 function funcKafkaBeginOffsets(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions)
-             returns kafka:Offset[] {
+             returns kafka:PartitionOffset[] {
 
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    kafka:Offset[] offsets;
+    kafka:PartitionOffset[] offsets;
     offsets = check consumerEP->getBeginningOffsets(partitions);
     return offsets;
 }
 
 function funcKafkaEndOffsets(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions)
-             returns kafka:Offset[] {
+             returns kafka:PartitionOffset[] {
 
     endpoint kafka:SimpleConsumer consumerEP {};
     consumerEP = consumer;
-    kafka:Offset[] offsets;
+    kafka:PartitionOffset[] offsets;
     offsets = check consumerEP->getEndOffsets(partitions);
     return offsets;
 }

@@ -215,7 +215,7 @@ public type ConsumerAction object {
     # Commits given offsets and partitions for the given topics, for consumer.
     #
     # + offsets - Offsets to be commited.
-    public extern function commitOffset(Offset[] offsets);
+    public extern function commitOffset(PartitionOffset[] offsets);
 
     // TODO:
     // Why we need this ?
@@ -233,19 +233,19 @@ public type ConsumerAction object {
     #
     # + partitions - Array of topic partitions to get the starting offsets.
     # + return - Starting offsets for the given partitions if executes successfully, error otherwise.
-    public extern function getBeginningOffsets(TopicPartition[] partitions) returns Offset[]|error;
+    public extern function getBeginningOffsets(TopicPartition[] partitions) returns PartitionOffset[]|error;
 
     # Returns last committed offsets for the given topic partitions.
     #
     # + partition - Topic partition in which the committed offset is returned for consumer.
     # + return - Committed offset for the consumer for the given partition if executes successfully, error otherwise.
-    public extern function getCommittedOffset(TopicPartition partition) returns Offset|error;
+    public extern function getCommittedOffset(TopicPartition partition) returns PartitionOffset|error;
 
     # Returns last offsets for given set of partitions.
     #
     # + partitions - Set of partitions to get the last offsets.
     # + return - End offsets for the given partitions if executes successfully, error otherwise.
-    public extern function getEndOffsets(TopicPartition[] partitions) returns Offset[]|error;
+    public extern function getEndOffsets(TopicPartition[] partitions) returns PartitionOffset[]|error;
 
     # Returns the partitions, which are currently paused.
     #
@@ -289,9 +289,9 @@ public type ConsumerAction object {
 
     # Seek the consumer for a given offset in a topic partition.
     #
-    # + offset - Offset to seek.
+    # + offset - PartitionOffset to seek.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function seek(Offset offset) returns error?;
+    public extern function seek(PartitionOffset offset) returns error?;
 
     # Seek consumer to the beginning of the offsets for the given set of topic partitions.
     #
