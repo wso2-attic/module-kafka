@@ -96,6 +96,7 @@ public class KafkaConstants {
     public static final String CONSUMER_ENABLE_AUTO_COMMIT_CONFIG = "autoCommit";
     public static final String CONSUMER_CHECK_CRCS_CONFIG = "checkCRCS";
     public static final String CONSUMER_EXCLUDE_INTERNAL_TOPICS_CONFIG = "excludeInternalTopics";
+    public static final String CONSUMER_DEFAULT_API_TIMEOUT_CONFIG = "defaultApiTimeout";
 
     // Producer Configuration.
     public static final String PRODUCER_BOOTSTRAP_SERVERS_CONFIG = "bootstrapServers";

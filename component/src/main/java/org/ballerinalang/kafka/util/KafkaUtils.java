@@ -46,6 +46,7 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.codegen.ProgramFile;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -347,6 +348,8 @@ public class KafkaUtils {
                 KafkaConstants.CONSUMER_MAX_POLL_INTERVAL_MS_CONFIG);
         addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bStruct, configParams,
                 KafkaConstants.CONSUMER_RECONNECT_BACKOFF_MAX_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_DEFAULT_API_TIMEOUT_CONFIG);
 
         addIntParamIfPresent(ALIAS_POLLING_TIMEOUT, bStruct, configParams, ALIAS_POLLING_TIMEOUT);
         addIntParamIfPresent(ALIAS_POLLING_INTERVAL, bStruct, configParams, ALIAS_POLLING_INTERVAL);
