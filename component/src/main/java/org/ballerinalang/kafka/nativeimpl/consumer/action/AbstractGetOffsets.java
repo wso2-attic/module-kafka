@@ -63,10 +63,4 @@ public abstract class AbstractGetOffsets extends AbstractApisWithDuration implem
         offsetStruct.put("offset", new BInteger(offset.getValue()));
         return offsetStruct;
     }
-
-    @Override
-    public boolean isBlocking() {
-
-        return true;
-    }
 }
