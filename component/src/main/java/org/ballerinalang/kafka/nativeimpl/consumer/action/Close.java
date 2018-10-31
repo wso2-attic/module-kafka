@@ -70,12 +70,12 @@ public class Close extends AbstractApisWithDuration {
 
         try {
 
-            if (apiTimeout == durationUndefinedValue && defaultApiTimeout == durationUndefinedValue) {
-                kafkaConsumer.close();
-            } else if (apiTimeout > -1) { // API timeout should given the priority over the default value
+            if (apiTimeout > durationUndefinedValue) { // API timeout should given the priority over the default value
                 closeWithDuration(kafkaConsumer, apiTimeout);
-            } else if (defaultApiTimeout > -1) {
+            } else if (defaultApiTimeout > durationUndefinedValue) {
                 closeWithDuration(kafkaConsumer, defaultApiTimeout);
+            } else {
+                kafkaConsumer.close();
             }
         } catch (KafkaException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));

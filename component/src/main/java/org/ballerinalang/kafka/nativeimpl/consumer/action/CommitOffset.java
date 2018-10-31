@@ -96,14 +96,14 @@ public class CommitOffset extends AbstractApisWithDuration {
         }
 
         try {
-            if (apiTimeout == durationUndefinedValue && defaultApiTimeout == durationUndefinedValue) {
-                kafkaConsumer.commitSync(partitionToMetadataMap);
-            } else if (apiTimeout > -1) { // API timeout should given the priority over the default value
+            if (apiTimeout > durationUndefinedValue) { // API timeout should given the priority over the default value
                 Duration duration = getDurationFromLong(apiTimeout);
                 kafkaConsumer.commitSync(partitionToMetadataMap, duration);
-            } else if (defaultApiTimeout > -1) {
+            } else if (defaultApiTimeout > durationUndefinedValue) {
                 Duration duration = getDurationFromLong(defaultApiTimeout);
                 kafkaConsumer.commitSync(partitionToMetadataMap, duration);
+            } else {
+                kafkaConsumer.commitSync(partitionToMetadataMap);
             }
         } catch (IllegalArgumentException | KafkaException e) {
             throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
