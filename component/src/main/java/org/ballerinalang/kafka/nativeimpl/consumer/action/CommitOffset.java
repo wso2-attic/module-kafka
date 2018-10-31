@@ -33,6 +33,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -55,16 +56,16 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                        structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE)
+                        structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
+                @Argument(name = "duration", type = TypeKind.INT)
         },
         isPublic = true)
-public class CommitOffset implements NativeCallableUnit {
+public class CommitOffset extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(NATIVE_CONSUMER);
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         if (Objects.isNull(kafkaConsumer)) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
@@ -72,6 +73,9 @@ public class CommitOffset implements NativeCallableUnit {
 
         BRefValueArray offsets = ((BRefValueArray) context.getRefArgument(1));
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
+
+        long apiTimeout = context.getIntArgument(0);
+        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
 
         BMap<String, BValue> offset;
         BMap<String, BValue> partition;
@@ -92,14 +96,17 @@ public class CommitOffset implements NativeCallableUnit {
         }
 
         try {
-            kafkaConsumer.commitSync(partitionToMetadataMap);
+            if (apiTimeout == durationUndefinedValue && defaultApiTimeout == durationUndefinedValue) {
+                kafkaConsumer.commitSync(partitionToMetadataMap);
+            } else if (apiTimeout > -1) { // API timeout should given the priority over the default value
+                Duration duration = getDurationFromLong(apiTimeout);
+                kafkaConsumer.commitSync(partitionToMetadataMap, duration);
+            } else if (defaultApiTimeout > -1) {
+                Duration duration = getDurationFromLong(defaultApiTimeout);
+                kafkaConsumer.commitSync(partitionToMetadataMap, duration);
+            }
         } catch (IllegalArgumentException | KafkaException e) {
             throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
         }
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return true;
     }
 }
