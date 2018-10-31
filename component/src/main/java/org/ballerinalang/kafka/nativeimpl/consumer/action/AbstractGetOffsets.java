@@ -19,7 +19,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
 /**
  * {@code AbstractGetOffsets} is the base class for getting beginning/end offsets for a particular consumer.
  */
-public abstract class AbstractGetOffsets extends AbstractApisWithDuration implements NativeCallableUnit {
+public abstract class AbstractGetOffsets extends AbstractApisWithDuration {
 
     private Context context;
 
