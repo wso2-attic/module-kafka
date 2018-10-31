@@ -34,6 +34,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "partitions", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                        structType = TOPIC_PARTITION_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE)
+                        structType = TOPIC_PARTITION_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
+                @Argument(name = "duration", type = TypeKind.INT)
         },
         returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                 structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
@@ -80,8 +82,20 @@ public class GetBeginningOffsets extends AbstractGetOffsets {
         BRefValueArray partitions = ((BRefValueArray) context.getRefArgument(1));
         ArrayList<TopicPartition> partitionList = KafkaUtils.getTopicPartitionList(partitions);
 
+        long apiTimeout = context.getIntArgument(0);
+        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
+
         try {
-            Map<TopicPartition, Long> offsetMap = kafkaConsumer.beginningOffsets(partitionList);
+            Map<TopicPartition, Long> offsetMap;
+            if (apiTimeout > -1) {
+                Duration duration = getDurationFromLong(apiTimeout);
+                offsetMap = kafkaConsumer.beginningOffsets(partitionList, duration);
+            } else if (defaultApiTimeout > -1) {
+                Duration duration = getDurationFromLong(defaultApiTimeout);
+                offsetMap = kafkaConsumer.beginningOffsets(partitionList, duration);
+            } else {
+                offsetMap = kafkaConsumer.beginningOffsets(partitionList);
+            }
             List<BMap<String, BValue>> offsetList = super.getOffsetList(offsetMap);
             context.setReturnValues(new BRefValueArray(offsetList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME).getType()));
