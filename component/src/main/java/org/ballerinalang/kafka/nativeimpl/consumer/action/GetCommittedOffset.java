@@ -85,10 +85,10 @@ public class GetCommittedOffset extends AbstractApisWithDuration {
         try {
 
             OffsetAndMetadata offsetAndMetadata;
-            if (apiTimeout > -1) {
+            if (apiTimeout > durationUndefinedValue) {
                 Duration duration = getDurationFromLong(apiTimeout);
                 offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue), duration);
-            } else if (defaultApiTimeout > -1) {
+            } else if (defaultApiTimeout > durationUndefinedValue) {
                 Duration duration = getDurationFromLong(defaultApiTimeout);
                 offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue), duration);
             } else {

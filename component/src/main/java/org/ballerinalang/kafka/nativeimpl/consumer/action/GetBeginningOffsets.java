@@ -87,10 +87,10 @@ public class GetBeginningOffsets extends AbstractGetOffsets {
 
         try {
             Map<TopicPartition, Long> offsetMap;
-            if (apiTimeout > -1) {
+            if (apiTimeout > durationUndefinedValue) {
                 Duration duration = getDurationFromLong(apiTimeout);
                 offsetMap = kafkaConsumer.beginningOffsets(partitionList, duration);
-            } else if (defaultApiTimeout > -1) {
+            } else if (defaultApiTimeout > durationUndefinedValue) {
                 Duration duration = getDurationFromLong(defaultApiTimeout);
                 offsetMap = kafkaConsumer.beginningOffsets(partitionList, duration);
             } else {
