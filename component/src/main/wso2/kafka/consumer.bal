@@ -89,6 +89,7 @@ public type ConsumerConfig record {
     int pollingTimeout = -1; // ALIAS_POLLING_TIMEOUT 19
     int pollingInterval = -1; // ALIAS_POLLING_INTERVAL 20
     int concurrentConsumers = -1; // ALIAS_CONCURRENT_CONSUMERS 21
+    int defaultApiTimeout = 30000; //
 
     boolean autoCommit = true; // ENABLE_AUTO_COMMIT_CONFIG 0
     boolean checkCRCS = true; // CHECK_CRCS_CONFIG 1
@@ -206,19 +207,19 @@ public type ConsumerAction object {
 
     # Closes consumer connection to the external Kafka broker.
     #
+    # + duration - Timeout duration for close operation to perform cleanly.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function close() returns error?;
+    public extern function close(int duration = -1) returns error?;
 
     # Commits current consumed offsets for consumer.
     public extern function commit();
 
     # Commits given offsets and partitions for the given topics, for consumer.
     #
+    # + duration - Maximum duration for commit operation to complete.
     # + offsets - Offsets to be commited.
-    public extern function commitOffset(PartitionOffset[] offsets);
+    public extern function commitOffset(PartitionOffset[] offsets, int duration = -1);
 
-    // TODO:
-    // Why we need this ?
     # Connects consumer to the provided host in the consumer configs.
     #
     # + return - Returns an error if encounters an error, returns nill otherwise.
@@ -233,19 +234,22 @@ public type ConsumerAction object {
     #
     # + partitions - Array of topic partitions to get the starting offsets.
     # + return - Starting offsets for the given partitions if executes successfully, error otherwise.
-    public extern function getBeginningOffsets(TopicPartition[] partitions) returns PartitionOffset[]|error;
+    public extern function getBeginningOffsets(TopicPartition[] partitions, int duration = -1)
+                               returns PartitionOffset[]|error;
 
     # Returns last committed offsets for the given topic partitions.
     #
     # + partition - Topic partition in which the committed offset is returned for consumer.
     # + return - Committed offset for the consumer for the given partition if executes successfully, error otherwise.
-    public extern function getCommittedOffset(TopicPartition partition) returns PartitionOffset|error;
+    public extern function getCommittedOffset(TopicPartition partition, int duration = -1)
+                               returns PartitionOffset|error;
 
     # Returns last offsets for given set of partitions.
     #
     # + partitions - Set of partitions to get the last offsets.
     # + return - End offsets for the given partitions if executes successfully, error otherwise.
-    public extern function getEndOffsets(TopicPartition[] partitions) returns PartitionOffset[]|error;
+    public extern function getEndOffsets(TopicPartition[] partitions, int duration = -1)
+                               returns PartitionOffset[]|error;
 
     # Returns the partitions, which are currently paused.
     #
@@ -256,7 +260,7 @@ public type ConsumerAction object {
     #
     # + partition - Topic partition in which the position is required.
     # + return - Offset which will be fetched next (if a records exists in that offset).
-    public extern function getPositionOffset(TopicPartition partition) returns int|error;
+    public extern function getPositionOffset(TopicPartition partition, int duration = -1) returns int|error;
 
     # Returns set of topics wich are currently subscribed by the consumer.
     #
@@ -267,7 +271,7 @@ public type ConsumerAction object {
     #
     # + topic - Given topic for partition information is needed.
     # + return - Array of partitions for the given topic if executes successfully, error otherwise.
-    public extern function getTopicPartitions(string topic) returns TopicPartition[]|error;
+    public extern function getTopicPartitions(string topic, int duration = -1) returns TopicPartition[]|error;
 
     # Pause consumer retrieving messages from set of partitions.
     #
