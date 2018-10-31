@@ -27,9 +27,6 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
     }
 
     protected Duration getDurationFromLong(long value) {
-        if (value == -1) {
-            return null;
-        }
         Duration duration = Duration.ofMillis(value);
         return duration;
     }
