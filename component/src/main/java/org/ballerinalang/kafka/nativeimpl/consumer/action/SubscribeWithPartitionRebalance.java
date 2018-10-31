@@ -54,6 +54,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
 
 /**
  * Native function subscribes to given topic array
@@ -169,16 +170,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         }
 
         private BRefValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
-            List<BMap<String, BValue>> assignmentList = new ArrayList<>();
-            if (!partitions.isEmpty()) {
-                partitions.forEach(assignment -> {
-                    BMap<String, BValue> partitionStruct = KafkaUtils.
-                            createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    partitionStruct.put("topic", new BString(assignment.topic()));
-                    partitionStruct.put("partition", new BInteger(assignment.partition()));
-                    assignmentList.add(partitionStruct);
-                });
-            }
+            List<BMap<String, BValue>> assignmentList = createPartitionList(context, partitions);
             return new BRefValueArray(assignmentList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType());
         }
