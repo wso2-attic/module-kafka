@@ -33,6 +33,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.time.Duration;
 import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
@@ -53,11 +54,12 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "partition", type = TypeKind.RECORD, structType = TOPIC_PARTITION_STRUCT_NAME,
-                        structPackage = KAFKA_NATIVE_PACKAGE)
+                        structPackage = KAFKA_NATIVE_PACKAGE),
+                @Argument(name = "duration", type = TypeKind.INT)
         },
         returnType = { @ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
-public class GetPositionOffset implements NativeCallableUnit {
+public class GetPositionOffset extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
@@ -68,21 +70,28 @@ public class GetPositionOffset implements NativeCallableUnit {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
 
+        long apiTimeout = context.getIntArgument(0);
+        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
+
         BMap<String, BValue> partition = (BMap<String, BValue>) context.getRefArgument(1);
         String topic = partition.get("topic").stringValue();
         int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
 
         try {
-            long position = kafkaConsumer.position(new TopicPartition(topic, partitionValue));
+            long position;
+            if (apiTimeout > durationUndefinedValue) {
+                Duration duration = getDurationFromLong(apiTimeout);
+                position = kafkaConsumer.position(new TopicPartition(topic, partitionValue), duration);
+            } else if (defaultApiTimeout > durationUndefinedValue) {
+                Duration duration = getDurationFromLong(defaultApiTimeout);
+                position = kafkaConsumer.position(new TopicPartition(topic, partitionValue), duration);
+            } else {
+                position = kafkaConsumer.position(new TopicPartition(topic, partitionValue));
+            }
             context.setReturnValues(new BInteger(position));
         } catch (IllegalStateException | KafkaException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return true;
     }
 }
 
