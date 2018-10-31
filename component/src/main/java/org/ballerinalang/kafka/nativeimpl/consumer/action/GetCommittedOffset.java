@@ -35,6 +35,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.time.Duration;
 import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
@@ -56,13 +57,14 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
                 @Argument(name = "partition", type = TypeKind.RECORD, structType = TOPIC_PARTITION_STRUCT_NAME,
-                        structPackage = KAFKA_NATIVE_PACKAGE)
+                        structPackage = KAFKA_NATIVE_PACKAGE),
+                @Argument(name = "duration", type = TypeKind.INT)
         },
         returnType = {@ReturnType(type = TypeKind.RECORD,
                 structPackage = KAFKA_NATIVE_PACKAGE, structType = OFFSET_STRUCT_NAME),
                 @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
-public class GetCommittedOffset implements NativeCallableUnit {
+public class GetCommittedOffset extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
@@ -73,13 +75,25 @@ public class GetCommittedOffset implements NativeCallableUnit {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
 
+        long apiTimeout = context.getIntArgument(0);
+        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
+
         BMap<String, BValue> partition = (BMap<String, BValue>) context.getRefArgument(1);
         String topic = partition.get("topic").stringValue();
         int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
 
         try {
-            OffsetAndMetadata offsetAndMetadata =
-                    kafkaConsumer.committed(new TopicPartition(topic, partitionValue));
+
+            OffsetAndMetadata offsetAndMetadata;
+            if (apiTimeout > -1) {
+                Duration duration = getDurationFromLong(apiTimeout);
+                offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue), duration);
+            } else if (defaultApiTimeout > -1) {
+                Duration duration = getDurationFromLong(defaultApiTimeout);
+                offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue), duration);
+            } else {
+                offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue));
+            }
             BMap<String, BValue> offset = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
             offset.put("partition", partition.copy());
 
@@ -90,11 +104,6 @@ public class GetCommittedOffset implements NativeCallableUnit {
         } catch (KafkaException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return true;
     }
 }
 
