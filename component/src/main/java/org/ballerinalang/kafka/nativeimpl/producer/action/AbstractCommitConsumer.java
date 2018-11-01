@@ -21,12 +21,23 @@ import static org.ballerinalang.kafka.util.KafkaUtils.isTransactionalProducer;
  */
 public abstract class AbstractCommitConsumer implements NativeCallableUnit {
 
-    public static void commitConsumer(Context context,
-                                      Properties producerProperties,
-                                      BMap<String, BValue> producerConnector,
-                                      KafkaProducer kafkaProducer,
-                                      Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
-                                      String groupID) {
+    private Context context;
+
+    public Context getContext() {
+
+        return context;
+    }
+
+    public void setContext(Context context) {
+
+        this.context = context;
+    }
+
+    public void commitConsumer(Properties producerProperties,
+                               BMap<String, BValue> producerConnector,
+                               KafkaProducer kafkaProducer,
+                               Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
+                               String groupID) {
 
         try {
             if (isTransactionalProducer(context, producerProperties)) {

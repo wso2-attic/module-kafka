@@ -66,6 +66,7 @@ public class CommitConsumerOffsets extends AbstractCommitConsumer {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
 
+        setContext(context);
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
@@ -98,8 +99,7 @@ public class CommitConsumerOffsets extends AbstractCommitConsumer {
             partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
         }
 
-        super.commitConsumer(context,
-                producerProperties,
+        commitConsumer(producerProperties,
                 producerConnector,
                 kafkaProducer,
                 partitionToMetadataMap,

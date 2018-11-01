@@ -67,6 +67,7 @@ public class CommitConsumer extends AbstractCommitConsumer {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
 
+        setContext(context);
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
@@ -94,8 +95,7 @@ public class CommitConsumer extends AbstractCommitConsumer {
         BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
         String groupID = consumerConfig.get("groupId").stringValue();
 
-        super.commitConsumer(context,
-                producerProperties,
+        commitConsumer(producerProperties,
                 producerConnector,
                 kafkaProducer,
                 partitionToMetadataMap,
