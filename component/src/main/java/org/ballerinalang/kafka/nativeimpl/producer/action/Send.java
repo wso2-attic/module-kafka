@@ -65,14 +65,13 @@ public class Send extends AbstractTransactionHandler {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
 
-        setContext(context);
+        this.context = context;
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
         BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
-        KafkaProducer kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
-        setProducer(kafkaProducer);
+        this.producer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
         Properties producerProperties = (Properties) producerStruct.getNativeData(NATIVE_PRODUCER_CONFIG);
 
         String topic = context.getStringArgument(0);
@@ -92,7 +91,7 @@ public class Send extends AbstractTransactionHandler {
             kafkaRecord = new ProducerRecord(topic, null, timestamp, key, value);
         }
 
-        if (Objects.isNull(kafkaProducer) || Objects.isNull(kafkaRecord)) {
+        if (Objects.isNull(producer) || Objects.isNull(kafkaRecord)) {
             throw new BallerinaException("Kafka producer/record has not been initialized properly.");
         }
 
@@ -100,7 +99,7 @@ public class Send extends AbstractTransactionHandler {
             if (isTransactionalProducer(producerProperties)) {
                 initiateTransaction(producerConnector);
             }
-            kafkaProducer.send(kafkaRecord, (metadata, exception) -> {
+            producer.send(kafkaRecord, (metadata, exception) -> {
                 if (Objects.nonNull(exception)) {
                     throw new BallerinaException("Failed to send message. " +
                             exception.getMessage(), exception, context);

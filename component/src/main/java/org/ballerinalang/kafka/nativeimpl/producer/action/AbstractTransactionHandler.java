@@ -23,28 +23,8 @@ import java.util.Properties;
  */
 public abstract class AbstractTransactionHandler implements NativeCallableUnit {
 
-    private Context context;
-    private KafkaProducer producer;
-
-    public Context getContext() {
-
-        return context;
-    }
-
-    public void setContext(Context context) {
-
-        this.context = context;
-    }
-
-    public KafkaProducer kafkaProducer() {
-
-        return producer;
-    }
-
-    public void setProducer(KafkaProducer producer) {
-
-        this.producer = producer;
-    }
+    protected Context context;
+    protected KafkaProducer producer;
 
     public void commitConsumer(Properties producerProperties,
                                BMap<String, BValue> producerConnector,
@@ -69,8 +49,7 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
 
     private void performTransaction(LocalTransactionInfo localTransactionInfo, String connectorKey) {
 
-        BallerinaTransactionContext blnTxContext = localTransactionInfo.getTransactionContext(connectorKey);
-        if (Objects.isNull(blnTxContext)) {
+        if (!isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
             KafkaTransactionContext txContext = new KafkaTransactionContext(producer);
             localTransactionInfo.registerTransactionContext(connectorKey, txContext);
             producer.beginTransaction();
@@ -87,5 +66,10 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
     public boolean isTransactionalProducer(Properties properties) {
 
         return Objects.nonNull(properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG)) && context.isInTransaction();
+    }
+
+    public boolean isKafkaTransactionInitiated(LocalTransactionInfo localTransactionInfo, String connectorKey) {
+        BallerinaTransactionContext blnTxContext = localTransactionInfo.getTransactionContext(connectorKey);
+        return Objects.nonNull(blnTxContext);
     }
 }

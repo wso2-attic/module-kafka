@@ -66,16 +66,15 @@ public class CommitConsumerOffsets extends AbstractTransactionHandler {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
 
-        setContext(context);
+        this.context = context;
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
         BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
-        KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
-        setProducer(kafkaProducer);
+        this.producer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
 
-        if (Objects.isNull(kafkaProducer)) {
+        if (Objects.isNull(producer)) {
             throw new BallerinaException("Kafka Producer has not been initialized properly.");
         }
 
