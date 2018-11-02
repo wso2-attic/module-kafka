@@ -52,7 +52,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 public class KafkaConsumerPauseTest {
     private CompileResult result;
     private static File dataDir;
-    protected static KafkaCluster kafkaCluster;
+    private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
@@ -166,7 +166,7 @@ public class KafkaConsumerPauseTest {
         }
     }
 
-    protected static KafkaCluster kafkaCluster() {
+    private static KafkaCluster kafkaCluster() {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }

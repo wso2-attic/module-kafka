@@ -45,7 +45,7 @@ import java.util.concurrent.CountDownLatch;
 public class KafkaConsumerTest {
     private CompileResult result;
     private static File dataDir;
-    protected static KafkaCluster kafkaCluster;
+    private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
@@ -115,7 +115,7 @@ public class KafkaConsumerTest {
         }
     }
 
-    protected static KafkaCluster kafkaCluster() {
+    private static KafkaCluster kafkaCluster() {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
