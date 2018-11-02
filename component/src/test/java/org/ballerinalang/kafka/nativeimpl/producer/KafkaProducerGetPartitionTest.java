@@ -40,7 +40,7 @@ import java.util.Properties;
 public class KafkaProducerGetPartitionTest {
     private CompileResult result;
     private static File dataDir;
-    private static KafkaCluster kafkaCluster;
+    protected static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
@@ -81,7 +81,7 @@ public class KafkaProducerGetPartitionTest {
         }
     }
 
-    private static KafkaCluster kafkaCluster() {
+    protected static KafkaCluster kafkaCluster() {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
