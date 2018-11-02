@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class KafkaProducerTest {
     private CompileResult result;
     private static File dataDir;
-    protected static KafkaCluster kafkaCluster;
+    private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
@@ -86,7 +86,7 @@ public class KafkaProducerTest {
         }
     }
 
-    protected static KafkaCluster kafkaCluster() {
+    private static KafkaCluster kafkaCluster() {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
