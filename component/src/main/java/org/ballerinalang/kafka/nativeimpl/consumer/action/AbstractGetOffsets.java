@@ -3,7 +3,6 @@ package org.ballerinalang.kafka.nativeimpl.consumer.action;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.kafka.util.KafkaUtils;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;

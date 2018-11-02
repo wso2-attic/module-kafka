@@ -1,7 +1,7 @@
 package org.ballerinalang.kafka.nativeimpl.producer.action;
 
-import kafka.common.KafkaException;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.types.TypeKind;

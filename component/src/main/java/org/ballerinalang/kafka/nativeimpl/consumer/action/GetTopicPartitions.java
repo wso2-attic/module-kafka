@@ -23,7 +23,6 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -85,10 +84,10 @@ public class GetTopicPartitions extends AbstractApisWithDuration {
 
         try {
             List<PartitionInfo> partitionInfos;
-            if (apiTimeout > durationUndefinedValue) {
+            if (apiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(apiTimeout);
                 partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
-            } else if (defaultApiTimeout > durationUndefinedValue) {
+            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(apiTimeout);
                 partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
             } else {

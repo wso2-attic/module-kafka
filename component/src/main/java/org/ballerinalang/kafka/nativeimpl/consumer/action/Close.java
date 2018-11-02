@@ -70,9 +70,9 @@ public class Close extends AbstractApisWithDuration {
 
         try {
 
-            if (apiTimeout > durationUndefinedValue) { // API timeout should given the priority over the default value
+            if (apiTimeout > DURATION_UNDEFINED_VALUE) { // API timeout should given the priority over the default value
                 closeWithDuration(kafkaConsumer, apiTimeout);
-            } else if (defaultApiTimeout > durationUndefinedValue) {
+            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
                 closeWithDuration(kafkaConsumer, defaultApiTimeout);
             } else {
                 kafkaConsumer.close();

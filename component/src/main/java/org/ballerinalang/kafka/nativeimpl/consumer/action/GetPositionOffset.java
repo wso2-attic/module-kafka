@@ -22,7 +22,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -79,10 +78,10 @@ public class GetPositionOffset extends AbstractApisWithDuration {
 
         try {
             long position;
-            if (apiTimeout > durationUndefinedValue) {
+            if (apiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(apiTimeout);
                 position = kafkaConsumer.position(new TopicPartition(topic, partitionValue), duration);
-            } else if (defaultApiTimeout > durationUndefinedValue) {
+            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(defaultApiTimeout);
                 position = kafkaConsumer.position(new TopicPartition(topic, partitionValue), duration);
             } else {

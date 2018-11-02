@@ -24,7 +24,6 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -68,6 +67,8 @@ public class GetCommittedOffset extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+
+        setContext(context);
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
@@ -85,10 +86,10 @@ public class GetCommittedOffset extends AbstractApisWithDuration {
         try {
 
             OffsetAndMetadata offsetAndMetadata;
-            if (apiTimeout > durationUndefinedValue) {
+            if (apiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(apiTimeout);
                 offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue), duration);
-            } else if (defaultApiTimeout > durationUndefinedValue) {
+            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(defaultApiTimeout);
                 offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue), duration);
             } else {

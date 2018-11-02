@@ -22,7 +22,6 @@ import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -96,10 +95,10 @@ public class CommitOffset extends AbstractApisWithDuration {
         }
 
         try {
-            if (apiTimeout > durationUndefinedValue) { // API timeout should given the priority over the default value
+            if (apiTimeout > DURATION_UNDEFINED_VALUE) { // API timeout should given the priority over the default value
                 Duration duration = getDurationFromLong(apiTimeout);
                 kafkaConsumer.commitSync(partitionToMetadataMap, duration);
-            } else if (defaultApiTimeout > durationUndefinedValue) {
+            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(defaultApiTimeout);
                 kafkaConsumer.commitSync(partitionToMetadataMap, duration);
             } else {
