@@ -230,6 +230,11 @@ public type ConsumerAction object {
     # + return - Array of assigned partitions for the consumer if executes successfully, error otherwise.
     public extern function getAssignment() returns TopicPartition[]|error;
 
+    # Returns the available list of topics for a particular consumer.
+    #
+    # + return - Array of topics currently available (authorized) for the consumer to subscribe.
+    public extern function getAvailableTopics(int duration = -1) returns string[]|error;
+
     # Returns start offsets for given set of partitions.
     #
     # + partitions - Array of topic partitions to get the starting offsets.
