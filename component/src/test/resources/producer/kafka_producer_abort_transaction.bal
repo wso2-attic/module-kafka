@@ -16,9 +16,22 @@
 
 import wso2/kafka;
 
+string topic = "test-topic";
+
 endpoint kafka:SimpleProducer kafkaProducer {
     bootstrapServers: "localhost:9094",
     clientID: "basic-producer",
-    acks: "all",
-    noRetries: 3
+    transactionalID: "transactional-producer-test"
 };
+
+function funcKafkaAbortTransactionTest() {
+    string msg = "test-message-1";
+    byte[] byteMsg = msg.toByteArray("UTF-8");
+    kafkaProducer->send(byteMsg, topic);
+
+    kafkaProducer->abortTransaction();
+
+    msg = "test-message-2";
+    byteMsg = msg.toByteArray("UTF-8");
+    kafkaProducer->send(byteMsg, topic);
+}
