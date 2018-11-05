@@ -49,6 +49,7 @@
 # + pollingTimeout - Time out interval of polling
 # + pollingInterval - Polling interval
 # + concurrentConsumers - Number of concurrent consumers
+# + defaultApiTimeout - Default API timeout value for APIs with duration
 # + autoCommit - Enables auto commit offsets
 # + checkCRCS - Check the CRC32 of the records consumed
 # + excludeInternalTopics - Whether records from internal topics should be exposed to the consumer
@@ -89,7 +90,7 @@ public type ConsumerConfig record {
     int pollingTimeout = -1; // ALIAS_POLLING_TIMEOUT 19
     int pollingInterval = -1; // ALIAS_POLLING_INTERVAL 20
     int concurrentConsumers = -1; // ALIAS_CONCURRENT_CONSUMERS 21
-    int defaultApiTimeout = 30000; //
+    int defaultApiTimeout = 30000; // DEFAULT_API_TIMEOUT_MS_CONFIG 22
 
     boolean autoCommit = true; // ENABLE_AUTO_COMMIT_CONFIG 0
     boolean checkCRCS = true; // CHECK_CRCS_CONFIG 1

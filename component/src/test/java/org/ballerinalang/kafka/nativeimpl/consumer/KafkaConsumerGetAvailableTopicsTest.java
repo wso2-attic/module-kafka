@@ -23,6 +23,7 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
+import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
@@ -34,6 +35,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Test cases for ballerina.net.kafka consumer for get list of available topics
@@ -51,11 +53,18 @@ public class KafkaConsumerGetAvailableTopicsTest {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
-        kafkaCluster.createTopic("test", 2, 1);
+        kafkaCluster.createTopic("test", 1, 1);
     }
 
     @Test(description = "Test functionality of getAvailableTopics() function")
     public void testKafkaConsumerGetAvailableTopics () {
+        CountDownLatch completion = new CountDownLatch(1);
+        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
+        try {
+            completion.await();
+        } catch (Exception ex) {
+            //Ignore
+        }
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
@@ -66,8 +75,46 @@ public class KafkaConsumerGetAvailableTopicsTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetAvailableTopics", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BStringArray);
-        //Assert.assertEquals(((BStringArray) returnBValues[0]).size(), 1);
-        //Assert.assertEquals(((BStringArray) returnBValues[0]).getStringArray(), topics);
+        Assert.assertEquals(((BStringArray) returnBValues[0]).size(), 1);
+        Assert.assertEquals(((BStringArray) returnBValues[0]).get(0), "test");
+
+        completion = new CountDownLatch(1);
+        kafkaCluster.useTo().produceStrings("test-2", 10, completion::countDown, () -> "test_string");
+        try {
+            completion.await();
+        } catch (Exception ex) {
+            //Ignore
+        }
+        BValue duration = new BInteger(1111);
+        inputBValues = new BValue[]{consumerEndpoint, duration};
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetAvailableTopicsWithDuration", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BStringArray);
+        Assert.assertEquals(((BStringArray) returnBValues[0]).size(), 2);
+        Assert.assertEquals(((BStringArray) returnBValues[0]).get(0), "test-2");
+        Assert.assertEquals(((BStringArray) returnBValues[0]).get(1), "test");
+
+        completion = new CountDownLatch(1);
+        kafkaCluster.useTo().produceStrings("test-2", 10, completion::countDown, () -> "test_string");
+        try {
+            completion.await();
+        } catch (Exception ex) {
+            //Ignore
+        }
+        // Obtain consumer with Invalid API timeout value.
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetNoTimeoutConsumer", new BValue[]{});
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
+        // getting kafka endpoint
+        consumerEndpoint = returnBValues[0];
+        duration = new BInteger(-10000);
+        inputBValues = new BValue[]{consumerEndpoint, duration};
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetAvailableTopicsWithDuration", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BStringArray);
+        Assert.assertEquals(((BStringArray) returnBValues[0]).size(), 2);
+        Assert.assertEquals(((BStringArray) returnBValues[0]).get(0), "test-2");
+        Assert.assertEquals(((BStringArray) returnBValues[0]).get(1), "test");
     }
 
     @AfterClass

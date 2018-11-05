@@ -43,6 +43,7 @@ public class GetAvailableTopics extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callback) {
+
         setContext(context);
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
@@ -64,7 +65,7 @@ public class GetAvailableTopics extends AbstractApisWithDuration {
                 topics = kafkaConsumer.listTopics();
             }
 
-            if (!topics.isEmpty()) {
+            if (!topics.keySet().isEmpty()) {
                 int i = 0;
                 for (String topic : topics.keySet()) {
                     availableTopics.add(i++, topic);
@@ -74,6 +75,5 @@ public class GetAvailableTopics extends AbstractApisWithDuration {
         } catch (KafkaException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
         }
-
     }
 }

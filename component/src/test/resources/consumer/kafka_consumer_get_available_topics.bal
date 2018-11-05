@@ -20,7 +20,19 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
     endpoint kafka:SimpleConsumer kafkaConsumer {
         bootstrapServers: "localhost:9094",
         groupId: "test-group",
-        offsetReset: "earliest"
+        offsetReset: "earliest",
+        topics: ["test"]
+    };
+    return kafkaConsumer;
+}
+
+function funcKafkaGetNoTimeoutConsumer() returns kafka:SimpleConsumer {
+    endpoint kafka:SimpleConsumer kafkaConsumer {
+        bootstrapServers: "localhost:9094",
+        groupId: "test-group",
+        offsetReset: "earliest",
+        topics: ["test"],
+        defaultApiTimeout: -1
     };
     return kafkaConsumer;
 }
@@ -47,4 +59,5 @@ function funcKafkaGetAvailableTopics(kafka:SimpleConsumer consumer) returns stri
     availableTopics = check consumerEP->getAvailableTopics();
     return availableTopics;
 }
+
 
