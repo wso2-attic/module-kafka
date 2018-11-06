@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
     }
 
     public boolean isKafkaTransactionInitiated(LocalTransactionInfo localTransactionInfo, String connectorKey) {
-        BallerinaTransactionContext blnTxContext = localTransactionInfo.getTransactionContext(connectorKey);
-        return Objects.nonNull(blnTxContext);
+
+        return Objects.nonNull(localTransactionInfo.getTransactionContext(connectorKey));
     }
 }

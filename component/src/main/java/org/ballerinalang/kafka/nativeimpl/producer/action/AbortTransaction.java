@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ public class AbortTransaction extends AbstractTransactionHandler {
 
     @Override
     public void execute(Context context, CallableUnitCallback callback) {
+
         this.context = context;
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
@@ -66,10 +67,9 @@ public class AbortTransaction extends AbstractTransactionHandler {
         LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
 
         try {
-            if (isTransactionalProducer(producerProperties)) {
-                if (isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
-                    producer.abortTransaction();
-                }
+            if (isTransactionalProducer(producerProperties) &&
+                    isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
+                producer.abortTransaction();
             }
         } catch (KafkaException e) {
             throw new BallerinaException("Failed to abort the transaction. " + e.getMessage(), e, context);

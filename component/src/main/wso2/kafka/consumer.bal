@@ -233,12 +233,14 @@ public type ConsumerAction object {
 
     # Returns the available list of topics for a particular consumer.
     #
+    # + duration - Timeout value
     # + return - Array of topics currently available (authorized) for the consumer to subscribe.
     public extern function getAvailableTopics(int duration = -1) returns string[]|error;
 
     # Returns start offsets for given set of partitions.
     #
     # + partitions - Array of topic partitions to get the starting offsets.
+    # + duration - Timeout value to perform getBeginningOffsets operation.
     # + return - Starting offsets for the given partitions if executes successfully, error otherwise.
     public extern function getBeginningOffsets(TopicPartition[] partitions, int duration = -1)
                                returns PartitionOffset[]|error;

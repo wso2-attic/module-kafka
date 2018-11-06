@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,12 @@ import java.util.Properties;
 
 /**
  * {@code AbstractApisWithDuration} is the base class for handle APIs with optional duration parameter.
+ *
+ * APIs which extends this class are now have a default parameter, `duration` which is used as the timeout of these APIs
+ * to execute. In the consumer config, there's a value `defaultApiTimeout` which is used as the default value, if user
+ * does not provide a duration. It can be overridden using `duration` parameter. If you do not want to provide a
+ * duration, simply set the value of configuration `defaultApiTimeout` to a negative int.
+ *
  */
 public abstract class AbstractApisWithDuration implements NativeCallableUnit {
 
@@ -53,22 +59,17 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
         long duration;
 
         Properties consumerProperties = getConsumerProperties(consumerStruct);
-        if (isDefaultApiTimeoutDefined(consumerProperties)) {
-            duration = getDefaultApiTimeoutConsumerConfig(consumerProperties);
-        } else {
-            duration = -1;
-        }
+        duration = isDefaultApiTimeoutDefined(consumerProperties) ?
+                getDefaultApiTimeoutConsumerConfig(consumerProperties):DURATION_UNDEFINED_VALUE;
         return duration;
     }
 
     protected int getDefaultApiTimeoutConsumerConfig(Properties consumerProperties) {
-        int apiTimeoutValue = (int) consumerProperties.get(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG);
-        return apiTimeoutValue;
+        return (int) consumerProperties.get(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG);
     }
 
     protected boolean isDefaultApiTimeoutDefined(Properties consumerProperties) {
-        Object defaultApiTimeout = consumerProperties.get(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG);
-        return Objects.nonNull(defaultApiTimeout);
+        return Objects.nonNull(consumerProperties.get(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG));
     }
 
     private Properties getConsumerProperties(BMap<String, BValue> consumerStruct) {
