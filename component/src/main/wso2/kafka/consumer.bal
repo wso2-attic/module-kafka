@@ -16,43 +16,43 @@
 
 # Configuration related to consumer endpoint.
 #
-# + bootstrapServers - List of remote server endpoints
-# + groupId - Unique string that identifies the consumer
-# + offsetReset - Offset reset strategy if no initial offset
-# + partitionAssignmentStrategy - Strategy class for handle partition assignment among consumers
-# + metricsRecordingLevel - Metrics recording level
-# + metricsReporterClasses - Metrics reporter classes
-# + clientId - Id to be used for server side logging
-# + interceptorClasses - Interceptor classes to be used before sending records
-# + isolationLevel - How the transactional messages are read
-# + topics - Topics to be subscribed
-# + properties - Additional properties if required
-# + sessionTimeout - Timeout used to detect consumer failures when heartbeat threshold is reached
-# + heartBeatInterval - Expected time between heartbeats
-# + metadataMaxAge - Max time to force a refresh of metadata
-# + autoCommitInterval - Offset committing interval
-# + maxPartitionFetchBytes - The max amount of data per-partition the server return
-# + sendBuffer - Size of the TCP send buffer (SO_SNDBUF)
-# + receiveBuffer - Size of the TCP receive buffer (SO_RCVBUF)
-# + fetchMinBytes - Minimum amount of data the server should return for a fetch request
-# + fetchMaxBytes - Maximum amount of data the server should return for a fetch request
-# + fetchMaxWait - Maximum amount of time the server will block before answering the fetch request
-# + reconnectBackoffMax - Maximum amount of time in milliseconds to wait when reconnecting
-# + retryBackoff - Time to wait before attempting to retry a failed request
-# + metricsSampleWindow - Window of time a metrics sample is computed over
-# + metricsNumSamples - Number of samples maintained to compute metrics
-# + requestTimeout - Wait time for response of a request
-# + connectionMaxIdle - Close idle connections after the number of milliseconds
-# + maxPollRecords - Maximum number of records returned in a single call to poll
-# + maxPollInterval - Maximum delay between invocations of poll
-# + reconnectBackoff - Time to wait before attempting to reconnect
-# + pollingTimeout - Time out interval of polling
-# + pollingInterval - Polling interval
-# + concurrentConsumers - Number of concurrent consumers
-# + defaultApiTimeout - Default API timeout value for APIs with duration
-# + autoCommit - Enables auto commit offsets
-# + checkCRCS - Check the CRC32 of the records consumed
-# + excludeInternalTopics - Whether records from internal topics should be exposed to the consumer
+# + bootstrapServers - List of remote server endpoints of kafka brokers.
+# + groupId - Unique string that identifies the consumer.
+# + offsetReset - Offset reset strategy if no initial offset.
+# + partitionAssignmentStrategy - Strategy class for handling the partition assignment among consumers.
+# + metricsRecordingLevel - Metrics recording level.
+# + metricsReporterClasses - Metrics reporter classes.
+# + clientId - ID to be used for server side logging.
+# + interceptorClasses - Interceptor classes to be used before sending records.
+# + isolationLevel - Transactional message reading method. Use "read_committed" to read committed messages only in transactional mode when poll() is called. Use "read_uncommitted" to read all the messages, even the aborted ones.
+# + topics - Topics to be subscribed by the consumer.
+# + properties - Additional properties if required.
+# + sessionTimeout - Timeout used to detect consumer failures when heartbeat threshold is reached.
+# + heartBeatInterval - Expected time between heartbeats.
+# + metadataMaxAge - Maximum time to force a refresh of metadata.
+# + autoCommitInterval - Auto committing interval for commit offset, when auto-commit is enabled.
+# + maxPartitionFetchBytes - The maximum amount of data per-partition the server returns.
+# + sendBuffer - Size of the TCP send buffer (SO_SNDBUF).
+# + receiveBuffer - Size of the TCP receive buffer (SO_RCVBUF).
+# + fetchMinBytes - Minimum amount of data the server should return for a fetch request.
+# + fetchMaxBytes - Maximum amount of data the server should return for a fetch request.
+# + fetchMaxWait - Maximum amount of time the server will block before answering the fetch request.
+# + reconnectBackoffMax - Maximum amount of time in milliseconds to wait when reconnecting.
+# + retryBackoff - Time to wait before attempting to retry a failed request.
+# + metricsSampleWindow - Window of time a metrics sample is computed over.
+# + metricsNumSamples - Number of samples maintained to compute metrics.
+# + requestTimeout - Wait time for response of a request.
+# + connectionMaxIdle - Close idle connections after the number of milliseconds.
+# + maxPollRecords - Maximum number of records returned in a single call to poll.
+# + maxPollInterval - Maximum delay between invocations of poll.
+# + reconnectBackoff - Time to wait before attempting to reconnect.
+# + pollingTimeout - Timeout interval for polling.
+# + pollingInterval - Polling interval for the consumer.
+# + concurrentConsumers - Number of concurrent consumers.
+# + defaultApiTimeout - Default API timeout value for APIs with duration.
+# + autoCommit - Enables auto committing offsets.
+# + checkCRCS - Check the CRC32 of the records consumed.
+# + excludeInternalTopics - Whether records from internal topics should be exposed to the consumer.
 # + decoupleProcessing - Decouples processing
 public type ConsumerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
@@ -104,7 +104,7 @@ public type ConsumerConfig record {
 # + key - Key that is included in the record.
 # + value - Record content.
 # + offset - Offset value.
-# + partition - Partition to which the record is stored.
+# + partition - Partition in which the record is stored.
 # + timestamp - Timestamp of the record, in milliseconds since epoch.
 # + topic - Topic to which the record belongs to.
 public type ConsumerRecord record {
@@ -131,7 +131,7 @@ public type Consumer object {
 
 # Represent a Kafka consumer endpoint.
 #
-# + consumerActions - Handle all the actions related to the endpoint.
+# + consumerActions - Handles all the actions related to the endpoint.
 # + consumerConfig - Used to store configurations related to a Kafka connection.
 public type SimpleConsumer object {
 
@@ -208,7 +208,7 @@ public type ConsumerAction object {
 
     # Closes consumer connection to the external Kafka broker.
     #
-    # + duration - Timeout duration for close operation to perform cleanly.
+    # + duration - Timeout duration for the close operation execution.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function close(int duration = -1) returns error?;
 
@@ -217,7 +217,7 @@ public type ConsumerAction object {
 
     # Commits given offsets and partitions for the given topics, for consumer.
     #
-    # + duration - Maximum duration for commit operation to complete.
+    # + duration - Timeout duration for the commit operation execution.
     # + offsets - Offsets to be commited.
     public extern function commitOffset(PartitionOffset[] offsets, int duration = -1);
 
@@ -233,12 +233,14 @@ public type ConsumerAction object {
 
     # Returns the available list of topics for a particular consumer.
     #
+    # + duration - Timeout duration for the get available topics execution.
     # + return - Array of topics currently available (authorized) for the consumer to subscribe.
     public extern function getAvailableTopics(int duration = -1) returns string[]|error;
 
     # Returns start offsets for given set of partitions.
     #
     # + partitions - Array of topic partitions to get the starting offsets.
+    # + duration - Timeout duration for the get beginning offsets execution.
     # + return - Starting offsets for the given partitions if executes successfully, error otherwise.
     public extern function getBeginningOffsets(TopicPartition[] partitions, int duration = -1)
                                returns PartitionOffset[]|error;
@@ -246,6 +248,7 @@ public type ConsumerAction object {
     # Returns last committed offsets for the given topic partitions.
     #
     # + partition - Topic partition in which the committed offset is returned for consumer.
+    # + duration - Timeout duration for the get committed offset operation to execute.
     # + return - Committed offset for the consumer for the given partition if executes successfully, error otherwise.
     public extern function getCommittedOffset(TopicPartition partition, int duration = -1)
                                returns PartitionOffset|error;
@@ -253,6 +256,7 @@ public type ConsumerAction object {
     # Returns last offsets for given set of partitions.
     #
     # + partitions - Set of partitions to get the last offsets.
+    # + duration - Timeout duration for the get end offsets operation to execute.
     # + return - End offsets for the given partitions if executes successfully, error otherwise.
     public extern function getEndOffsets(TopicPartition[] partitions, int duration = -1)
                                returns PartitionOffset[]|error;
@@ -265,6 +269,7 @@ public type ConsumerAction object {
     # Returns the offset of the next record that will be fetched, if a records exists in that position.
     #
     # + partition - Topic partition in which the position is required.
+    # + duration - Timeout duration for the get position offset operation to execute.
     # + return - Offset which will be fetched next (if a records exists in that offset).
     public extern function getPositionOffset(TopicPartition partition, int duration = -1) returns int|error;
 
@@ -276,6 +281,7 @@ public type ConsumerAction object {
     # Retrieve the set of partitions in which the topic belongs.
     #
     # + topic - Given topic for partition information is needed.
+    # + duration - Timeout duration for the get topic partitions operation to execute.
     # + return - Array of partitions for the given topic if executes successfully, error otherwise.
     public extern function getTopicPartitions(string topic, int duration = -1) returns TopicPartition[]|error;
 

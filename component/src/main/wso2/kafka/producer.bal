@@ -18,34 +18,34 @@ import ballerina/system;
 
 # Struct which represents Kafka Producer configuration.
 #
-# + bootstrapServers - List of remote server endpoints
-# + acks - Number of acknowledgments
-# + compressionType - Compression type to be used for
-# + clientID - Id to be used for server side logging
-# + metricsRecordingLevel - Metrics recording level
-# + metricReporterClasses - Metrics reporter classes
-# + partitionerClass - Partitioner class to be used to select partition the message is sent
-# + interceptorClasses - Interceptor classes to be used before sending records
-# + transactionalID - TransactionalId to use for transactional delivery
-# + bufferMemory - Total bytes of memory the producer can use to buffer records
-# + noRetries - Number of retries to resend a record
-# + batchSize - Number of records to be batched for a single request
-# + linger - Delay to allow other records to be batched
-# + sendBuffer - Size of the TCP send buffer (SO_SNDBUF)
-# + receiveBuffer - Size of the TCP receive buffer (SO_RCVBUF)
-# + maxRequestSize - The maximum size of a request in bytes
-# + reconnectBackoff - Time to wait before attempting to reconnect
-# + reconnectBackoffMax - Maximum amount of time in milliseconds to wait when reconnecting
-# + retryBackoff - Time to wait before attempting to retry a failed request
-# + maxBlock - Max block time which the send is blocked if buffer is full
-# + requestTimeout - Wait time for response of a request
-# + metadataMaxAge - Max time to force a refresh of metadata
-# + metricsSampleWindow - Window of time a metrics sample is computed over
-# + metricsNumSamples - Number of samples maintained to compute metrics
-# + maxInFlightRequestsPerConnection - Maximum number of unacknowledged requests on a single connection
-# + connectionsMaxIdle - Close idle connections after the number of milliseconds
-# + transactionTimeout - Timeout fro transaction status update from the producer
-# + enableIdempotence - Exactly one copy of each message is written in the stream when enabled
+# + bootstrapServers - List of remote server endpoints of Kafka brokers.
+# + acks - Number of acknowledgments.
+# + compressionType - Compression type to be used for messages.
+# + clientID - ID to be used for server side logging.
+# + metricsRecordingLevel - Metrics recording level.
+# + metricReporterClasses - Metrics reporter classes.
+# + partitionerClass - Partitioner class to be used to select partition to which the message is sent.
+# + interceptorClasses - Interceptor classes to be used before sending records.
+# + transactionalID - Transactional ID to be used in transactional delivery.
+# + bufferMemory - Total bytes of memory the producer can use to buffer records.
+# + noRetries - Number of retries to resend a record.
+# + batchSize - Number of records to be batched for a single request. Use 0 for no batching.
+# + linger - Delay to allow other records to be batched.
+# + sendBuffer - Size of the TCP send buffer (SO_SNDBUF).
+# + receiveBuffer - Size of the TCP receive buffer (SO_RCVBUF).
+# + maxRequestSize - The maximum size of a request in bytes.
+# + reconnectBackoff - Time to wait before attempting to reconnect.
+# + reconnectBackoffMax - Maximum amount of time in milliseconds to wait when reconnecting.
+# + retryBackoff - Time to wait before attempting to retry a failed request.
+# + maxBlock - Maximum block time which the send is blocked, when the buffer is full.
+# + requestTimeout - Wait time for response of a request.
+# + metadataMaxAge - Maximum time to force a refresh of metadata.
+# + metricsSampleWindow - Time window for a metrics sample to computed over.
+# + metricsNumSamples - Number of samples maintained to compute metrics.
+# + maxInFlightRequestsPerConnection - Maximum number of unacknowledged requests on a single connection.
+# + connectionsMaxIdle - Close idle connections after the number of milliseconds.
+# + transactionTimeout - Timeout for transaction status update from the producer.
+# + enableIdempotence - Exactly one copy of each message is written in the stream when enabled.
 public type ProducerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks; // ACKS_CONFIG 1
