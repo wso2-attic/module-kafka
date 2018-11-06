@@ -30,12 +30,11 @@ import java.util.Properties;
 
 /**
  * {@code AbstractApisWithDuration} is the base class for handle APIs with optional duration parameter.
- *
+ * <p>
  * APIs which extends this class are now have a default parameter, `duration` which is used as the timeout of these APIs
  * to execute. In the consumer config, there's a value `defaultApiTimeout` which is used as the default value, if user
  * does not provide a duration. It can be overridden using `duration` parameter. If you do not want to provide a
  * duration, simply set the value of configuration `defaultApiTimeout` to a negative int.
- *
  */
 public abstract class AbstractApisWithDuration implements NativeCallableUnit {
 
@@ -43,19 +42,22 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
     protected static final long DURATION_UNDEFINED_VALUE = -1;
 
     public void setContext(Context context) {
+
         this.context = context;
     }
 
     public Context getContext() {
+
         return context;
     }
 
     protected Duration getDurationFromLong(long value) {
-        Duration duration = Duration.ofMillis(value);
-        return duration;
+
+        return Duration.ofMillis(value);
     }
 
     protected long getDefaultApiTimeout(BMap<String, BValue> consumerStruct) {
+
         long duration;
 
         Properties consumerProperties = getConsumerProperties(consumerStruct);
@@ -65,14 +67,17 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
     }
 
     protected int getDefaultApiTimeoutConsumerConfig(Properties consumerProperties) {
+
         return (int) consumerProperties.get(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG);
     }
 
     protected boolean isDefaultApiTimeoutDefined(Properties consumerProperties) {
+
         return Objects.nonNull(consumerProperties.get(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG));
     }
 
     private Properties getConsumerProperties(BMap<String, BValue> consumerStruct) {
+
         BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
         // Check whether consumer configuration is available.
         if (Objects.isNull(consumerConfig)) {
