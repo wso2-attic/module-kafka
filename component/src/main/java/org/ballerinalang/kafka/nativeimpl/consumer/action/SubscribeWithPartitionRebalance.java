@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.ballerinalang.kafka.nativeimpl.consumer.action;
 
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -72,6 +71,7 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
         returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
+
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
@@ -90,19 +90,18 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
             onPartitionsRevoked = ((BFunctionPointer) context.getRefArgument(2)).value();
         } else {
             context.setReturnValues(BLangVMErrors.createError(context,
-                                                        "The onPartitionsRevoked function is not provided."));
+                    "The onPartitionsRevoked function is not provided."));
         }
 
         if (Objects.nonNull(partitionsAssigned) && partitionsAssigned instanceof BFunctionPointer) {
             onPartitionsAssigned = ((BFunctionPointer) context.getRefArgument(3)).value();
         } else {
             context.setReturnValues(BLangVMErrors.createError(context,
-                                                        "The onPartitionsAssigned function is not provided."));
+                    "The onPartitionsAssigned function is not provided."));
         }
 
         ConsumerRebalanceListener listener = new KafkaRebalanceListener(context, onPartitionsRevoked,
-                                                                        onPartitionsAssigned, consumerStruct);
-
+                onPartitionsAssigned, consumerStruct);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
@@ -122,11 +121,10 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         return true;
     }
 
-
     /**
      * Implementation for {@link ConsumerRebalanceListener} interface from connector side.
      * We register this listener at subscription.
-     *
+     * <p>
      * {@inheritDoc}
      */
     class KafkaRebalanceListener implements ConsumerRebalanceListener {
@@ -153,7 +151,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
             BLangFunctions
                     .invokeCallable(onPartitionsRevoked,
-                                    new BValue[] {consumerStruct, getPartitionsArray(partitions)});
+                            new BValue[]{consumerStruct, getPartitionsArray(partitions)});
 
         }
 
@@ -163,7 +161,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         @Override
         public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
             BLangFunctions.invokeCallable(onPartitionsAssigned,
-                                          new BValue[] {consumerStruct, getPartitionsArray(partitions)});
+                    new BValue[]{consumerStruct, getPartitionsArray(partitions)});
 
         }
 

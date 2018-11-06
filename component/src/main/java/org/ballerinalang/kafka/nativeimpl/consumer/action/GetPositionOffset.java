@@ -56,7 +56,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
                         structPackage = KAFKA_NATIVE_PACKAGE),
                 @Argument(name = "duration", type = TypeKind.INT)
         },
-        returnType = { @ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.RECORD)},
+        returnType = {@ReturnType(type = TypeKind.INT), @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class GetPositionOffset extends AbstractApisWithDuration {
 

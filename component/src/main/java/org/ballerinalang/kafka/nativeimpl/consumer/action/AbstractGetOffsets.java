@@ -39,17 +39,14 @@ public abstract class AbstractGetOffsets extends AbstractApisWithDuration {
     private Context context;
 
     public Context getContext() {
-
         return context;
     }
 
     public void setContext(Context context) {
-
         this.context = context;
     }
 
     public List<BMap<String, BValue>> getOffsetList(Map<TopicPartition, Long> offsetMap) {
-
         List<BMap<String, BValue>> offsetList = new ArrayList<>();
         if (!offsetMap.entrySet().isEmpty()) {
             for (Map.Entry<TopicPartition, Long> offset : offsetMap.entrySet()) {
@@ -62,7 +59,6 @@ public abstract class AbstractGetOffsets extends AbstractApisWithDuration {
     }
 
     private BMap<String, BValue> getPartitionStruct(Map.Entry<TopicPartition, Long> offset) {
-
         BMap<String, BValue> partitionStruct = KafkaUtils.createKafkaPackageStruct(context,
                 TOPIC_PARTITION_STRUCT_NAME);
         partitionStruct.put("topic", new BString(offset.getKey().topic()));
@@ -72,7 +68,6 @@ public abstract class AbstractGetOffsets extends AbstractApisWithDuration {
 
     private BMap<String, BValue> getOffsetStruct(BMap<String, BValue> partitionStruct,
                                                  Map.Entry<TopicPartition, Long> offset) {
-
         BMap<String, BValue> offsetStruct = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
         offsetStruct.put("partition", partitionStruct);
         offsetStruct.put("offset", new BInteger(offset.getValue()));

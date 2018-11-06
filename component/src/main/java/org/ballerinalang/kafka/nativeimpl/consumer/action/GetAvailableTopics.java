@@ -59,7 +59,6 @@ public class GetAvailableTopics extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callback) {
-
         setContext(context);
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);

@@ -71,7 +71,6 @@ public class GetEndOffsets extends AbstractGetOffsets {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-
         super.setContext(context);
         BMap<String, BValue> consumerStruct = (BMap<String, BValue> ) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);

@@ -65,7 +65,6 @@ public class GetPausedPartitions implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
                 .getNativeData(NATIVE_CONSUMER);
         if (Objects.isNull(kafkaConsumer)) {

@@ -78,7 +78,6 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
 public class KafkaUtils {
 
     public static Resource extractKafkaResource(Service service) throws BallerinaConnectorException {
-
         Resource[] resources = service.getResources();
 
         if (resources.length == 0) {
@@ -110,7 +109,6 @@ public class KafkaUtils {
     }
 
     private static void validateConsumerParam(ParamDetail param) {
-
         if (param.getVarType().getTag() == TypeTags.OBJECT_TYPE_TAG) {
             BObjectType type = (BObjectType) param.getVarType();
             if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
@@ -122,7 +120,6 @@ public class KafkaUtils {
     }
 
     private static void validateRecordsParam(ParamDetail param) {
-
         if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
             BArrayType array = (BArrayType) param.getVarType();
             if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
@@ -138,7 +135,6 @@ public class KafkaUtils {
     }
 
     private static void validateOffsetsParam(ParamDetail param) {
-
         if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
             BArrayType array = (BArrayType) param.getVarType();
             if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
@@ -153,7 +149,6 @@ public class KafkaUtils {
     }
 
     private static void validateGroupIDParam(ParamDetail param) {
-
         if (param.getVarType().getTag() == TypeTags.STRING_TAG) {
             return;
         }
@@ -163,7 +158,6 @@ public class KafkaUtils {
     public static BValue[] getSignatureParameters(Resource resource,
                                                   ConsumerRecords<byte[], byte[]> records,
                                                   KafkaConsumer<byte[], byte[]> kafkaConsumer) {
-
         List<ParamDetail> paramDetails = resource.getParamDetails();
         BValue[] bValues = new BValue[paramDetails.size()];
         if (paramDetails.size() > 0) {
@@ -268,7 +262,6 @@ public class KafkaUtils {
                                                   ConsumerRecords<byte[], byte[]> records,
                                                   KafkaConsumer<byte[], byte[]> kafkaConsumer,
                                                   String groupId) {
-
         List<ParamDetail> paramDetails = resource.getParamDetails();
         BValue[] bValues = new BValue[paramDetails.size()];
         if (paramDetails.size() > 0) {
@@ -292,7 +285,6 @@ public class KafkaUtils {
     }
 
     public static Properties processKafkaConsumerConfig(BMap<String, BValue> bStruct) {
-
         Properties configParams = new Properties();
 
         addStringParamIfPresent(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bStruct, configParams,
@@ -378,7 +370,6 @@ public class KafkaUtils {
     }
 
     public static Properties processKafkaProducerConfig(BMap<String, BValue> bStruct) {
-
         Properties configParams = new Properties();
 
         if (bStruct == null) {
@@ -450,13 +441,11 @@ public class KafkaUtils {
     }
 
     public static void processDefaultConsumerProperties(Properties configParams) {
-
         configParams.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, DEFAULT_KEY_DESERIALIZER);
         configParams.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, DEFAULT_VALUE_DESERIALIZER);
     }
 
     public static void processDefaultProducerProperties(Properties configParams) {
-
         configParams.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, DEFAULT_KEY_SERIALIZER);
         configParams.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DEFAULT_VALUE_SERIALIZER);
     }
@@ -465,7 +454,6 @@ public class KafkaUtils {
                                                 BMap<String, BValue> bStruct,
                                                 Properties configParams,
                                                 String key) {
-
         if (Objects.nonNull(bStruct.get(key))) {
             String value = ((BString) bStruct.get(key)).value();
             if (!(value == null || value.equals(""))) {
@@ -478,7 +466,6 @@ public class KafkaUtils {
                                                      BMap<String, BValue> bStruct,
                                                      Properties configParams,
                                                      String key) {
-
         BStringArray bArray = (BStringArray) bStruct.get(key);
         List<String> values = new ArrayList<>();
         if (bArray != null && bArray.size() != 0) {
@@ -493,7 +480,6 @@ public class KafkaUtils {
                                              BMap<String, BValue> bStruct,
                                              Properties configParams,
                                              String key) {
-
         long value = ((BInteger) bStruct.get(key)).intValue();
         if (value != -1) {
             configParams.put(paramName, new Long(value).intValue());
@@ -505,7 +491,6 @@ public class KafkaUtils {
                                                  Properties configParams,
                                                  String key,
                                                  boolean defaultValue) {
-
         boolean value = ((BBoolean) bStruct.get(key)).value();
         if (value != defaultValue) {
             configParams.put(paramName, value);
@@ -513,14 +498,12 @@ public class KafkaUtils {
     }
 
     public static BMap<String, BValue> createKafkaPackageStruct(Context context, String structName) {
-
         return BLangConnectorSPIUtil.createBStruct(context.getProgramFile(),
                 KAFKA_NATIVE_PACKAGE,
                 structName);
     }
 
     public static ArrayList<TopicPartition> getTopicPartitionList(BRefValueArray partitions) {
-
         ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
         if (partitions != null) {
             for (int counter = 0; counter < partitions.size(); counter++) {
@@ -534,8 +517,7 @@ public class KafkaUtils {
     }
 
     public static List<BMap<String, BValue>> createPartitionList(Context context,
-                                                                   Collection<TopicPartition> partitions) {
-
+                                                                 Collection<TopicPartition> partitions) {
         List<BMap<String, BValue>> topicPartitionList = new ArrayList<>();
         if (!partitions.isEmpty()) {
             partitions.forEach(assignment -> {
@@ -548,5 +530,4 @@ public class KafkaUtils {
         }
         return topicPartitionList;
     }
-
 }

@@ -66,7 +66,6 @@ public class CommitConsumer extends AbstractTransactionHandler {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-
         this.context = context;
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 

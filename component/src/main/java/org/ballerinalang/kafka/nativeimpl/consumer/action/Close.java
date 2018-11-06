@@ -53,23 +53,17 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         isPublic = true)
 public class Close extends AbstractApisWithDuration {
 
-
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
-
         long apiTimeout = context.getIntArgument(0);
         long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
-
         if (Objects.isNull(kafkaConsumer)) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
         // Clears the reference to Kafka Native consumer.
         consumerStruct.addNativeData(NATIVE_CONSUMER, null);
-
         try {
-
             if (apiTimeout > DURATION_UNDEFINED_VALUE) { // API timeout should given the priority over the default value
                 closeWithDuration(kafkaConsumer, apiTimeout);
             } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
@@ -83,7 +77,6 @@ public class Close extends AbstractApisWithDuration {
     }
 
     private void closeWithDuration(KafkaConsumer<byte[], byte[]> kafkaConsumer, long timeout) {
-
         Duration duration = getDurationFromLong(timeout);
         kafkaConsumer.close(duration);
     }

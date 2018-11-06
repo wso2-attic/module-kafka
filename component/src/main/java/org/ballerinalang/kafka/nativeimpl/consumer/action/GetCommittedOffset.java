@@ -67,7 +67,6 @@ public class GetCommittedOffset extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-
         setContext(context);
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);

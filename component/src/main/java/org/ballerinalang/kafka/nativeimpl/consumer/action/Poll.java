@@ -99,8 +99,8 @@ public class Poll implements NativeCallableUnit {
                 });
             }
             context.setReturnValues(new BRefValueArray(recordsList.toArray(new BRefType[0]),
-                                                 KafkaUtils.createKafkaPackageStruct(context,
-                                                             CONSUMER_RECORD_STRUCT_NAME).getType()));
+                    KafkaUtils.createKafkaPackageStruct(context,
+                            CONSUMER_RECORD_STRUCT_NAME).getType()));
         } catch (IllegalStateException |
                 IllegalArgumentException | KafkaException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));

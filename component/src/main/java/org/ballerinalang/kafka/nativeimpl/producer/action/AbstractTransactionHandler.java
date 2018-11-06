@@ -45,7 +45,6 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
                                BMap<String, BValue> producerConnector,
                                Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
                                String groupID) {
-
         try {
             if (isTransactionalProducer(producerProperties)) {
                 initiateTransaction(producerConnector);
@@ -58,12 +57,10 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
 
     @Override
     public boolean isBlocking() {
-
         return false;
     }
 
     private void performTransaction(LocalTransactionInfo localTransactionInfo, String connectorKey) {
-
         if (!isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
             KafkaTransactionContext txContext = new KafkaTransactionContext(producer);
             localTransactionInfo.registerTransactionContext(connectorKey, txContext);
@@ -72,14 +69,12 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
     }
 
     public void initiateTransaction(BMap<String, BValue> producerConnector) {
-
         String connectorKey = producerConnector.get("connectorID").stringValue();
         LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
         performTransaction(localTransactionInfo, connectorKey);
     }
 
     public boolean isTransactionalProducer(Properties properties) {
-
         return Objects.nonNull(properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG)) && context.isInTransaction();
     }
 
