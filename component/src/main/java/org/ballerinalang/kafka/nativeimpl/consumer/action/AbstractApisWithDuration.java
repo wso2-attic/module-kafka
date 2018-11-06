@@ -60,7 +60,7 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
 
         Properties consumerProperties = getConsumerProperties(consumerStruct);
         duration = isDefaultApiTimeoutDefined(consumerProperties) ?
-                getDefaultApiTimeoutConsumerConfig(consumerProperties):DURATION_UNDEFINED_VALUE;
+                getDefaultApiTimeoutConsumerConfig(consumerProperties) : DURATION_UNDEFINED_VALUE;
         return duration;
     }
 
