@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/package-kafka.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-kafka)
+[![Build Status](https://travis-ci.org/wso2-ballerina/module-kafka.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-kafka)
 
 # **Ballerina Kafka Client Endpoint**
 
