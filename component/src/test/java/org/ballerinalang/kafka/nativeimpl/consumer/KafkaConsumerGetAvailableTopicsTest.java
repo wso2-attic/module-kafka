@@ -45,7 +45,6 @@ public class KafkaConsumerGetAvailableTopicsTest {
     private CompileResult result;
     private static File dataDir;
     private static KafkaCluster kafkaCluster;
-    //private static String [] topics = {"test1-topic-1", "test1-topic-2"};
 
     @BeforeClass
     public void setup() throws IOException {
