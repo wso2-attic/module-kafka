@@ -88,7 +88,7 @@ public class GetTopicPartitions extends AbstractApisWithDuration {
                 Duration duration = getDurationFromLong(apiTimeout);
                 partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
             } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
-                Duration duration = getDurationFromLong(apiTimeout);
+                Duration duration = getDurationFromLong(defaultApiTimeout);
                 partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
             } else {
                 partitionInfos = kafkaConsumer.partitionsFor(topic);
