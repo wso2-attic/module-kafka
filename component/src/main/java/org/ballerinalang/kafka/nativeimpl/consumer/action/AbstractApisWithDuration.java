@@ -45,10 +45,6 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
         this.context = context;
     }
 
-    public Context getContext() {
-        return context;
-    }
-
     protected Duration getDurationFromLong(long value) {
         return Duration.ofMillis(value);
     }
