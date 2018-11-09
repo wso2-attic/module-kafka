@@ -21,10 +21,21 @@ under the License.
 
 <suite name="ballerina-natives-test-suite">
     <test name="ballerina-native-functions-unit-tests" parallel="false">
-        <packages>
-            <package name="org.ballerinalang.kafka.nativeimpl.consumer.*"/>
-            <package name="org.ballerinalang.kafka.nativeimpl.producer.*"/>
-        </packages>
-    </test>
+        <classes>
+            <!-- Consumer-Related tests -->
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAssignTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetAvailableTopicsTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetTopicPartitionsTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerManualCommitTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerManualOffsetCommitTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerPauseTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSeekTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
 
+            <!-- Producer-Related tests -->
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerAbortTransactionTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerGetPartitionTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>
+        </classes>
+    </test>
 </suite>
