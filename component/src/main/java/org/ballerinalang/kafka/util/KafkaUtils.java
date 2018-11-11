@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -47,6 +47,7 @@ import org.ballerinalang.util.codegen.ProgramFile;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -199,8 +200,8 @@ public class KafkaUtils {
                                                              KafkaConsumer<byte[], byte[]> kafkaConsumer) {
         // Create consumer struct.
         ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
-        BMap<String, BValue>  consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
-                                                             CONSUMER_STRUCT_NAME);
+        BMap<String, BValue> consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
+                CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
         return consumerStruct;
     }
@@ -223,10 +224,10 @@ public class KafkaUtils {
         List<BMap<String, BValue>> offsetList = new ArrayList<>();
         partitionToMetadataMap.entrySet().forEach(offset -> {
             BMap<String, BValue> offsetStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
-                                                OFFSET_STRUCT_NAME);
+                    OFFSET_STRUCT_NAME);
             BMap<String, BValue> partitionStruct = BLangConnectorSPIUtil.createBStruct(programFile,
-                                                                          KAFKA_NATIVE_PACKAGE,
-                                                                          TOPIC_PARTITION_STRUCT_NAME);
+                    KAFKA_NATIVE_PACKAGE,
+                    TOPIC_PARTITION_STRUCT_NAME);
             partitionStruct.put("topic", new BString(offset.getKey().topic()));
             partitionStruct.put("partition", new BInteger(offset.getKey().partition()));
             offsetStruct.put("partition", partitionStruct);
@@ -235,8 +236,8 @@ public class KafkaUtils {
         });
 
         return new BRefValueArray(offsetList.toArray(new BRefType[0]),
-                                  BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
-                                                                      OFFSET_STRUCT_NAME).getType());
+                BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
+                        OFFSET_STRUCT_NAME).getType());
     }
 
     private static BMap<String, BValue> createConsumerStruct(Resource resource,
@@ -347,6 +348,8 @@ public class KafkaUtils {
                 KafkaConstants.CONSUMER_MAX_POLL_INTERVAL_MS_CONFIG);
         addIntParamIfPresent(ConsumerConfig.RECONNECT_BACKOFF_MAX_MS_CONFIG, bStruct, configParams,
                 KafkaConstants.CONSUMER_RECONNECT_BACKOFF_MAX_MS_CONFIG);
+        addIntParamIfPresent(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, bStruct, configParams,
+                KafkaConstants.CONSUMER_DEFAULT_API_TIMEOUT_CONFIG);
 
         addIntParamIfPresent(ALIAS_POLLING_TIMEOUT, bStruct, configParams, ALIAS_POLLING_TIMEOUT);
         addIntParamIfPresent(ALIAS_POLLING_INTERVAL, bStruct, configParams, ALIAS_POLLING_INTERVAL);
@@ -513,4 +516,18 @@ public class KafkaUtils {
         return partitionList;
     }
 
+    public static List<BMap<String, BValue>> createPartitionList(Context context,
+                                                                 Collection<TopicPartition> partitions) {
+        List<BMap<String, BValue>> topicPartitionList = new ArrayList<>();
+        if (!partitions.isEmpty()) {
+            partitions.forEach(assignment -> {
+                BMap<String, BValue> partitionStruct = KafkaUtils.
+                        createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
+                partitionStruct.put("topic", new BString(assignment.topic()));
+                partitionStruct.put("partition", new BInteger(assignment.partition()));
+                topicPartitionList.add(partitionStruct);
+            });
+        }
+        return topicPartitionList;
+    }
 }

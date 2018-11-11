@@ -14,22 +14,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# This type represents topic partition position in which consumed record is stored.
-#
-# + partition - TopicPartition which record is related.
-# + offset - offset in which record is stored in partition.
-public type PartitionOffset record {
-    TopicPartition partition;
-    int offset;
-    !...
+import wso2/kafka;
+
+string topic = "test-topic";
+
+endpoint kafka:SimpleProducer kafkaProducer {
+    bootstrapServers: "localhost:9094",
+    clientID: "basic-producer",
+    transactionalID: "transactional-producer-test"
 };
 
-# This type represents a topic partition.
-#
-# + topic - topic which partition is related.
-# + partition - index for the partition.
-public type TopicPartition record {
-    string topic;
-    int partition;
-    !...
-};
+function funcKafkaAbortTransactionTest() {
+    string msg = "test-message-1";
+    byte[] byteMsg = msg.toByteArray("UTF-8");
+    kafkaProducer->send(byteMsg, topic);
+
+    kafkaProducer->abortTransaction();
+
+    msg = "test-message-2";
+    byteMsg = msg.toByteArray("UTF-8");
+    kafkaProducer->send(byteMsg, topic);
+}

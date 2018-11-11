@@ -16,43 +16,44 @@
 
 # Configuration related to consumer endpoint.
 #
-# + bootstrapServers - list of remote server endpoints
-# + groupId - unique string that identifies the consumer
-# + offsetReset - offset reset strategy if no initial offset
-# + partitionAssignmentStrategy - strategy class for handle partition assignment among consumers
-# + metricsRecordingLevel - metrics recording level
-# + metricsReporterClasses - metrics reporter classes
-# + clientId - id to be used for server side logging
-# + interceptorClasses - interceptor classes to be used before sending records
-# + isolationLevel - how the transactional messages are read
-# + topics - topics to be subscribed
-# + properties - additional properties if required
-# + sessionTimeout - timeout used to detect consumer failures when heartbeat threshold is reached
-# + heartBeatInterval - expected time between heartbeats
-# + metadataMaxAge - max time to force a refresh of metadata
-# + autoCommitInterval - offset committing interval
-# + maxPartitionFetchBytes - the max amount of data per-partition the server return
-# + sendBuffer - size of the TCP send buffer (SO_SNDBUF)
-# + receiveBuffer - size of the TCP receive buffer (SO_RCVBUF)
-# + fetchMinBytes - minimum amount of data the server should return for a fetch request
-# + fetchMaxBytes - maximum amount of data the server should return for a fetch request
-# + fetchMaxWait - maximum amount of time the server will block before answering the fetch request
-# + reconnectBackoffMax - maximum amount of time in milliseconds to wait when reconnecting
-# + retryBackoff - time to wait before attempting to retry a failed request
-# + metricsSampleWindow - window of time a metrics sample is computed over
-# + metricsNumSamples - number of samples maintained to compute metrics
-# + requestTimeout - wait time for response of a request
-# + connectionMaxIdle - close idle connections after the number of milliseconds
-# + maxPollRecords - maximum number of records returned in a single call to poll
-# + maxPollInterval - maximum delay between invocations of poll
-# + reconnectBackoff - time to wait before attempting to reconnect
-# + pollingTimeout - time out interval of polling
-# + pollingInterval - polling interval
-# + concurrentConsumers - number of concurrent consumers
-# + autoCommit - enables auto commit offsets
-# + checkCRCS - check the CRC32 of the records consumed
-# + excludeInternalTopics - whether records from internal topics should be exposed to the consumer
-# + decoupleProcessing - decouples processing
+# + bootstrapServers - List of remote server endpoints of kafka brokers.
+# + groupId - Unique string that identifies the consumer.
+# + offsetReset - Offset reset strategy if no initial offset.
+# + partitionAssignmentStrategy - Strategy class for handling the partition assignment among consumers.
+# + metricsRecordingLevel - Metrics recording level.
+# + metricsReporterClasses - Metrics reporter classes.
+# + clientId - ID to be used for server side logging.
+# + interceptorClasses - Interceptor classes to be used before sending records.
+# + isolationLevel - Transactional message reading method. Use "read_committed" to read committed messages only in transactional mode when poll() is called. Use "read_uncommitted" to read all the messages, even the aborted ones.
+# + topics - Topics to be subscribed by the consumer.
+# + properties - Additional properties if required.
+# + sessionTimeout - Timeout used to detect consumer failures when heartbeat threshold is reached.
+# + heartBeatInterval - Expected time between heartbeats.
+# + metadataMaxAge - Maximum time to force a refresh of metadata.
+# + autoCommitInterval - Auto committing interval for commit offset, when auto-commit is enabled.
+# + maxPartitionFetchBytes - The maximum amount of data per-partition the server returns.
+# + sendBuffer - Size of the TCP send buffer (SO_SNDBUF).
+# + receiveBuffer - Size of the TCP receive buffer (SO_RCVBUF).
+# + fetchMinBytes - Minimum amount of data the server should return for a fetch request.
+# + fetchMaxBytes - Maximum amount of data the server should return for a fetch request.
+# + fetchMaxWait - Maximum amount of time the server will block before answering the fetch request.
+# + reconnectBackoffMax - Maximum amount of time in milliseconds to wait when reconnecting.
+# + retryBackoff - Time to wait before attempting to retry a failed request.
+# + metricsSampleWindow - Window of time a metrics sample is computed over.
+# + metricsNumSamples - Number of samples maintained to compute metrics.
+# + requestTimeout - Wait time for response of a request.
+# + connectionMaxIdle - Close idle connections after the number of milliseconds.
+# + maxPollRecords - Maximum number of records returned in a single call to poll.
+# + maxPollInterval - Maximum delay between invocations of poll.
+# + reconnectBackoff - Time to wait before attempting to reconnect.
+# + pollingTimeout - Timeout interval for polling.
+# + pollingInterval - Polling interval for the consumer.
+# + concurrentConsumers - Number of concurrent consumers.
+# + defaultApiTimeout - Default API timeout value for APIs with duration.
+# + autoCommit - Enables auto committing offsets.
+# + checkCRCS - Check the CRC32 of the records consumed.
+# + excludeInternalTopics - Whether records from internal topics should be exposed to the consumer.
+# + decoupleProcessing - Decouples processing
 public type ConsumerConfig record {
     string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
     string? groupId; // GROUP_ID_CONFIG 1
@@ -89,6 +90,7 @@ public type ConsumerConfig record {
     int pollingTimeout = -1; // ALIAS_POLLING_TIMEOUT 19
     int pollingInterval = -1; // ALIAS_POLLING_INTERVAL 20
     int concurrentConsumers = -1; // ALIAS_CONCURRENT_CONSUMERS 21
+    int defaultApiTimeout = 30000; // DEFAULT_API_TIMEOUT_MS_CONFIG 22
 
     boolean autoCommit = true; // ENABLE_AUTO_COMMIT_CONFIG 0
     boolean checkCRCS = true; // CHECK_CRCS_CONFIG 1
@@ -99,12 +101,12 @@ public type ConsumerConfig record {
 
 # Type related to consumer record.
 #
-# + key - key that is included in the record
-# + value - record content
-# + offset - offset value
-# + partition - partition to which the record is stored
-# + timestamp - timestamp of the record, in milliseconds since epoch
-# + topic - topic of the record
+# + key - Key that is included in the record.
+# + value - Record content.
+# + offset - Offset value.
+# + partition - Partition in which the record is stored.
+# + timestamp - Timestamp of the record, in milliseconds since epoch.
+# + topic - Topic to which the record belongs to.
 public type ConsumerRecord record {
     byte[] key;
     byte[] value;
@@ -129,8 +131,8 @@ public type Consumer object {
 
 # Represent a Kafka consumer endpoint.
 #
-# + consumerActions - handle all the actions related to the endpoint
-# + consumerConfig - used to store configurations related to a Kafka connection
+# + consumerActions - Handles all the actions related to the endpoint.
+# + consumerConfig - Used to store configurations related to a Kafka connection.
 public type SimpleConsumer object {
 
     public ConsumerAction consumerActions;
@@ -138,7 +140,7 @@ public type SimpleConsumer object {
 
     # Initialize the consumer endpoint.
     #
-    # + config - configurations related to the endpoint.
+    # + config - Configurations related to the endpoint.
     public function init(ConsumerConfig config) {
         self.consumerConfig = config;
         self.consumerActions.config = config;
@@ -147,7 +149,7 @@ public type SimpleConsumer object {
 
     # Registers consumer endpoint in the service.
     #
-    # + serviceType - type descriptor of the service.
+    # + serviceType - Type descriptor of the service.
     public function register(typedesc serviceType) {
         self.registerListener(serviceType);
     }
@@ -157,7 +159,7 @@ public type SimpleConsumer object {
 
     # Returns the action object of ConsumerAction.
     #
-    # + return - ConsumerAction object of the Caller
+    # + return - ConsumerAction object of the Caller.
     public function getCallerActions() returns ConsumerAction {
         return consumerActions;
     }
@@ -187,8 +189,8 @@ public type SimpleConsumer object {
         }
     }
 
+    # Registers a listener to the Kafka service.
     extern function registerListener(typedesc serviceType);
-
 };
 
 # Kafka consumer action handling object.
@@ -198,133 +200,151 @@ public type ConsumerAction object {
 
     public ConsumerConfig config;
 
+    # Assigns consumer to a set of topic partitions.
+    #
+    # + partitions - Topic partitions to be assigned.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function assign(TopicPartition[] partitions) returns error?;
+
+    # Closes consumer connection to the external Kafka broker.
+    #
+    # + duration - Timeout duration for the close operation execution.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function close(int duration = -1) returns error?;
+
+    # Commits current consumed offsets for consumer.
+    public extern function commit();
+
+    # Commits given offsets and partitions for the given topics, for consumer.
+    #
+    # + duration - Timeout duration for the commit operation execution.
+    # + offsets - Offsets to be commited.
+    public extern function commitOffset(PartitionOffset[] offsets, int duration = -1);
+
+    # Connects consumer to the provided host in the consumer configs.
+    #
+    # + return - Returns an error if encounters an error, returns nill otherwise.
     public extern function connect() returns error?;
 
-    # Subscribes to consumer to external Kafka broker topic pattern.
+    # Returns the currently assigned partitions for the consumer.
     #
-    # + regex - topic pattern to be subscribed.
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function subscribeToPattern(string regex) returns error?;
+    # + return - Array of assigned partitions for the consumer if executes successfully, error otherwise.
+    public extern function getAssignment() returns TopicPartition[]|error;
 
-    # Subscribes to consumer to external Kafka broker topic array.
+    # Returns the available list of topics for a particular consumer.
     #
-    # + topics - Topic array to be subscribed.
+    # + duration - Timeout duration for the get available topics execution.
+    # + return - Array of topics currently available (authorized) for the consumer to subscribe.
+    public extern function getAvailableTopics(int duration = -1) returns string[]|error;
+
+    # Returns start offsets for given set of partitions.
+    #
+    # + partitions - Array of topic partitions to get the starting offsets.
+    # + duration - Timeout duration for the get beginning offsets execution.
+    # + return - Starting offsets for the given partitions if executes successfully, error otherwise.
+    public extern function getBeginningOffsets(TopicPartition[] partitions, int duration = -1)
+                               returns PartitionOffset[]|error;
+
+    # Returns last committed offsets for the given topic partitions.
+    #
+    # + partition - Topic partition in which the committed offset is returned for consumer.
+    # + duration - Timeout duration for the get committed offset operation to execute.
+    # + return - Committed offset for the consumer for the given partition if executes successfully, error otherwise.
+    public extern function getCommittedOffset(TopicPartition partition, int duration = -1)
+                               returns PartitionOffset|error;
+
+    # Returns last offsets for given set of partitions.
+    #
+    # + partitions - Set of partitions to get the last offsets.
+    # + duration - Timeout duration for the get end offsets operation to execute.
+    # + return - End offsets for the given partitions if executes successfully, error otherwise.
+    public extern function getEndOffsets(TopicPartition[] partitions, int duration = -1)
+                               returns PartitionOffset[]|error;
+
+    # Returns the partitions, which are currently paused.
+    #
+    # + return - Set of partitions paused from message retrieval if executes successfully, error otherwise.
+    public extern function getPausedPartitions() returns TopicPartition[]|error;
+
+    # Returns the offset of the next record that will be fetched, if a records exists in that position.
+    #
+    # + partition - Topic partition in which the position is required.
+    # + duration - Timeout duration for the get position offset operation to execute.
+    # + return - Offset which will be fetched next (if a records exists in that offset).
+    public extern function getPositionOffset(TopicPartition partition, int duration = -1) returns int|error;
+
+    # Returns set of topics wich are currently subscribed by the consumer.
+    #
+    # + return - Array of subscribed topics for the consumer if executes successfully, error otherwise.
+    public extern function getSubscription() returns string[]|error;
+
+    # Retrieve the set of partitions in which the topic belongs.
+    #
+    # + topic - Given topic for partition information is needed.
+    # + duration - Timeout duration for the get topic partitions operation to execute.
+    # + return - Array of partitions for the given topic if executes successfully, error otherwise.
+    public extern function getTopicPartitions(string topic, int duration = -1) returns TopicPartition[]|error;
+
+    # Pause consumer retrieving messages from set of partitions.
+    #
+    # + partitions - Set of partitions to pause the retrieval of messages.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function pause(TopicPartition[] partitions) returns error?;
+
+    # Poll the consumer for external broker for records.
+    #
+    # + timeoutValue - Polling time in milliseconds.
+    # + return - Array of consumer records if executes successfully, error otherwise.
+    public extern function poll(int timeoutValue) returns ConsumerRecord[]|error;
+
+    # Resume consumer retrieving messages from set of partitions which were paused earlier.
+    #
+    # + partitions - Set of partitions to resume the retrieval of messages.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function resume(TopicPartition[] partitions) returns error?;
+
+    # Seek the consumer for a given offset in a topic partition.
+    #
+    # + offset - PartitionOffset to seek.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function seek(PartitionOffset offset) returns error?;
+
+    # Seek consumer to the beginning of the offsets for the given set of topic partitions.
+    #
+    # + partitions - Set of topic partitions to seek.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function seekToBeginning(TopicPartition[] partitions) returns error?;
+
+    # Seek consumer for end of the offsets for the given set of topic partitions.
+    #
+    # + partitions - Set of topic partitions to seek.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function seekToEnd(TopicPartition[] partitions) returns error?;
+
+    # Subscribes the consumer to the provided set of topics.
+    #
+    # + topics - Array of topics to be subscribed.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribe(string[] topics) returns error?;
 
-    # Subscribes to consumer to external Kafka broker topic with rebalance listening is enabled.
+    # Subscribes the consumer to the topics which matches to the provided pattern.
     #
-    # + topics - topic array to be subscribed.
-    # + onPartitionsRevoked - function will be executed if partitions are revoked from this consumer.
-    # + onPartitionsAssigned - function will be executed if partitions are assigned this consumer.
+    # + regex - Pattern which should be matched with the topics to be subscribed.
+    # + return - Returns an error if encounters an error, returns nil otherwise.
+    public extern function subscribeToPattern(string regex) returns error?;
+
+    # Subscribes to consumer to the provided set of topics with rebalance listening is enabled.
+    #
+    # + topics - Array of topics to be subscribed.
+    # + onPartitionsRevoked - Function which will be executed if partitions are revoked from this consumer.
+    # + onPartitionsAssigned - Function which will be executed if partitions are assigned this consumer.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribeWithPartitionRebalance(string[] topics,
     function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsRevoked,
     function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsAssigned) returns error?;
 
-    # Assign consumer to external Kafka broker set of topic partitions.
-    #
-    # + partitions - topic partitions to be assigned.
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function assign(TopicPartition[] partitions) returns error?;
-
-    # Returns current offset position in which consumer is at.
-    #
-    # + partition - topic partitions in which the position is required.
-    # + return - position in which the consumer is at in given Topic partition if executes successfully, error otherwise.
-    public extern function getPositionOffset(TopicPartition partition) returns int|error;
-
-    # Returns current assignment of partitions for a consumer.
-    #
-    # + return - Assigned partitions array for consumer if executes successfully, error otherwise.
-    public extern function getAssignment() returns TopicPartition[]|error;
-
-    # Returns current subscription of topics for a consumer.
-    #
-    # + return - subscribed topic array for consumer if executes successfully, error otherwise.
-    public extern function getSubscription() returns string[]|error;
-
-    # Returns current subscription of topics for a consumer.
-    #
-    # + partition - partition in which offset is returned for consumer.
-    # + return - committed offset for consumer for given partition if executes successfully, error otherwise.
-    public extern function getCommittedOffset(TopicPartition partition) returns Offset|error;
-
-    # Poll the consumer for external broker for records.
-    #
-    # + timeoutValue - polling time in milliseconds.
-    # + return - consumer record array if executes successfully, error otherwise.
-    public extern function poll(int timeoutValue) returns ConsumerRecord[]|error;
-
-    # Commits current consumed offsets for consumer.
-    public extern function commit();
-
-    # Commits given offsets for consumer.
-    #
-    # + offsets - offsets to be commited.
-    public extern function commitOffset(Offset[] offsets);
-
-    # Seek consumer for given offset in a topic partition.
-    #
-    # + offset - given offset to seek.
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function seek(Offset offset) returns error?;
-
-    # Seek consumer for beginning offsets for set of topic partitions.
-    #
-    # + partitions - set of partitions to seek.
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function seekToBeginning(TopicPartition[] partitions) returns error?;
-
-    # Seek consumer for end offsets for set of topic partitions.
-    #
-    # + partitions - set of partitions to seek.
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function seekToEnd(TopicPartition[] partitions) returns error?;
-
-    # Retrieve the set of partitions which topic belongs.
-    #
-    # + topic - given topic for partition information is needed.
-    # + return - partition array for given topic if executes successfully, error otherwise.
-    public extern function getTopicPartitions(string topic) returns TopicPartition[]|error;
-
-    # Un-subscribe consumer from all external broaker topic subscription.
+    # Unsubscribe the consumer from all the topic subscriptions.
     #
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function unsubscribe() returns error?;
-
-    # Closes consumer connection to external Kafka broker.
-    #
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function close() returns error?;
-
-    # Pause consumer retrieving messages from set of partitions.
-    #
-    # + partitions - Set of partitions to pause messages retrieval.
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function pause(TopicPartition[] partitions) returns error?;
-
-    # Resume consumer retrieving messages from set of partitions which were paused earlier.
-    #
-    # + partitions - Set of partitions to resume messages retrieval.
-    # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function resume(TopicPartition[] partitions) returns error?;
-
-    # Returns partitions in which the consumer is paused retrieving messages.
-    #
-    # + return - Set of partitions paused from message retrieval if executes successfully, error otherwise.
-    public extern function getPausedPartitions() returns TopicPartition[]|error;
-
-    # Returns start offsets for given set of partitions.
-    #
-    # + partitions - Set of partitions to return start offsets.
-    # + return - Start offsets for partitions if executes successfully, error otherwise.
-    public extern function getBeginningOffsets(TopicPartition[] partitions) returns Offset[]|error;
-
-    # Returns last offsets for given set of partitions.
-    #
-    # + partitions - Set of partitions to return last offsets.
-    # + return - Last offsets for partitions if executes successfully, error otherwise.
-    public extern function getEndOffsets(TopicPartition[] partitions) returns Offset[]|error;
-
 };

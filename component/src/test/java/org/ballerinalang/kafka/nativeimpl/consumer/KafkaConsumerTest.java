@@ -1,5 +1,5 @@
 /*
-*   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*   Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -45,7 +45,7 @@ import java.util.concurrent.CountDownLatch;
 public class KafkaConsumerTest {
     private CompileResult result;
     private static File dataDir;
-    protected static KafkaCluster kafkaCluster;
+    private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
@@ -115,7 +115,7 @@ public class KafkaConsumerTest {
         }
     }
 
-    protected static KafkaCluster kafkaCluster() {
+    private static KafkaCluster kafkaCluster() {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }

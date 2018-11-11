@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,15 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -47,6 +44,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
 
 /**
  * Native function returns given partition assignment for consumer.
@@ -76,16 +74,7 @@ public class GetAssignment implements NativeCallableUnit {
 
         try {
             Set<TopicPartition> assignments = kafkaConsumer.assignment();
-            List<BMap<String, BValue>> assignmentList = new ArrayList<>();
-            if (!assignments.isEmpty()) {
-                assignments.forEach(assignment -> {
-                    BMap<String, BValue> infoStruct = KafkaUtils.
-                            createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    infoStruct.put("topic", new BString(assignment.topic()));
-                    infoStruct.put("partition", new BInteger(assignment.partition()));
-                    assignmentList.add(infoStruct);
-                });
-            }
+            List<BMap<String, BValue>> assignmentList = createPartitionList(context, assignments);
             context.setReturnValues(
                     new BRefValueArray(
                             assignmentList.toArray(new BRefType[0]),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -37,6 +36,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -58,13 +58,16 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
         args = {
-                @Argument(name = "topic", type = TypeKind.STRING)
+                @Argument(name = "topic", type = TypeKind.STRING),
+                @Argument(name = "duration", type = TypeKind.INT)
         },
         returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                 structType = TOPIC_PARTITION_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
                 @ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
-public class GetTopicPartitions implements NativeCallableUnit {
+//Duplicated code here cannot be moved as the Collection<T> has different types
+@SuppressWarnings("Duplicates")
+public class GetTopicPartitions extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
@@ -76,8 +79,20 @@ public class GetTopicPartitions implements NativeCallableUnit {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
 
+        long apiTimeout = context.getIntArgument(0);
+        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
+
         try {
-            List<PartitionInfo> partitionInfos = kafkaConsumer.partitionsFor(topic);
+            List<PartitionInfo> partitionInfos;
+            if (apiTimeout > DURATION_UNDEFINED_VALUE) {
+                Duration duration = getDurationFromLong(apiTimeout);
+                partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
+            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
+                Duration duration = getDurationFromLong(defaultApiTimeout);
+                partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
+            } else {
+                partitionInfos = kafkaConsumer.partitionsFor(topic);
+            }
             List<BMap<String, BValue>> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {

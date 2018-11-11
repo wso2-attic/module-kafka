@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,9 @@ package org.ballerinalang.kafka.nativeimpl.producer.action;
 
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.kafka.transaction.KafkaTransactionContext;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -36,8 +32,6 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.ballerinalang.util.transactions.BallerinaTransactionContext;
-import org.ballerinalang.util.transactions.LocalTransactionInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
 
 /**
- * Native action commits the consumer fir given offsets in transaction.
+ * Native action commits the consumer for given offsets in transaction.
  */
 @BallerinaFunction(
         orgName = ORG_NAME,
@@ -67,18 +61,19 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
                 @Argument(name = "groupID", type = TypeKind.STRING)
         },
         returnType = {@ReturnType(type = TypeKind.NONE)})
-public class CommitConsumerOffsets implements NativeCallableUnit {
+public class CommitConsumerOffsets extends AbstractTransactionHandler {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+        this.context = context;
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
 
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
         BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
 
-        KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
+        this.producer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
 
-        if (Objects.isNull(kafkaProducer)) {
+        if (Objects.isNull(producer)) {
             throw new BallerinaException("Kafka Producer has not been initialized properly.");
         }
 
@@ -103,28 +98,8 @@ public class CommitConsumerOffsets implements NativeCallableUnit {
             partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
         }
 
-        try {
-            if (Objects.nonNull(producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG))
-                    && context.isInTransaction()) {
-                String connectorKey = producerConnector.get("connectorID").stringValue();
-                LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
-                BallerinaTransactionContext regTxContext = localTransactionInfo.getTransactionContext(connectorKey);
-                if (Objects.isNull(regTxContext)) {
-                    KafkaTransactionContext txContext = new KafkaTransactionContext(kafkaProducer);
-                    localTransactionInfo.registerTransactionContext(connectorKey, txContext);
-                    kafkaProducer.beginTransaction();
-                }
-            }
-            kafkaProducer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
-        } catch (IllegalStateException | KafkaException e) {
-            throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
-        }
+        commitConsumer(producerProperties, producerConnector, partitionToMetadataMap, groupID);
         callableUnitCallback.notifySuccess();
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return false;
     }
 }
 

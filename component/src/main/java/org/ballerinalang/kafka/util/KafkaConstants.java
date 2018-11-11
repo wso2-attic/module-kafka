@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -35,7 +35,7 @@ public class KafkaConstants {
     public static final String NATIVE_PRODUCER_CONFIG = "KafkaProducerConfig";
 
     public static final String TOPIC_PARTITION_STRUCT_NAME = "TopicPartition";
-    public static final String OFFSET_STRUCT_NAME = "Offset";
+    public static final String OFFSET_STRUCT_NAME = "PartitionOffset";
 
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
     public static final String CONSUMER_STRUCT_NAME = "ConsumerAction";
@@ -96,6 +96,7 @@ public class KafkaConstants {
     public static final String CONSUMER_ENABLE_AUTO_COMMIT_CONFIG = "autoCommit";
     public static final String CONSUMER_CHECK_CRCS_CONFIG = "checkCRCS";
     public static final String CONSUMER_EXCLUDE_INTERNAL_TOPICS_CONFIG = "excludeInternalTopics";
+    public static final String CONSUMER_DEFAULT_API_TIMEOUT_CONFIG = "defaultApiTimeout";
 
     // Producer Configuration.
     public static final String PRODUCER_BOOTSTRAP_SERVERS_CONFIG = "bootstrapServers";

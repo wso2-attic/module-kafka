@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.ballerinalang.kafka.nativeimpl.consumer.action;
 
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -28,11 +27,9 @@ import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BFunctionPointer;
-import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
@@ -54,6 +51,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
 
 /**
  * Native function subscribes to given topic array
@@ -73,6 +71,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         returnType = {@ReturnType(type = TypeKind.RECORD)},
         isPublic = true)
 public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
+
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
@@ -91,19 +90,18 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
             onPartitionsRevoked = ((BFunctionPointer) context.getRefArgument(2)).value();
         } else {
             context.setReturnValues(BLangVMErrors.createError(context,
-                                                        "The onPartitionsRevoked function is not provided."));
+                    "The onPartitionsRevoked function is not provided."));
         }
 
         if (Objects.nonNull(partitionsAssigned) && partitionsAssigned instanceof BFunctionPointer) {
             onPartitionsAssigned = ((BFunctionPointer) context.getRefArgument(3)).value();
         } else {
             context.setReturnValues(BLangVMErrors.createError(context,
-                                                        "The onPartitionsAssigned function is not provided."));
+                    "The onPartitionsAssigned function is not provided."));
         }
 
         ConsumerRebalanceListener listener = new KafkaRebalanceListener(context, onPartitionsRevoked,
-                                                                        onPartitionsAssigned, consumerStruct);
-
+                onPartitionsAssigned, consumerStruct);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
@@ -123,11 +121,10 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         return true;
     }
 
-
     /**
      * Implementation for {@link ConsumerRebalanceListener} interface from connector side.
      * We register this listener at subscription.
-     *
+     * <p>
      * {@inheritDoc}
      */
     class KafkaRebalanceListener implements ConsumerRebalanceListener {
@@ -135,7 +132,6 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         private Context context;
         private FunctionInfo onPartitionsRevoked;
         private FunctionInfo onPartitionsAssigned;
-        private NativeCallableUnit function;
         private BMap<String, BValue> consumerStruct;
 
         KafkaRebalanceListener(Context context,
@@ -155,7 +151,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
             BLangFunctions
                     .invokeCallable(onPartitionsRevoked,
-                                    new BValue[] {consumerStruct, getPartitionsArray(partitions)});
+                            new BValue[]{consumerStruct, getPartitionsArray(partitions)});
 
         }
 
@@ -165,21 +161,12 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         @Override
         public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
             BLangFunctions.invokeCallable(onPartitionsAssigned,
-                                          new BValue[] {consumerStruct, getPartitionsArray(partitions)});
+                    new BValue[]{consumerStruct, getPartitionsArray(partitions)});
 
         }
 
         private BRefValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
-            List<BMap<String, BValue>> assignmentList = new ArrayList<>();
-            if (!partitions.isEmpty()) {
-                partitions.forEach(assignment -> {
-                    BMap<String, BValue> partitionStruct = KafkaUtils.
-                            createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    partitionStruct.put("topic", new BString(assignment.topic()));
-                    partitionStruct.put("partition", new BInteger(assignment.partition()));
-                    assignmentList.add(partitionStruct);
-                });
-            }
+            List<BMap<String, BValue>> assignmentList = createPartitionList(context, partitions);
             return new BRefValueArray(assignmentList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType());
         }

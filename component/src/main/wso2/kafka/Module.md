@@ -30,7 +30,7 @@ service<kafka:Consumer> kafkaService bind consumer {
 }
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
-    blob serializedMsg = kafkaRecord.value;
+    byte[] serializedMsg = kafkaRecord.value;
     string msg = serializedMsg.toString("UTF-8");
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
@@ -56,7 +56,7 @@ endpoint kafka:SimpleProducer kafkaProducer {
 
 function main (string... args) {
     string msg = "Hello World, Ballerina";
-    blob serializedMsg = msg.toBlob("UTF-8");
+    byte[] serializedMsg = msg.toByteArray("UTF-8");
     kafkaProducer->send(serializedMsg, "test-kafka-topic");
 }
 ````
