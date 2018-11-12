@@ -16,7 +16,7 @@ Building From the Source
 If you want to build Ballerina Kafka client endpoint from the source code:
 
 1. Get a clone or download the source from this repository:
-    https://github.com/wso2-ballerina/package-kafka
+    https://github.com/wso2-ballerina/module-kafka
 2. Run the following Maven command from the ballerina directory:
     mvn clean install
 3. Extract the distribution created at `/component/target/wso2-kafka-<version>.zip`. Run the install.{sh/bat} script to install the package.
