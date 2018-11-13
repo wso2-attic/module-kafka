@@ -33,9 +33,11 @@ public class KafkaProducerCloseTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(description = "Test Producer close() action",
+    @Test(
+            description = "Test Producer close() action",
             expectedExceptions = BLangRuntimeException.class,
-            expectedExceptionsMessageRegExp = ".*Cannot perform operation after producer has been closed.*")
+            expectedExceptionsMessageRegExp = ".*Cannot perform operation after producer has been closed.*"
+    )
     public void testKafkaProduce() {
         BValue[] inputBValues = {};
         BRunUtil.invoke(result, "funcTestKafkaClose", inputBValues);
