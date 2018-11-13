@@ -34,6 +34,7 @@ under the License.
 
             <!-- Producer-Related tests -->
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerAbortTransactionTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCloseTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerGetPartitionTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>
         </classes>
