@@ -7,7 +7,6 @@ import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BLangRuntimeException;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -15,9 +14,6 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class KafkaProducerCloseTest {
     private CompileResult result;
@@ -41,20 +37,6 @@ public class KafkaProducerCloseTest {
     public void testKafkaProduce() {
         BValue[] inputBValues = {};
         BRunUtil.invoke(result, "funcTestKafkaClose", inputBValues);
-
-        final CountDownLatch completion = new CountDownLatch(1);
-        final AtomicLong messagesRead = new AtomicLong(0);
-        kafkaCluster.useTo().consumeStrings("test", 2, 10, TimeUnit.SECONDS, completion::countDown, (key, value) -> {
-            messagesRead.incrementAndGet();
-            return true;
-        });
-
-        try {
-            completion.await();
-        } catch (Exception ex) {
-            //Ignore
-        }
-        Assert.assertEquals(messagesRead.get(), 1);
     }
 
     @AfterClass
