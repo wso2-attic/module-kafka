@@ -130,8 +130,6 @@ public type ProducerAction object {
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
-    #
-    # + consumer - Consumer which needs to abort the transaction.
     public extern function abortTransaction();
 
     # Closes producer connection to the external Kafka broker.
