@@ -124,9 +124,7 @@ public class KafkaRecordConsumer {
      * Starts Kafka consumer polling cycles, schedules thread pool for given polling cycle.
      */
     public void consume() {
-        final Runnable pollingFunction = () -> {
-            poll();
-        };
+        final Runnable pollingFunction = () -> poll();
         this.pollTaskFuture = this.executorService.scheduleAtFixedRate(pollingFunction, 0,
                 this.pollingInterval, TimeUnit.MILLISECONDS);
     }
