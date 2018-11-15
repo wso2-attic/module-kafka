@@ -34,7 +34,7 @@ endpoint kafka:SimpleProducer kafkaProducer {
     noRetries: 3
 };
 
-string resultText = "nothing";
+string resultText = "";
 int noOfChars = 11;
 
 service<kafka:Consumer> kafkaService bind kafkaConsumer {

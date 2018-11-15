@@ -34,6 +34,9 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 
 /**
  * Test cases for ballerina kafka consumer endpoint bind to a service .
@@ -55,19 +58,21 @@ public class KafkaConsumerServiceTest {
     @Test(description = "Test endpoint bind to a service")
     public void testKafkaServiceEndpoint() {
         String testString = "test_string";
+        //CountDownLatch completion = new CountDownLatch(1);
         compileResult = BCompileUtil.compileAndSetup("consumer/kafka_consumer_service.bal");
         BServiceUtil.runService(compileResult);
         BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
+
         try {
-            // Wait till messages published and polled
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            // Do nothing
+            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResultText");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BString);
+                return (returnBValues[0].stringValue().equals(testString));
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
         }
-        BValue[] returnBValues = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResultText");
-        Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertTrue(returnBValues[0] instanceof BString);
-        Assert.assertEquals(returnBValues[0].stringValue(), testString);
     }
 
     @AfterClass

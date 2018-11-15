@@ -16,7 +16,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ballerinalang</groupId>
@@ -32,7 +33,7 @@
         <tag>HEAD</tag>
     </scm>
 
-   <repositories>
+    <repositories>
         <!-- WSO2 released artifact repository -->
         <repository>
             <id>wso2.releases</id>
@@ -248,6 +249,12 @@
                 <version>${scala.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka_${version.kafka.scala}</artifactId>
                 <version>${apache.kafka.version}</version>
@@ -371,6 +378,7 @@
         <scala.version>2.11.0</scala.version>
         <version.kafka.scala>2.11</version.kafka.scala>
         <debezium.version>0.9.0.Alpha2</debezium.version>
+        <awaitility.version>3.0.0</awaitility.version>
         <project.scm.id>my-scm-server</project.scm.id>
         <ballerina.version>0.983.0</ballerina.version>
         <apache.kafka.version>2.0.0</apache.kafka.version>
