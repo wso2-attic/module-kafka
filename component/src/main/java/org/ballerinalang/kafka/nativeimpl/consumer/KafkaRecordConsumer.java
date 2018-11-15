@@ -28,6 +28,7 @@ import org.ballerinalang.kafka.util.KafkaConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -46,7 +47,7 @@ public class KafkaRecordConsumer {
     private static final Logger logger = LoggerFactory.getLogger(KafkaRecordConsumer.class);
 
     private KafkaConsumer<byte[], byte[]> kafkaConsumer;
-    private int pollingTimeout = 1000;
+    private Duration pollingTimeout = Duration.ofMillis(1000);
     private int pollingInterval = 1000;
     private boolean decoupleProcessing = true;
     private String groupId;
@@ -69,7 +70,7 @@ public class KafkaRecordConsumer {
         this.kafkaConsumer.subscribe(topics);
         this.kafkaListener = kafkaListener;
         if (configParams.get(KafkaConstants.ALIAS_POLLING_TIMEOUT) != null) {
-            this.pollingTimeout = (Integer) configParams.get(KafkaConstants.ALIAS_POLLING_TIMEOUT);
+            this.pollingTimeout = Duration.ofMillis((Integer) configParams.get(KafkaConstants.ALIAS_POLLING_TIMEOUT));
         }
         if (configParams.get(KafkaConstants.ALIAS_POLLING_INTERVAL) != null) {
             this.pollingInterval = (Integer) configParams.get(KafkaConstants.ALIAS_POLLING_INTERVAL);
