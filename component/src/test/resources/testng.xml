@@ -30,6 +30,7 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerManualOffsetCommitTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerPauseTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSeekTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerServiceTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
 
             <!-- Producer-Related tests -->
