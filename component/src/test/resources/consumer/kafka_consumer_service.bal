@@ -15,7 +15,6 @@
 // under the License.
 
 import wso2/kafka;
-import ballerina/runtime;
 import ballerina/io;
 
 string topic = "test";
