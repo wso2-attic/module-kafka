@@ -23,8 +23,10 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BLangRuntimeException;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -32,35 +34,42 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 
 public class KafkaProducerAbortTransactionTest {
-    private CompileResult result;
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("producer/kafka_producer_abort_transaction.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
         kafkaCluster.createTopic("test-topic", 2, 3);
     }
 
-    @Test(description = "Test abort transaction in producer", expectedExceptions = BLangRuntimeException.class)
+    @Test(
+            description = "Test abort transaction in producer",
+            expectedExceptions = BLangRuntimeException.class,
+            expectedExceptionsMessageRegExp = ".*failed to send message. Cannot call send in state READY.*"
+    )
     public void testKafkaProduce() {
-        CountDownLatch completion = new CountDownLatch(1);
-        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {
-            return "test_string";
-        });
-        try {
-            completion.await();
-        } catch (Exception ex) {
-            //Ignore
-        }
+        CompileResult result = BCompileUtil.compileAndSetup("producer/kafka_producer_abort_transaction.bal");
         BValue[] inputBValues = {};
-        BRunUtil.invoke(result, "funcKafkaAbortTransactionTest", inputBValues);
+        BRunUtil.invokeStateful(result, "funcKafkaAbortTransactionTest", inputBValues);
+
+        try {
+            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaGetResultText");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BString);
+                return (returnBValues[0].stringValue().equals("success"));
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     @AfterClass
