@@ -28,7 +28,7 @@ endpoint kafka:SimpleConsumer consumer {
     autoCommit:false
 };
 
-function main(string... args) {
+public function main(string... args) {
     // Here we initializes a consumer which connects to remote cluster.
     var conError = consumer->connect();
 

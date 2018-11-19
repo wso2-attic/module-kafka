@@ -26,7 +26,7 @@ endpoint kafka:SimpleConsumer consumer {
     topics:["test-kafka-topic"]
 };
 
-function main(string... args) {
+public function main(string... args) {
     // polling consumer for messages
     var results = consumer->poll(1000);
     match results {

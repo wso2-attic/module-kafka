@@ -28,7 +28,7 @@ endpoint kafka:SimpleProducer kafkaProducer {
     transactionalID:"test-transactional-id"
 };
 
-function main(string... args) {
+public function main(string... args) {
     string msg = "Hello World Transaction";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
 
