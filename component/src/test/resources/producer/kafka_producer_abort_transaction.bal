@@ -15,20 +15,14 @@
 // under the License.
 
 import wso2/kafka;
-import ballerina/io;
 
 endpoint kafka:SimpleProducer kafkaProducer {
-    // Here we create a producer configs with optional parameters client.id - used for broker side logging.
-    // acks - number of acknowledgments for request complete,
-    // noRetries - number of retries if record send fails.
     bootstrapServers:"localhost:9094",
     clientID:"basic-producer",
     acks:"all",
     noRetries:3,
     transactionalID:"test-transactional-id"
 };
-
-string status = "init";
 
 function funcKafkaAbortTransactionTest() {
     string msg = "Hello World Transaction";
@@ -37,21 +31,9 @@ function funcKafkaAbortTransactionTest() {
 }
 
 function kafkaAdvancedTransactionalProduce(byte[] msg) {
-    boolean transactionSuccess = false;
     transaction {
         kafkaProducer->send(msg, "test", partition = 0);
         kafkaProducer->abortTransaction();
         kafkaProducer->send(msg, "test", partition = 0);
-        transactionSuccess = true;
     }
-
-    if (transactionSuccess) {
-        io:println("Transaction committed");
-    } else {
-        io:println("Transaction failed");
-    }
-}
-
-function funcKafkaGetStatus() returns string {
-    return status;
 }
