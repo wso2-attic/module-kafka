@@ -16,45 +16,46 @@
 
 import wso2/kafka;
 
+kafka:ConsumerConfig consumerConfigs = {
+    bootstrapServers: "localhost:9094",
+    groupId: "test-group",
+    offsetReset: "earliest",
+    topics: ["test"]
+};
+
+kafka:ConsumerConfig consumerConfigsNoTimeout = {
+    bootstrapServers: "localhost:9094",
+    groupId: "test-group",
+    offsetReset: "earliest",
+    topics: ["test"],
+    defaultApiTimeout: -1
+};
+
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    endpoint kafka:SimpleConsumer kafkaConsumer {
-        bootstrapServers: "localhost:9094",
-        groupId: "test-group",
-        offsetReset: "earliest",
-        topics: ["test"]
-    };
+    kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
     return kafkaConsumer;
 }
 
 function funcKafkaGetNoTimeoutConsumer() returns kafka:SimpleConsumer {
-    endpoint kafka:SimpleConsumer kafkaConsumer {
-        bootstrapServers: "localhost:9094",
-        groupId: "test-group",
-        offsetReset: "earliest",
-        topics: ["test"],
-        defaultApiTimeout: -1
-    };
+    kafka:SimpleConsumer kafkaConsumer = new(consumerConfigsNoTimeout);
     return kafkaConsumer;
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     var conErr = consumerEP->close();
     return true;
 }
 
-function funcKafkaGetAvailableTopicsWithDuration(kafka:SimpleConsumer consumer, int duration) returns string[] {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+function funcKafkaGetAvailableTopicsWithDuration(kafka:SimpleConsumer consumer, int duration) returns string[]|error {
+    kafka:SimpleConsumer consumerEP = consumer;
     string[] availableTopics;
     availableTopics = check consumerEP->getAvailableTopics(duration = duration);
     return availableTopics;
 }
 
-function funcKafkaGetAvailableTopics(kafka:SimpleConsumer consumer) returns string[] {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+function funcKafkaGetAvailableTopics(kafka:SimpleConsumer consumer) returns string[]|error {
+    kafka:SimpleConsumer consumerEP = consumer;
     string[] availableTopics;
     availableTopics = check consumerEP->getAvailableTopics();
     return availableTopics;
