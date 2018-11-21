@@ -26,6 +26,7 @@ import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
@@ -177,8 +178,8 @@ public class KafkaConsumerManualOffsetCommitTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BMap);
-        Assert.assertEquals(((BMap) returnBValues[0]).get("message").stringValue(),
+        Assert.assertTrue(returnBValues[0] instanceof BError);
+        Assert.assertEquals(((BError) returnBValues[0]).getReason(),
                 "You can only check the position for partitions assigned to this consumer.");
 
         part.put("topic", new BString("test"));
