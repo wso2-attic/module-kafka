@@ -16,13 +16,15 @@
 
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     bootstrapServers:"localhost:9094",
     clientID:"basic-producer",
     acks:"all",
     noRetries:3,
     transactionalID:"test-transactional-id"
 };
+
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 function funcKafkaAbortTransactionTest() {
     string msg = "Hello World Transaction";
