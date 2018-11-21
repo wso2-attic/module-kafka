@@ -91,7 +91,7 @@ public class CommitConsumer extends AbstractTransactionHandler {
             partitionToMetadataMap.put(new TopicPartition(tp.topic(), tp.partition()), new OffsetAndMetadata(pos));
         });
 
-        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
+        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
         String groupID = consumerConfig.get("groupId").stringValue();
 
         commitConsumer(producerProperties, producerConnector, partitionToMetadataMap, groupID);
