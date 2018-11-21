@@ -38,11 +38,11 @@ public class KafkaConstants {
     public static final String OFFSET_STRUCT_NAME = "PartitionOffset";
 
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
-    public static final String CONSUMER_STRUCT_NAME = "ConsumerAction";
+    public static final String CONSUMER_STRUCT_NAME = "SimpleConsumer";
     public static final String CONSUMER_CONFIG_STRUCT_NAME = "ConsumerConfig";
     public static final String CONSUMER_ENDPOINT_STRUCT_NAME = "SimpleConsumer";
 
-    public static final String PRODUCER_STRUCT_NAME = "ProducerAction";
+    public static final String PRODUCER_STRUCT_NAME = "SimpleProducer";
     public static final String PRODUCER_CONFIG_STRUCT_NAME = "ProducerConfig";
     public static final String PRODUCER_RECORD_STRUCT_NAME = "ProducerRecord";
 
