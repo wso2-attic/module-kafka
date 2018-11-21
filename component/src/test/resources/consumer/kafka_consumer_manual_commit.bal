@@ -16,65 +16,56 @@
 
 import wso2/kafka;
 
-endpoint kafka:SimpleConsumer kafkaConsumer {
+kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
     groupId: "abcd",
     offsetReset: "earliest",
-    autoCommit: false
+    autoCommit: false,
+    topics: ["test"]
 };
 
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    endpoint kafka:SimpleConsumer simpleKafkaConsumer {
-        bootstrapServers: "localhost:9094",
-        groupId: "abcd",
-        offsetReset: "earliest",
-        autoCommit: false,
-        topics: ["test"]
-    };
+    kafka:SimpleConsumer simpleKafkaConsumer = new (consumerConfigs);
     return simpleKafkaConsumer;
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     var conErr = consumerEP->close();
     return true;
 }
 
-function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
-    kafka:ConsumerRecord[] records;
-    records = check consumerEP->poll(1000);
-    return lengthof records;
+function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
+    kafka:SimpleConsumer consumerEP = consumer;
+    var records = consumerEP->poll(1000);
+    if (records is error) {
+        return records;
+    } else {
+        return records.length();
+    }
 }
 
-function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns kafka:PartitionOffset {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part)
+             returns kafka:PartitionOffset|error {
+    kafka:SimpleConsumer consumerEP = consumer;
     kafka:PartitionOffset offset;
-    error e;
     offset = check consumerEP->getCommittedOffset(part);
     return offset;
 }
 
 function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns int|error {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     int offset;
     var result = consumerEP->getPositionOffset(part);
-    match result {
-        int i => {
-            return i;
-        }
-        error err => {
-            return err;
-        }
+    if (result is int) {
+        return result;
+    }
+    else {
+        return result;
     }
 }
 
 function funcKafkaCommit(kafka:SimpleConsumer consumer) {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     consumerEP->commit();
 }
