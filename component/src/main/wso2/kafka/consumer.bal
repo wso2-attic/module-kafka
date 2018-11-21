@@ -131,20 +131,16 @@ public type Consumer object {
 
 # Represent a Kafka consumer endpoint.
 #
-# + consumerActions - Handles all the actions related to the endpoint.
 # + consumerConfig - Used to store configurations related to a Kafka connection.
 public type SimpleConsumer object {
-
-    public ConsumerAction consumerActions;
-    public ConsumerConfig consumerConfig;
+    public ConsumerConfig? consumerConfig = ();
 
     # Initialize the consumer endpoint.
     #
     # + config - Configurations related to the endpoint.
     public function init(ConsumerConfig config) {
         self.consumerConfig = config;
-        self.consumerActions.config = config;
-        self.initEndpoint();
+        _ = self.initEndpoint();
     }
 
     # Registers consumer endpoint in the service.
@@ -157,25 +153,21 @@ public type SimpleConsumer object {
     # Starts the consumer endpoint.
     public function start() {}
 
-    # Returns the action object of ConsumerAction.
-    #
-    # + return - ConsumerAction object of the Caller.
-    public function getCallerActions() returns ConsumerAction {
-        return consumerActions;
-    }
-
     # Stops the consumer endpoint.
-    public function stop() {
-        check self.consumerActions.close();
+    #
+    # + return - Returns an error if encounters an error, returns nil otherwise
+    public function stop() returns error?{
+        check self.close();
+        return;
     }
 
-    function initEndpoint() {
+    function initEndpoint() returns error?{
         match self.consumerConfig.bootstrapServers {
             () => {
                 //do nothing
             }
             string servers => {
-                check self.consumerActions.connect();
+                check self.connect();
             }
         }
 
@@ -184,21 +176,14 @@ public type SimpleConsumer object {
                 //do nothing
             }
             string[] topics => {
-                check self.consumerActions.subscribe(topics);
+                check self.subscribe(topics);
             }
         }
+        return;
     }
 
     # Registers a listener to the Kafka service.
     extern function registerListener(typedesc serviceType);
-};
-
-# Kafka consumer action handling object.
-#
-# + config - Consumer Configuration.
-public type ConsumerAction object {
-
-    public ConsumerConfig config;
 
     # Assigns consumer to a set of topic partitions.
     #
@@ -340,8 +325,9 @@ public type ConsumerAction object {
     # + onPartitionsAssigned - Function which will be executed if partitions are assigned this consumer.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public extern function subscribeWithPartitionRebalance(string[] topics,
-    function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsRevoked,
-    function(ConsumerAction consumerActions, TopicPartition[] partitions) onPartitionsAssigned) returns error?;
+                           function(TopicPartition[] partitions) onPartitionsRevoked,
+                           function(TopicPartition[] partitions) onPartitionsAssigned)
+                           returns error?;
 
     # Unsubscribe the consumer from all the topic subscriptions.
     #

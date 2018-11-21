@@ -81,19 +81,17 @@ public type ProducerConfig record {
 
 # Represent a Kafka producer endpoint.
 #
-# + producerActions - Handle all the actions related to the endpoint.
 # + producerConfig - Used to store configurations related to a Kafka connection.
 public type SimpleProducer object {
 
-    public ProducerAction producerActions;
-    public ProducerConfig producerConfig;
+    public ProducerConfig? producerConfig = ();
 
     # Initialize the producer endpoint.
     #
     # + config - configurations related to the endpoint.
     public function init(ProducerConfig config) {
         self.producerConfig = config;
-        self.producerActions.init(config);
+        self.init(config);
     }
 
     # Registers producer endpoint in the service.
@@ -106,27 +104,12 @@ public type SimpleProducer object {
     # Starts the consumer endpoint.
     public function start () {}
 
-    # Returns the action object of ProducerAction.
-    #
-    # + return - Producer actions.
-    public function getCallerActions () returns ProducerAction {
-        return producerActions;
-    }
-
     # Stops the consumer endpoint.
     public function stop () {
-        self.producerActions.close();
+        self.close();
     }
 
-};
-
-# Kafka producer action handling object.
-#
-# + producerHolder - List of producers available.
-# + connectorID - Unique ID for a particular connector.
-public type ProducerAction object {
-
-    public map producerHolder;
+    public map producerHolder = {};
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
@@ -137,8 +120,7 @@ public type ProducerAction object {
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
-    # + consumer - Consumer which needs offsets to be committed.
-    public extern function commitConsumer(ConsumerAction consumer);
+    public extern function commitConsumer();
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
@@ -155,8 +137,6 @@ public type ProducerAction object {
     # + return - Partitions for the given topic.
     public extern function getTopicPartitions(string topic) returns TopicPartition[];
 
-    extern function init(ProducerConfig config);
-
     # Simple Send action which produce records to Kafka server.
     #
     # + value - Record contents.
@@ -165,6 +145,7 @@ public type ProducerAction object {
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
     public extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
+
 };
 
 public type Producer object {};

@@ -16,7 +16,6 @@
 
 package org.ballerinalang.kafka.impl;
 
-
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
@@ -25,8 +24,7 @@ import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.kafka.api.KafkaListener;
 import org.ballerinalang.kafka.nativeimpl.consumer.KafkaPollCycleFutureListener;
 import org.ballerinalang.kafka.util.KafkaUtils;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +82,7 @@ public class KafkaListenerImpl implements KafkaListener {
         }
 
         @Override
-        public void notifyFailure(BMap<String, BValue> bStruct) {
+        public void notifyFailure(BError error) {
             // do nothing
         }
     }
