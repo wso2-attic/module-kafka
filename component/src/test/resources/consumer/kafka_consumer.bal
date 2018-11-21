@@ -16,43 +16,42 @@
 
 import wso2/kafka;
 
+kafka:ConsumerConfig consumerConfig = {
+    bootstrapServers: "localhost:9094",
+    groupId: "test-group",
+    offsetReset: "earliest",
+    topics: ["test"]
+};
+
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    endpoint kafka:SimpleConsumer kafkaConsumer {
-        bootstrapServers: "localhost:9094",
-        groupId: "test-group",
-        offsetReset: "earliest",
-        topics: ["test"]
-    };
+    kafka:SimpleConsumer kafkaConsumer = new(consumerConfig);
     return kafkaConsumer;
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     var conErr = consumerEP->close();
     return true;
 }
 
-function funcKafkaGetSubscription(kafka:SimpleConsumer consumer) returns string[] {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
-    string[] topics;
+function funcKafkaGetSubscription(kafka:SimpleConsumer consumer) returns string[]|error {
+    kafka:SimpleConsumer consumerEP = consumer;
+    string[] topics = [];
     topics = check consumerEP->getSubscription();
     return topics;
 }
 
-function funcKafkaGetAssignment(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[] {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
-    kafka:TopicPartition[] partitions;
+function funcKafkaGetAssignment(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
+    kafka:SimpleConsumer consumerEP = consumer;
+    kafka:TopicPartition[] partitions = [];
     partitions = check consumerEP->getAssignment();
     return partitions;
 }
 
-function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
-    kafka:ConsumerRecord[] records;
+function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
+    kafka:SimpleConsumer consumerEP = consumer;
+    kafka:ConsumerRecord[] records = [];
+
     records = check consumerEP->poll(1000);
-    return lengthof records;
+    return records.length();
 }
