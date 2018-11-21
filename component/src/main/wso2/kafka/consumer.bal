@@ -117,6 +117,18 @@ public type ConsumerRecord record {
     !...
 };
 
+//# Kafka consumer service object.
+//public type Consumer object {
+
+//    # Returns the endpoint bound to service.
+//    #
+//    # + return - Kafka consumer endpoint bound to the service.
+//    public function getEndpoint() returns SimpleConsumer {
+//        SimpleConsumer consumer = new();
+//        return consumer;
+//    }
+//};
+
 # Represent a Kafka consumer endpoint.
 #
 # + consumerConfig - Used to store configurations related to a Kafka connection.
