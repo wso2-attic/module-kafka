@@ -132,23 +132,8 @@ public type Consumer object {
 # Represent a Kafka consumer endpoint.
 #
 # + consumerConfig - Used to store configurations related to a Kafka connection.
-public type SimpleConsumer object {
+public type SimpleConsumer client object {
     public ConsumerConfig? consumerConfig = ();
-
-    # Initialize the consumer endpoint.
-    #
-    # + config - Configurations related to the endpoint.
-    public function init(ConsumerConfig config) {
-        self.consumerConfig = config;
-        _ = self.initEndpoint();
-    }
-
-    # Registers consumer endpoint in the service.
-    #
-    # + serviceType - Type descriptor of the service.
-    public function register(typedesc serviceType) {
-        self.registerListener(serviceType);
-    }
 
     # Starts the consumer endpoint.
     public function start() {}
@@ -157,17 +142,17 @@ public type SimpleConsumer object {
     #
     # + return - Returns an error if encounters an error, returns nil otherwise
     public function stop() returns error?{
-        check self.close();
+        check self->close();
         return;
     }
 
-    function initEndpoint() returns error?{
+    remote function initEndpoint() returns error?{
         match self.consumerConfig.bootstrapServers {
             () => {
                 //do nothing
             }
             string servers => {
-                check self.connect();
+                check self->connect();
             }
         }
 
@@ -176,7 +161,7 @@ public type SimpleConsumer object {
                 //do nothing
             }
             string[] topics => {
-                check self.subscribe(topics);
+                check self->subscribe(topics);
             }
         }
         return;
@@ -189,45 +174,45 @@ public type SimpleConsumer object {
     #
     # + partitions - Topic partitions to be assigned.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function assign(TopicPartition[] partitions) returns error?;
+    remote extern function assign(TopicPartition[] partitions) returns error?;
 
     # Closes consumer connection to the external Kafka broker.
     #
     # + duration - Timeout duration for the close operation execution.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function close(int duration = -1) returns error?;
+    remote  extern function close(int duration = -1) returns error?;
 
     # Commits current consumed offsets for consumer.
-    public extern function commit();
+    remote extern function commit();
 
     # Commits given offsets and partitions for the given topics, for consumer.
     #
     # + duration - Timeout duration for the commit operation execution.
     # + offsets - Offsets to be commited.
-    public extern function commitOffset(PartitionOffset[] offsets, int duration = -1);
+    remote extern function commitOffset(PartitionOffset[] offsets, int duration = -1);
 
     # Connects consumer to the provided host in the consumer configs.
     #
     # + return - Returns an error if encounters an error, returns nill otherwise.
-    public extern function connect() returns error?;
+    remote extern function connect() returns error?;
 
     # Returns the currently assigned partitions for the consumer.
     #
     # + return - Array of assigned partitions for the consumer if executes successfully, error otherwise.
-    public extern function getAssignment() returns TopicPartition[]|error;
+    remote extern function getAssignment() returns TopicPartition[]|error;
 
     # Returns the available list of topics for a particular consumer.
     #
     # + duration - Timeout duration for the get available topics execution.
     # + return - Array of topics currently available (authorized) for the consumer to subscribe.
-    public extern function getAvailableTopics(int duration = -1) returns string[]|error;
+    remote extern function getAvailableTopics(int duration = -1) returns string[]|error;
 
     # Returns start offsets for given set of partitions.
     #
     # + partitions - Array of topic partitions to get the starting offsets.
     # + duration - Timeout duration for the get beginning offsets execution.
     # + return - Starting offsets for the given partitions if executes successfully, error otherwise.
-    public extern function getBeginningOffsets(TopicPartition[] partitions, int duration = -1)
+    remote extern function getBeginningOffsets(TopicPartition[] partitions, int duration = -1)
                                returns PartitionOffset[]|error;
 
     # Returns last committed offsets for the given topic partitions.
@@ -235,7 +220,7 @@ public type SimpleConsumer object {
     # + partition - Topic partition in which the committed offset is returned for consumer.
     # + duration - Timeout duration for the get committed offset operation to execute.
     # + return - Committed offset for the consumer for the given partition if executes successfully, error otherwise.
-    public extern function getCommittedOffset(TopicPartition partition, int duration = -1)
+    remote extern function getCommittedOffset(TopicPartition partition, int duration = -1)
                                returns PartitionOffset|error;
 
     # Returns last offsets for given set of partitions.
@@ -243,80 +228,80 @@ public type SimpleConsumer object {
     # + partitions - Set of partitions to get the last offsets.
     # + duration - Timeout duration for the get end offsets operation to execute.
     # + return - End offsets for the given partitions if executes successfully, error otherwise.
-    public extern function getEndOffsets(TopicPartition[] partitions, int duration = -1)
+    remote extern function getEndOffsets(TopicPartition[] partitions, int duration = -1)
                                returns PartitionOffset[]|error;
 
     # Returns the partitions, which are currently paused.
     #
     # + return - Set of partitions paused from message retrieval if executes successfully, error otherwise.
-    public extern function getPausedPartitions() returns TopicPartition[]|error;
+    remote extern function getPausedPartitions() returns TopicPartition[]|error;
 
     # Returns the offset of the next record that will be fetched, if a records exists in that position.
     #
     # + partition - Topic partition in which the position is required.
     # + duration - Timeout duration for the get position offset operation to execute.
     # + return - Offset which will be fetched next (if a records exists in that offset).
-    public extern function getPositionOffset(TopicPartition partition, int duration = -1) returns int|error;
+    remote extern function getPositionOffset(TopicPartition partition, int duration = -1) returns int|error;
 
     # Returns set of topics wich are currently subscribed by the consumer.
     #
     # + return - Array of subscribed topics for the consumer if executes successfully, error otherwise.
-    public extern function getSubscription() returns string[]|error;
+    remote extern function getSubscription() returns string[]|error;
 
     # Retrieve the set of partitions in which the topic belongs.
     #
     # + topic - Given topic for partition information is needed.
     # + duration - Timeout duration for the get topic partitions operation to execute.
     # + return - Array of partitions for the given topic if executes successfully, error otherwise.
-    public extern function getTopicPartitions(string topic, int duration = -1) returns TopicPartition[]|error;
+    remote extern function getTopicPartitions(string topic, int duration = -1) returns TopicPartition[]|error;
 
     # Pause consumer retrieving messages from set of partitions.
     #
     # + partitions - Set of partitions to pause the retrieval of messages.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function pause(TopicPartition[] partitions) returns error?;
+    remote extern function pause(TopicPartition[] partitions) returns error?;
 
     # Poll the consumer for external broker for records.
     #
     # + timeoutValue - Polling time in milliseconds.
     # + return - Array of consumer records if executes successfully, error otherwise.
-    public extern function poll(int timeoutValue) returns ConsumerRecord[]|error;
+    remote extern function poll(int timeoutValue) returns ConsumerRecord[]|error;
 
     # Resume consumer retrieving messages from set of partitions which were paused earlier.
     #
     # + partitions - Set of partitions to resume the retrieval of messages.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function resume(TopicPartition[] partitions) returns error?;
+    remote extern function resume(TopicPartition[] partitions) returns error?;
 
     # Seek the consumer for a given offset in a topic partition.
     #
     # + offset - PartitionOffset to seek.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function seek(PartitionOffset offset) returns error?;
+    remote extern function seek(PartitionOffset offset) returns error?;
 
     # Seek consumer to the beginning of the offsets for the given set of topic partitions.
     #
     # + partitions - Set of topic partitions to seek.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function seekToBeginning(TopicPartition[] partitions) returns error?;
+    remote extern function seekToBeginning(TopicPartition[] partitions) returns error?;
 
     # Seek consumer for end of the offsets for the given set of topic partitions.
     #
     # + partitions - Set of topic partitions to seek.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function seekToEnd(TopicPartition[] partitions) returns error?;
+    remote extern function seekToEnd(TopicPartition[] partitions) returns error?;
 
     # Subscribes the consumer to the provided set of topics.
     #
     # + topics - Array of topics to be subscribed.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function subscribe(string[] topics) returns error?;
+    remote extern function subscribe(string[] topics) returns error?;
 
     # Subscribes the consumer to the topics which matches to the provided pattern.
     #
     # + regex - Pattern which should be matched with the topics to be subscribed.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function subscribeToPattern(string regex) returns error?;
+    remote extern function subscribeToPattern(string regex) returns error?;
 
     # Subscribes to consumer to the provided set of topics with rebalance listening is enabled.
     #
@@ -324,7 +309,7 @@ public type SimpleConsumer object {
     # + onPartitionsRevoked - Function which will be executed if partitions are revoked from this consumer.
     # + onPartitionsAssigned - Function which will be executed if partitions are assigned this consumer.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function subscribeWithPartitionRebalance(string[] topics,
+    remote extern function subscribeWithPartitionRebalance(string[] topics,
                            function(TopicPartition[] partitions) onPartitionsRevoked,
                            function(TopicPartition[] partitions) onPartitionsAssigned)
                            returns error?;
@@ -332,5 +317,5 @@ public type SimpleConsumer object {
     # Unsubscribe the consumer from all the topic subscriptions.
     #
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public extern function unsubscribe() returns error?;
+    remote extern function unsubscribe() returns error?;
 };

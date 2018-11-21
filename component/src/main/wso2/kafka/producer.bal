@@ -81,61 +81,40 @@ public type ProducerConfig record {
 
 # Represent a Kafka producer endpoint.
 #
+# + producerHolder - List of producers available.
+# + connectorID - Unique ID for a particular connector.
 # + producerConfig - Used to store configurations related to a Kafka connection.
-public type SimpleProducer object {
+public type SimpleProducer client object {
 
     public ProducerConfig? producerConfig = ();
-
-    # Initialize the producer endpoint.
-    #
-    # + config - configurations related to the endpoint.
-    public function init(ProducerConfig config) {
-        self.producerConfig = config;
-        self.init(config);
-    }
-
-    # Registers producer endpoint in the service.
-    #
-    # + serviceType - type descriptor of the service.
-    public function register (typedesc serviceType) {
-
-    }
-
-    # Starts the consumer endpoint.
-    public function start () {}
-
-    # Stops the consumer endpoint.
-    public function stop () {
-        self.close();
-    }
 
     public map producerHolder = {};
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
-    public extern function abortTransaction();
+    remote extern function abortTransaction();
 
     # Closes producer connection to the external Kafka broker.
-    public extern function close();
+    remote extern function close();
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
-    public extern function commitConsumer();
+    remote extern function commitConsumer();
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
     # + offsets - Consumer offsets to commit for given transaction.
     # + groupID - Consumer group id.
-    public extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
+    remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
 
     # Flush action which flush batch of records.
-    public extern function flush();
+    remote extern function flush();
 
     # GetTopicPartitions action which returns given topic partition information.
     #
     # + topic - Topic which the partition information is given.
     # + return - Partitions for the given topic.
-    public extern function getTopicPartitions(string topic) returns TopicPartition[];
+    remote extern function getTopicPartitions(string topic) returns TopicPartition[];
 
     # Simple Send action which produce records to Kafka server.
     #
@@ -144,7 +123,7 @@ public type SimpleProducer object {
     # + key - Key that will be included in the record.
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
-    public extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
+    remote extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
 
 };
 
