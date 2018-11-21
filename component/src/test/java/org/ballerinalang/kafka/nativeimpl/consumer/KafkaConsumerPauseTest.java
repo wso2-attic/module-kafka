@@ -26,6 +26,7 @@ import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
@@ -134,16 +135,16 @@ public class KafkaConsumerPauseTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaPause", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BMap);
-        Assert.assertEquals(((BMap) returnBValues[0]).get("message").stringValue(),
+        Assert.assertTrue(returnBValues[0] instanceof BError);
+        Assert.assertEquals(((BError) returnBValues[0]).getReason(),
                 "No current assignment for partition test_not-100");
 
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
         returnBValues = BRunUtil.invoke(result, "funcKafkaResume", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BMap);
-        Assert.assertEquals(((BMap) returnBValues[0]).get("message").stringValue(),
+        Assert.assertTrue(returnBValues[0] instanceof BError);
+        Assert.assertEquals(((BError) returnBValues[0]).getReason(),
                 "No current assignment for partition test_not-100");
 
         inputBValues = new BValue[]{consumerEndpoint};

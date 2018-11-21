@@ -16,65 +16,54 @@
 
 import wso2/kafka;
 
+kafka:ConsumerConfig consumerConfigs = {
+    bootstrapServers: "localhost:9094",
+    groupId: "test-group",
+    offsetReset: "earliest",
+    topics: ["test"]
+};
+
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    endpoint kafka:SimpleConsumer kafkaConsumer {
-        bootstrapServers: "localhost:9094",
-        groupId: "test-group",
-        offsetReset: "earliest",
-        topics: ["test"]
-    };
+    kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
     return kafkaConsumer;
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     var conErr = consumerEP->close();
     return true;
 }
 
-function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
-    kafka:ConsumerRecord[] records;
-    records = check consumerEP->poll(1000);
-    return lengthof records;
+function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
+    kafka:SimpleConsumer consumerEP = consumer;
+    var records = consumerEP->poll(1000);
+    if (records is error) {
+        return records;
+    } else {
+        return records.length();
+    }
 }
 
 function funcKafkaPause(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) returns error? {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     var result = consumerEP->pause(partitions);
-    match result {
-        () => {
-            // nothing to return
-            return;
-        }
-        error err => {
-            return err;
-        }
+    if (result is error) {
+        return result;
     }
+    return;
 }
 
 function funcKafkaResume(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) returns error? {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     var result = consumerEP->resume(partitions);
-    match result {
-        () => {
-            // nothing to return
-            return;
-        }
-        error err => {
-            return err;
-        }
+    if (result is error) {
+        return result;
     }
+    return;
 }
 
-function funcKafkaGetPausedPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[] {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
-    kafka:TopicPartition[] partitions;
-    partitions = check consumerEP->getPausedPartitions();
+function funcKafkaGetPausedPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
+    kafka:SimpleConsumer consumerEP = consumer;
+    var partitions = consumerEP->getPausedPartitions();
     return partitions;
 }
