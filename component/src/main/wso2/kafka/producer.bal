@@ -110,7 +110,8 @@ public type SimpleProducer client object {
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
-    public remote extern function commitConsumer();
+    # + consumer - Consumer which needs offsets to be committed.
+    public remote extern function commitConsumer(SimpleConsumer consumer);
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
