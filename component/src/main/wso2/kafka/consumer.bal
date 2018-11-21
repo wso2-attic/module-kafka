@@ -65,8 +65,8 @@ public type ConsumerConfig record {
     string? interceptorClasses = (); // INTERCEPTOR_CLASSES_CONFIG 7
     string? isolationLevel = (); // ISOLATION_LEVEL_CONFIG 8
 
-    string[]? topics; // ALIAS_TOPICS 0
-    string[]? properties; // PROPERTIES_ARRAY 1
+    string[]? topics = (); // ALIAS_TOPICS 0
+    string[]? properties = (); // PROPERTIES_ARRAY 1
 
     int sessionTimeout = -1; // SESSION_TIMEOUT_MS_CONFIG  0
     int heartBeatInterval = -1; // HEARTBEAT_INTERVAL_MS_CONFIG 1
@@ -95,7 +95,7 @@ public type ConsumerConfig record {
     boolean autoCommit = true; // ENABLE_AUTO_COMMIT_CONFIG 0
     boolean checkCRCS = true; // CHECK_CRCS_CONFIG 1
     boolean excludeInternalTopics = true; // EXCLUDE_INTERNAL_TOPICS_CONFIG 2
-    boolean decoupleProcessing;                 // ALIAS_DECOUPLE_PROCESSING
+    boolean decoupleProcessing = false;                 // ALIAS_DECOUPLE_PROCESSING
     !...
 };
 
@@ -125,6 +125,22 @@ public type SimpleConsumer client object {
 
     public new (ConsumerConfig config) {
         self.consumerConfig = config;
+        var initResult = self.initEndpoint();
+        if (initResult is error) {
+            panic initResult;
+        }
+    }
+
+    function initEndpoint() returns error? {
+        if (self.consumerConfig.bootstrapServers is string) {
+            check self->connect();
+        }
+
+        string[]? topics = self.consumerConfig.topics;
+        if (topics is string[]){
+            check self->subscribe(topics);
+        }
+        return;
     }
 
     # Assigns consumer to a set of topic partitions.
