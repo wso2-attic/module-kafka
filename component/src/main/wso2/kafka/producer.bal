@@ -47,15 +47,15 @@ import ballerina/system;
 # + transactionTimeout - Timeout for transaction status update from the producer.
 # + enableIdempotence - Exactly one copy of each message is written in the stream when enabled.
 public type ProducerConfig record {
-    string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
-    string? acks; // ACKS_CONFIG 1
-    string? compressionType; // COMPRESSION_TYPE_CONFIG 2
+    string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
+    string? acks = (); // ACKS_CONFIG 1
+    string? compressionType = (); // COMPRESSION_TYPE_CONFIG 2
     string? clientID; // CLIENT_ID_CONFIG 3
-    string? metricsRecordingLevel; // METRICS_RECORDING_LEVEL_CONFIG 4
-    string? metricReporterClasses; // METRIC_REPORTER_CLASSES_CONFIG 5
-    string? partitionerClass; // PARTITIONER_CLASS_CONFIG 6
-    string? interceptorClasses; // INTERCEPTOR_CLASSES_CONFIG 7
-    string? transactionalID; // TRANSACTIONAL_ID_CONFIG 8
+    string? metricsRecordingLevel = (); // METRICS_RECORDING_LEVEL_CONFIG 4
+    string? metricReporterClasses = (); // METRIC_REPORTER_CLASSES_CONFIG 5
+    string? partitionerClass = (); // PARTITIONER_CLASS_CONFIG 6
+    string? interceptorClasses = (); // INTERCEPTOR_CLASSES_CONFIG 7
+    string? transactionalID = (); // TRANSACTIONAL_ID_CONFIG 8
 
     int bufferMemory = -1; // BUFFER_MEMORY_CONFIG 0
     int noRetries = -1; // RETRIES_CONFIG 1
@@ -77,6 +77,7 @@ public type ProducerConfig record {
     int transactionTimeout = -1; // TRANSACTION_TIMEOUT_CONFIG 17
 
     boolean enableIdempotence = false;          // ENABLE_IDEMPOTENCE_CONFIG 0
+    !...
 };
 
 # Represent a Kafka producer endpoint.
@@ -88,33 +89,37 @@ public type SimpleProducer client object {
 
     public ProducerConfig? producerConfig = ();
 
+    public new (ProducerConfig config) {
+        self.producerConfig = config;
+    }
+
     public map producerHolder = {};
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
-    remote extern function abortTransaction();
+    public remote extern function abortTransaction();
 
     # Closes producer connection to the external Kafka broker.
-    remote extern function close();
+    public remote extern function close();
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
-    remote extern function commitConsumer();
+    public remote extern function commitConsumer();
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
     # + offsets - Consumer offsets to commit for given transaction.
     # + groupID - Consumer group id.
-    remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
+    public remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
 
     # Flush action which flush batch of records.
-    remote extern function flush();
+    public remote extern function flush();
 
     # GetTopicPartitions action which returns given topic partition information.
     #
     # + topic - Topic which the partition information is given.
     # + return - Partitions for the given topic.
-    remote extern function getTopicPartitions(string topic) returns TopicPartition[];
+    public remote extern function getTopicPartitions(string topic) returns TopicPartition[];
 
     # Simple Send action which produce records to Kafka server.
     #
@@ -123,8 +128,6 @@ public type SimpleProducer client object {
     # + key - Key that will be included in the record.
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
-    remote extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
+    public remote extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
 
 };
-
-public type Producer object {};
