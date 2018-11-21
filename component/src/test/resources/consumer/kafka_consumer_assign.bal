@@ -16,26 +16,26 @@
 
 import wso2/kafka;
 
+kafka:ConsumerConfig consumerConfig = {
+    bootstrapServers: "localhost:9094",
+    groupId: "test-group",
+    offsetReset: "earliest"
+};
+
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    endpoint kafka:SimpleConsumer kafkaConsumer {
-        bootstrapServers: "localhost:9094",
-        groupId: "test-group",
-        offsetReset: "earliest"
-    };
+    kafka:SimpleConsumer kafkaConsumer = new (consumerConfig);
     return kafkaConsumer;
 }
 
 function funcKafkaAssign (kafka:SimpleConsumer consumer) {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
+    kafka:SimpleConsumer consumerEP = consumer;
     kafka:TopicPartition partition = { topic: "test", partition: 1 };
     kafka:TopicPartition [] partitions = [partition];
     var assignResult = consumerEP->assign(partitions);
 }
 
-function funcKafkaGetTopicPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[] {
-    endpoint kafka:SimpleConsumer consumerEP{};
-    consumerEP = consumer;
+function funcKafkaGetTopicPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
+    kafka:SimpleConsumer consumerEP = consumer;
     kafka:TopicPartition[] partitions;
     partitions = check consumerEP->getTopicPartitions("test");
     return partitions;
