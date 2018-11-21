@@ -55,9 +55,10 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
         }
     }
 
-    @Override
-    public boolean isBlocking() {
-        return false;
+    public void initiateTransaction(BMap<String, BValue> producerConnector) {
+        String connectorKey = producerConnector.get("connectorID").stringValue();
+        LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
+        performTransaction(localTransactionInfo, connectorKey);
     }
 
     private void performTransaction(LocalTransactionInfo localTransactionInfo, String connectorKey) {
@@ -68,17 +69,16 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
         }
     }
 
-    public void initiateTransaction(BMap<String, BValue> producerConnector) {
-        String connectorKey = producerConnector.get("connectorID").stringValue();
-        LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
-        performTransaction(localTransactionInfo, connectorKey);
-    }
-
     public boolean isTransactionalProducer(Properties properties) {
         return Objects.nonNull(properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG)) && context.isInTransaction();
     }
 
     public boolean isKafkaTransactionInitiated(LocalTransactionInfo localTransactionInfo, String connectorKey) {
         return Objects.nonNull(localTransactionInfo.getTransactionContext(connectorKey));
+    }
+
+    @Override
+    public boolean isBlocking() {
+        return false;
     }
 }
