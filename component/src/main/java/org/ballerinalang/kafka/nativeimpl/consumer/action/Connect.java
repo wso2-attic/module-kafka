@@ -58,7 +58,7 @@ public class Connect implements NativeCallableUnit {
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         // Consumer initialization.
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
+        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
         // Check whether consumer configuration is available.
         if (Objects.isNull(consumerConfig)) {
             context.setReturnValues(BLangVMErrors.

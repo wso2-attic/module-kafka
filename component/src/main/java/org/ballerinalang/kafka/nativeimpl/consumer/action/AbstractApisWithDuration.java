@@ -66,7 +66,7 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
     }
 
     private Properties getConsumerProperties(BMap<String, BValue> consumerStruct) {
-        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
+        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
         // Check whether consumer configuration is available.
         if (Objects.isNull(consumerConfig)) {
             context.setReturnValues(BLangVMErrors.
