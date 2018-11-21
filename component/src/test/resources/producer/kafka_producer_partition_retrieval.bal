@@ -16,12 +16,14 @@
 
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
     clientID: "basic-producer",
     acks: "all",
     noRetries: 3
 };
+
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 function funcTestPartitionInfoRetrieval(string topic) returns kafka:TopicPartition[] {
     return getPartitionInfo(topic);
