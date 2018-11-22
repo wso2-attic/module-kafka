@@ -2,15 +2,11 @@ package org.ballerinalang.kafka.nativeimpl.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
-import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
-import org.ballerinalang.kafka.util.KafkaConstants;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
-import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.codegen.ProgramFile;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -19,8 +15,6 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-
-import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
 public class KafkaConsumerUnsubscribeTest {
     private CompileResult result;
@@ -64,11 +58,5 @@ public class KafkaConsumerUnsubscribeTest {
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
         kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
         return kafkaCluster;
-    }
-
-    private BMap<String, BValue> createPartitionStruct(ProgramFile programFile) {
-        return BLangConnectorSPIUtil.createBStruct(programFile,
-                KAFKA_NATIVE_PACKAGE,
-                KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
     }
 }
