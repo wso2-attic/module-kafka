@@ -5,7 +5,7 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
-import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BValue;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -38,10 +38,21 @@ public class KafkaProducerCommitConsumerTest {
         BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
         try {
             await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
-                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaConsume");
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaCommit");
                 Assert.assertEquals(returnBValues.length, 1);
-                Assert.assertTrue(returnBValues[0] instanceof BString);
-                return (returnBValues[0].stringValue().equals("success"));
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+
+        try {
+            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaPollAgain");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
             });
         } catch (Throwable e) {
             Assert.fail(e.getMessage());

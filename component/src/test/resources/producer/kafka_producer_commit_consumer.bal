@@ -15,6 +15,7 @@
 // under the License.
 
 import wso2/kafka;
+import ballerina/io;
 
 endpoint kafka:SimpleProducer kafkaProducer {
     bootstrapServers: "localhost:9094",
@@ -24,15 +25,27 @@ endpoint kafka:SimpleProducer kafkaProducer {
     noRetries: 3
 };
 
-endpoint kafka:SimpleConsumer kafkaConsumer {
+endpoint kafka:SimpleConsumer kafkaConsumer1 {
     bootstrapServers: "localhost:9094",
     groupId: "test-group",
     offsetReset: "earliest",
-    topics: ["test"]
+    topics: ["test"],
+    autoCommit: false
 };
 
+endpoint kafka:SimpleConsumer kafkaConsumer2 {
+    bootstrapServers: "localhost:9094",
+    groupId: "test-group",
+    offsetReset: "earliest",
+    topics: ["test"],
+    autoCommit: false
+};
+
+//No of chars in test string
+int noOfChars = 8;
+string msg = "test-msg";
+
 function funcTestKafkaProduce() {
-    string msg = "Hello World";
     byte[] byteMsg = msg.toByteArray("UTF-8");
     kafkaProduce(byteMsg, "test");
 }
@@ -43,15 +56,53 @@ function kafkaProduce(byte[] value, string topic) {
     }
 }
 
-function funcTestKafkaConsume() returns string{
-    var results = kafkaConsumer->poll(3000);
-    match results {
+function funcTestKafkaCommit() returns boolean {
+    string results = kafkaConsume(kafkaConsumer1);
+    if (results != msg) {
+        return false;
+    }
+    kafkaProducer->commitConsumer(kafkaConsumer1.consumerActions);
+    return true;
+}
+
+function funcTestKafkaPollAgain() returns boolean {
+    string results = kafkaConsume(kafkaConsumer2);
+    if (results == "No Records") {
+        return true; // This should not return test-msg, as it's already committed.
+    }
+    return false;
+}
+
+function kafkaConsume(kafka:SimpleConsumer consumer) returns string {
+    endpoint kafka:SimpleConsumer consumerEP {};
+    consumerEP = consumer;
+    error|kafka:ConsumerRecord[] result = consumerEP->poll(2000);
+    match result {
         error e => {
-            return "failure";
+            return "failed";
         }
         kafka:ConsumerRecord[] records => {
-            kafkaProducer->commitConsumer(kafkaConsumer.consumerActions);
-            return "success";
+            string resultText = "";
+            foreach kafkaRecord in records {
+                byte[] serializedMsg = kafkaRecord.value;
+                io:ReadableByteChannel byteChannel = io:createReadableChannel(serializedMsg);
+                io:ReadableCharacterChannel characterChannel = new io:ReadableCharacterChannel(byteChannel, "UTF-8");
+                var characters = characterChannel.read(noOfChars);
+                match characters {
+                    string text => {
+                        resultText += text;
+                    }
+                    error e => {
+                        resultText = "Failed";
+                    }
+                }
+            }
+            if (resultText == "") {
+                return "No Records";
+            }
+            else {
+                return resultText;
+            }
         }
     }
 }
