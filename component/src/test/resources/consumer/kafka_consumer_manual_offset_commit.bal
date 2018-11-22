@@ -16,27 +16,23 @@
 
 import wso2/kafka;
 
-kafka:ConsumerConfig consumerConfigs = {
-    bootstrapServers: "localhost:9094",
-    groupId: "test-group",
-    offsetReset: "earliest",
-    topics: ["test"]
-};
-
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer kafkaConsumer = new (consumerConfigs);
+    kafka:SimpleConsumer kafkaConsumer = new ({
+            bootstrapServers: "localhost:9094",
+            groupId: "test-group",
+            offsetReset: "earliest",
+            topics: ["test"]
+        });
     return kafkaConsumer;
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var conErr = consumerEP->close();
+    var conErr = consumer->close();
     return true;
 }
 
 function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var records = consumerEP->poll(1000);
+    var records = consumer->poll(1000);
     if (records is error) {
         return records;
     } else {
