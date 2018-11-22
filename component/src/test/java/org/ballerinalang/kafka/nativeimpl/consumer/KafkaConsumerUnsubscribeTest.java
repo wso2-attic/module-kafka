@@ -22,7 +22,7 @@ import java.util.Properties;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
-public class KafkaConsumerUnsuscribeTest {
+public class KafkaConsumerUnsubscribeTest {
     private CompileResult result;
     private static File dataDir;
     private static KafkaCluster kafkaCluster;
