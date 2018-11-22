@@ -16,30 +16,30 @@
 
 import wso2/kafka;
 
-string[] topics = ["test1", "test2"];
-
-endpoint kafka:SimpleConsumer kafkaConsumer {
-    bootstrapServers: "localhost:9094",
-    groupId: "test-group",
-    offsetReset: "earliest",
-    topics: topics
-};
-
 function funcKafkaTestUnsubscribe() returns boolean {
-    string[] subscribedTopics = funcKafkaGetSubscription();
-    if (lengthof subscribedTopics != 2) {
+    kafka:SimpleConsumer kafkaConsumer = new({
+            bootstrapServers: "localhost:9094",
+            groupId: "test-group",
+            offsetReset: "earliest",
+            topics: ["test1", "test2"]
+        });
+    var subscribedTopics = kafkaConsumer->getSubscription();
+    if (subscribedTopics is error) {
         return false;
+    }
+    else {
+        if (subscribedTopics.length() != 2) {
+            return false;
+        }
     }
     var result = kafkaConsumer->unsubscribe();
-    subscribedTopics = funcKafkaGetSubscription();
-    if (lengthof subscribedTopics != 0) {
+    subscribedTopics = kafkaConsumer->getSubscription();
+    if (subscribedTopics is error) {
         return false;
+    } else {
+        if (subscribedTopics.length() != 0) {
+            return false;
+        }
+        return true;
     }
-    return true;
-}
-
-function funcKafkaGetSubscription() returns string[] {
-    string[] subscribedTopics;
-    subscribedTopics = check kafkaConsumer->getSubscription();
-    return subscribedTopics;
 }

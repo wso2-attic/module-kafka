@@ -16,7 +16,7 @@
 
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9294, localhost:9295, localhost:9296",
     clientID: "basic-producer",
     acks: "all",
@@ -24,7 +24,9 @@ endpoint kafka:SimpleProducer kafkaProducer {
     noRetries: 3
 };
 
-endpoint kafka:SimpleConsumer kafkaConsumer1 {
+kafka:SimpleProducer kafkaProducer = new (producerConfigs);
+
+kafka:ConsumerConfig consumerConfigs1 = {
     bootstrapServers: "localhost:9294, localhost:9295, localhost:9296",
     groupId: "test-group",
     offsetReset: "earliest",
@@ -32,13 +34,17 @@ endpoint kafka:SimpleConsumer kafkaConsumer1 {
     autoCommit: false
 };
 
-endpoint kafka:SimpleConsumer kafkaConsumer2 {
+kafka:SimpleConsumer kafkaConsumer1 = new (consumerConfigs1);
+
+kafka:ConsumerConfig consumerConfigs2 = {
     bootstrapServers: "localhost:9294, localhost:9295, localhost:9296",
     groupId: "test-group",
     offsetReset: "earliest",
     topics: ["test"],
     autoCommit: false
 };
+
+kafka:SimpleConsumer kafkaConsumer2 = new (consumerConfigs2);
 
 function funcTestKafkaProduce() {
     string msg = "test-msg";
@@ -59,7 +65,7 @@ function funcTestKafkaCommitOffsets() returns boolean {
             return false;
         }
         kafka:PartitionOffset[] offsets => {
-            if (lengthof offsets == 0) {
+            if (offsets.length() == 0) {
                 return false;
             } else {
                 kafkaProducer->commitConsumerOffsets(offsets, "test-group");
@@ -76,7 +82,7 @@ function funcTestPollAgain() returns boolean {
             return false;
         }
         kafka:PartitionOffset[] offsets => {
-            if (lengthof offsets == 0) {
+            if (offsets.length() == 0) {
                 return true;
             } else {
                 return false; // This should not recieve any records as they are already committed.
@@ -86,24 +92,19 @@ function funcTestPollAgain() returns boolean {
 }
 
 function funcGetPartitionOffset(kafka:SimpleConsumer consumer) returns kafka:PartitionOffset[]|error {
-    endpoint kafka:SimpleConsumer consumerEP {};
-    consumerEP = consumer;
-    error|kafka:ConsumerRecord[] result = consumerEP->poll(2000);
-    match result {
-        error e => {
-            return e;
+    error|kafka:ConsumerRecord[] result = consumer->poll(2000);
+    if (result is error) {
+        return result;
+    } else {
+        kafka:PartitionOffset[] offsets = [];
+        int i = 0;
+        foreach kafkaRecord in result {
+            kafka:TopicPartition partition = { topic: kafkaRecord.topic, partition: kafkaRecord.partition };
+            kafka:PartitionOffset offset = { partition: partition, offset: kafkaRecord.offset };
+            offsets[i] = offset;
+            i += 1;
         }
-        kafka:ConsumerRecord[] records => {
-            kafka:PartitionOffset[] offsets = [];
-            int i = 0;
-            foreach kafkaRecord in records {
-                kafka:TopicPartition partition = { topic: kafkaRecord.topic, partition: kafkaRecord.partition };
-                kafka:PartitionOffset offset = { partition: partition, offset: kafkaRecord.offset };
-                offsets[i] = offset;
-                i += 1;
-            }
-            return offsets;
-        }
+        return offsets;
     }
 }
 
