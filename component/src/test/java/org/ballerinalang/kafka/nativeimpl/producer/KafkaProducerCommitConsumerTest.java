@@ -31,8 +31,8 @@ public class KafkaProducerCommitConsumerTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
     }
 
-    @Test(description = "Test Basic produce")
-    public void testKafkaProduce() {
+    @Test(description = "Test kafka producer commitConsumer() function")
+    public void testKafkaCommitConsumerTest() {
         result = BCompileUtil.compileAndSetup("producer/kafka_producer_commit_consumer.bal");
         BValue[] inputBValues = {};
         BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
