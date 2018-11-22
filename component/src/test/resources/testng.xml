@@ -31,6 +31,7 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerPauseTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSeekTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerServiceTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribeToPatternTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerUnsubscribeTest"/>
 
