@@ -89,7 +89,7 @@ public type SimpleProducer client object {
 
     public ProducerConfig? producerConfig = ();
 
-    public new (ProducerConfig config) {
+    public function __init (ProducerConfig config) {
         self.producerConfig = config;
         self.init(config);
     }

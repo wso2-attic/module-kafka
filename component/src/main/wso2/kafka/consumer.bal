@@ -135,20 +135,20 @@ public type ConsumerRecord record {
 public type SimpleConsumer client object {
     public ConsumerConfig? consumerConfig = ();
 
-    public new (ConsumerConfig config) {
+    public function __init (ConsumerConfig config) {
         self.consumerConfig = config;
-        var initResult = self.initEndpoint();
+        var initResult = self.initEndpoint(config);
         if (initResult is error) {
             panic initResult;
         }
     }
 
-    function initEndpoint() returns error? {
-        if (self.consumerConfig.bootstrapServers is string) {
+    function initEndpoint(ConsumerConfig config) returns error? {
+        if (config.bootstrapServers is string) {
             check self->connect();
         }
 
-        string[]? topics = self.consumerConfig.topics;
+        string[]? topics = config.topics;
         if (topics is string[]){
             check self->subscribe(topics);
         }
