@@ -17,7 +17,7 @@
 import wso2/kafka;
 
 endpoint kafka:SimpleProducer kafkaProducer {
-    bootstrapServers:"localhost:9094",
+    bootstrapServers:"localhost:9094, localhost:9095, localhost:9096",
     clientID:"basic-producer",
     acks:"all",
     noRetries:3,
