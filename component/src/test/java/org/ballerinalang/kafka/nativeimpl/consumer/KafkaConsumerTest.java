@@ -1,20 +1,20 @@
 /*
-*   Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ *   Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 package org.ballerinalang.kafka.nativeimpl.consumer;
 
@@ -38,11 +38,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 
 /**
  * Test cases for ballerina.kafka consumer native functions.
  */
 public class KafkaConsumerTest {
+
     private CompileResult result;
     private static File dataDir;
     private static KafkaCluster kafkaCluster;
@@ -71,17 +75,24 @@ public class KafkaConsumerTest {
         Assert.assertTrue(returnBValues[0] instanceof BMap);
         // adding kafka endpoint as the input parameter
         inputBValues = new BValue[]{returnBValues[0]};
-        int msgCount = 0;
-        while (true) {
-            returnBValues = BRunUtil.invoke(result, "funcKafkaPoll", inputBValues);
-            Assert.assertEquals(returnBValues.length, 1);
-            Assert.assertTrue(returnBValues[0] instanceof BInteger);
-            msgCount = msgCount + new Long(((BInteger) returnBValues[0]).intValue()).intValue();
-            if (msgCount == 10) {
-                break;
-            }
+        BValue[] inputs = new BValue[]{returnBValues[0]};
+
+        try {
+            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+                int msgCount = 0;
+                while (true) {
+                    BValue[] results = BRunUtil.invoke(result, "funcKafkaPoll", inputs);
+                    Assert.assertEquals(results.length, 1);
+                    Assert.assertTrue(results[0] instanceof BInteger);
+                    msgCount = msgCount + new Long(((BInteger) results[0]).intValue()).intValue();
+                    if (msgCount == 10) {
+                        return true;
+                    }
+                }
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
         }
-        Assert.assertEquals(msgCount, 10);
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetSubscription", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
