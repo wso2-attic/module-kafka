@@ -41,7 +41,6 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerGetPartitionTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>
-
         </classes>
     </test>
 </suite>
