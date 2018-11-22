@@ -17,7 +17,7 @@
 import wso2/kafka;
 
 kafka:ProducerConfig producerConfigs = {
-    bootstrapServers: "localhost:9094",
+    bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
     clientID: "basic-producer",
     acks: "all",
     transactionalID: "test-transaction-id",
@@ -27,7 +27,7 @@ kafka:ProducerConfig producerConfigs = {
 kafka:SimpleProducer kafkaProducer = new (producerConfigs);
 
 kafka:ConsumerConfig consumerConfigs = {
-    bootstrapServers: "localhost:9094",
+    bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
     groupId: "test-group",
     offsetReset: "earliest",
     topics: ["test"]
