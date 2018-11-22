@@ -35,6 +35,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
@@ -95,7 +96,7 @@ public class GetCommittedOffset extends AbstractApisWithDuration {
                 offsetAndMetadata = kafkaConsumer.committed(new TopicPartition(topic, partitionValue));
             }
             BMap<String, BValue> offset = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
-            offset.put("partition", partition.copy());
+            offset.put("partition", partition.copy(new HashMap<>()));
 
             if (Objects.nonNull(offsetAndMetadata)) {
                 offset.put("offset", new BInteger(offsetAndMetadata.offset()));
