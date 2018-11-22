@@ -17,7 +17,7 @@
 import wso2/kafka;
 
 endpoint kafka:SimpleProducer kafkaProducer {
-    bootstrapServers: "localhost:9094",
+    bootstrapServers: "localhost:9294, localhost:9295, localhost:9296",
     clientID: "basic-producer",
     acks: "all",
     transactionalID: "test-transaction-id",
@@ -25,7 +25,7 @@ endpoint kafka:SimpleProducer kafkaProducer {
 };
 
 endpoint kafka:SimpleConsumer kafkaConsumer1 {
-    bootstrapServers: "localhost:9094",
+    bootstrapServers: "localhost:9294, localhost:9295, localhost:9296",
     groupId: "test-group",
     offsetReset: "earliest",
     topics: ["test"],
@@ -33,7 +33,7 @@ endpoint kafka:SimpleConsumer kafkaConsumer1 {
 };
 
 endpoint kafka:SimpleConsumer kafkaConsumer2 {
-    bootstrapServers: "localhost:9094",
+    bootstrapServers: "localhost:9294, localhost:9295, localhost:9296",
     groupId: "test-group",
     offsetReset: "earliest",
     topics: ["test"],

@@ -37,7 +37,7 @@ public class KafkaProducerCommitConsumerOffsetsTest {
         BValue[] inputBValues = {};
         BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
         try {
-            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
                 BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaCommitOffsets");
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BBoolean);
@@ -77,7 +77,7 @@ public class KafkaProducerCommitConsumerOffsetsTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2382, 9294);
         return kafkaCluster;
     }
 }
