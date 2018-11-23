@@ -20,7 +20,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
-import org.ballerinalang.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
@@ -69,9 +68,7 @@ public class AbortTransaction extends AbstractTransactionHandler {
         try {
             if (isTransactionalProducer(producerProperties)) {
                 if (isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
-                    KafkaTransactionContext txContext = new KafkaTransactionContext(producer);
-                    localTransactionInfo.registerTransactionContext(connectorKey, txContext);
-                    txContext.rollback();
+                    this.producer.abortTransaction();
                 }
             }
         } catch (KafkaException e) {
