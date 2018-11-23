@@ -78,7 +78,7 @@ public class KafkaConsumerTest {
         BValue[] inputs = new BValue[]{returnBValues[0]};
 
         try {
-            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
                 int msgCount = 0;
                 while (true) {
                     BValue[] results = BRunUtil.invoke(result, "funcKafkaPoll", inputs);
