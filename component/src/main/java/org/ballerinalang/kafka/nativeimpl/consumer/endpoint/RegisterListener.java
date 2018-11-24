@@ -21,6 +21,7 @@ import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.Service;
+import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.kafka.api.KafkaListener;
 import org.ballerinalang.kafka.api.KafkaServerConnector;
 import org.ballerinalang.kafka.exception.KafkaConnectorException;
@@ -38,6 +39,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import java.util.Properties;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_ENDPOINT_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_SERVER_CONNECTOR_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
@@ -49,8 +51,11 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
         functionName = "registerListener",
-        receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_ENDPOINT_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE),
+        receiver = @Receiver(
+                type = TypeKind.OBJECT,
+                structType = CONSUMER_ENDPOINT_STRUCT_NAME,
+                structPackage = KAFKA_NATIVE_PACKAGE
+        ),
         args = {@Argument(name = "serviceType", type = TypeKind.TYPEDESC)}
 )
 public class RegisterListener implements NativeCallableUnit {
@@ -58,19 +63,23 @@ public class RegisterListener implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         Service service = BLangConnectorSPIUtil.getServiceRegistered(context);
-        BMap<String, BValue> consumerEndpoint = (BMap<String, BValue>) context.getRefArgument(0);
-        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerEndpoint.get("consumerConfig");
-
-        Properties configParams = KafkaUtils.processKafkaConsumerConfig(consumerConfig);
+        Struct serviceEndpoint = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
+        BMap<String, BValue> serverConfigs = (BMap<String, BValue>) context.getRefArgument(0);
+        BMap<String, BValue> consumerConfigs = (BMap<String, BValue>) serverConfigs.get("consumerConfig");
         String serviceId = service.getName();
-
         try {
+            Properties configParams = KafkaUtils.processKafkaConsumerConfig(consumerConfigs);
             KafkaListener kafkaListener = new KafkaListenerImpl(KafkaUtils.extractKafkaResource(service));
             KafkaServerConnector serverConnector = new KafkaServerConnectorImpl(serviceId, configParams, kafkaListener);
-            serverConnector.start();
+            serviceEndpoint.addNativeData(CONSUMER_SERVER_CONNECTOR_NAME, serverConnector);
         } catch (KafkaConnectorException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+            context.setReturnValues(BLangVMErrors.createError(context,
+                    "Unable to initialize server connector: " + e.getMessage()));
+            return;
+        } catch (Throwable e) {
+            context.setReturnValues(BLangVMErrors.createError(context, "Cannot register: " + e.getMessage()));
         }
+        context.setReturnValues();
     }
 
     @Override

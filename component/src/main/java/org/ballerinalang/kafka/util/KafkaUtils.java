@@ -173,7 +173,7 @@ public class KafkaUtils {
                                                           ConsumerRecords<byte[], byte[]> records) {
         // Create records struct array.
         List<BMap<String, BValue>> recordsList = new ArrayList<>();
-        ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
+        ProgramFile programFile = resource.getResourceInfo().getPackageInfo().getProgramFile();
 
         records.forEach(record -> {
             BMap<String, BValue> recordStruct = BLangConnectorSPIUtil.createBStruct(programFile,
@@ -199,7 +199,7 @@ public class KafkaUtils {
     private static BMap<String, BValue> createConsumerStruct(Resource resource,
                                                              KafkaConsumer<byte[], byte[]> kafkaConsumer) {
         // Create consumer struct.
-        ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
+        ProgramFile programFile = resource.getResourceInfo().getPackageInfo().getProgramFile();
         BMap<String, BValue> consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
                 CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
@@ -220,7 +220,7 @@ public class KafkaUtils {
             partitionToMetadataMap.put(e.getKey(), new OffsetAndMetadata(e.getValue() + 1));
         }
 
-        ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
+        ProgramFile programFile = resource.getResourceInfo().getPackageInfo().getProgramFile();
         List<BMap<String, BValue>> offsetList = new ArrayList<>();
         partitionToMetadataMap.entrySet().forEach(offset -> {
             BMap<String, BValue> offsetStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
@@ -244,7 +244,7 @@ public class KafkaUtils {
                                                              KafkaConsumer<byte[], byte[]> kafkaConsumer,
                                                              String groupId) {
         // Create consumer struct.
-        ProgramFile programFile = resource.getResourceInfo().getServiceInfo().getPackageInfo().getProgramFile();
+        ProgramFile programFile = resource.getResourceInfo().getPackageInfo().getProgramFile();
         BMap<String, BValue> consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
                 CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);

@@ -41,6 +41,7 @@ public class KafkaConstants {
     public static final String CONSUMER_STRUCT_NAME = "SimpleConsumer";
     public static final String CONSUMER_CONFIG_STRUCT_NAME = "ConsumerConfig";
     public static final String CONSUMER_ENDPOINT_STRUCT_NAME = "SimpleConsumer";
+    public static final String CONSUMER_SERVER_CONNECTOR_NAME = "serverConnector";
 
     public static final String PRODUCER_STRUCT_NAME = "SimpleProducer";
     public static final String PRODUCER_CONFIG_STRUCT_NAME = "ProducerConfig";

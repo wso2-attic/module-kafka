@@ -117,22 +117,12 @@ public type ConsumerRecord record {
     !...
 };
 
-//# Kafka consumer service object.
-//public type Consumer object {
-
-//    # Returns the endpoint bound to service.
-//    #
-//    # + return - Kafka consumer endpoint bound to the service.
-//    public function getEndpoint() returns SimpleConsumer {
-//        SimpleConsumer consumer = new();
-//        return consumer;
-//    }
-//};
-
 # Represent a Kafka consumer endpoint.
 #
 # + consumerConfig - Used to store configurations related to a Kafka connection.
 public type SimpleConsumer client object {
+    *AbstractListener;
+
     public ConsumerConfig? consumerConfig = ();
 
     public function __init (ConsumerConfig config) {
@@ -154,6 +144,22 @@ public type SimpleConsumer client object {
         }
         return;
     }
+
+    public function __start() returns error? {
+        return self.start();
+    }
+
+    public function __stop() returns error? {
+        return ();
+    }
+
+    public function __attach(service s, map<any> annotationData) returns error? {
+        return self.registerListener(s, annotationData);
+    }
+
+    extern function registerListener(service serviceType, map<any> annotationData) returns error?;
+
+    extern function start() returns error?;
 
     # Assigns consumer to a set of topic partitions.
     #
