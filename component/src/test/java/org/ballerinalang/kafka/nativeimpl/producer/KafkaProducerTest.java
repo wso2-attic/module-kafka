@@ -53,7 +53,10 @@ public class KafkaProducerTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(description = "Test Basic produce")
+    @Test(
+            description = "Test Basic produce",
+            sequential = true
+    )
     public void testKafkaProduce() {
         BValue[] inputBValues = {};
         BRunUtil.invoke(result, "funcTestKafkaProduce", inputBValues);

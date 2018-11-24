@@ -31,7 +31,10 @@ public class KafkaProducerCommitConsumerOffsetsTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
     }
 
-    @Test(description = "Test kafka producer commitConsumerOffsets() function")
+    @Test(
+            description = "Test kafka producer commitConsumerOffsets() function",
+            sequential = true
+    )
     public void testKafkaCommitConsumerOffsetsTest() {
         result = BCompileUtil.compileAndSetup("producer/kafka_producer_commit_consumer_offsets.bal");
         BValue[] inputBValues = {};

@@ -31,7 +31,10 @@ public class KafkaConsumerSubscribeToPatternTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
-    @Test(description = "Test functionality of getAvailableTopics() function")
+    @Test(
+            description = "Test functionality of getAvailableTopics() function",
+            sequential = true
+    )
     public void testKafkaConsumerSubscribeToPattern () {
         result = BCompileUtil.compileAndSetup("consumer/kafka_consumer_subscribe_to_pattern.bal");
         BValue[] inputBValues = {};

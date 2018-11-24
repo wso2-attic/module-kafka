@@ -66,7 +66,10 @@ public class KafkaConsumerPauseTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test Basic consumer with seek")
+    @Test(
+            description = "Test Basic consumer with seek",
+            sequential = true
+    )
     public void testKafkaConsumeWithPause() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {

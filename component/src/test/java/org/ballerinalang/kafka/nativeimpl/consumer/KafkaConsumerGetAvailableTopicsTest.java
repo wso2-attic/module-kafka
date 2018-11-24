@@ -55,7 +55,10 @@ public class KafkaConsumerGetAvailableTopicsTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test functionality of getAvailableTopics() function")
+    @Test(
+            description = "Test functionality of getAvailableTopics() function",
+            sequential = true
+    )
     public void testKafkaConsumerGetAvailableTopics () {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");

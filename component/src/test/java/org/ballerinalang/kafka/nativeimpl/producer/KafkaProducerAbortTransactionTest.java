@@ -53,7 +53,8 @@ public class KafkaProducerAbortTransactionTest {
     @Test(
             description = "Test abort transaction in producer",
             expectedExceptions = BLangRuntimeException.class,
-            expectedExceptionsMessageRegExp = ".*failed to send message. Cannot call send in state READY.*"
+            expectedExceptionsMessageRegExp = ".*failed to send message. Cannot call send in state READY.*",
+            sequential = true
     )
     public void testKafkaProduce() {
         CompileResult result = BCompileUtil.compileAndSetup("producer/kafka_producer_abort_transaction.bal");

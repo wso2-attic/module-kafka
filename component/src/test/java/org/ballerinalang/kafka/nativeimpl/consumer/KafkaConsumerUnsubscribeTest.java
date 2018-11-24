@@ -28,7 +28,10 @@ public class KafkaConsumerUnsubscribeTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
-    @Test(description = "Test functionality of getAvailableTopics() function")
+    @Test(
+            description = "Test functionality of getAvailableTopics() function",
+            sequential = true
+    )
     public void testKafkaConsumerUnsubscribe () {
         result = BCompileUtil.compileAndSetup("consumer/kafka_consumer_unsubscribe.bal");
         BValue[] inputBValues = {};

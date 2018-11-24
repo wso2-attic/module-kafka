@@ -51,7 +51,10 @@ public class KafkaConsumerAssignTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test assign functions functionality")
+    @Test(
+            description = "Test assign functions functionality",
+            sequential = true
+    )
     public void testKafkaConsumerAssign() {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);

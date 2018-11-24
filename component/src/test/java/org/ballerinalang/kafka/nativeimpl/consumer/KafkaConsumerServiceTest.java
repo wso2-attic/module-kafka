@@ -55,7 +55,10 @@ public class KafkaConsumerServiceTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test endpoint bind to a service")
+    @Test(
+            description = "Test endpoint bind to a service",
+            sequential = true
+    )
     public void testKafkaServiceEndpoint() {
         String testString = "test_string";
         //CountDownLatch completion = new CountDownLatch(1);
