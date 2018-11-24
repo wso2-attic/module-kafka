@@ -32,7 +32,10 @@ public class KafkaProducerCommitConsumerTest {
         kafkaCluster.createTopic("test", 2, 3);
     }
 
-    @Test(description = "Test Basic produce")
+    @Test(
+            description = "Test producer commit consumer functionality",
+            sequential = true
+    )
     public void testKafkaProduce() {
         result = BCompileUtil.compileAndSetup("producer/kafka_producer_commit_consumer.bal");
         BValue[] inputBValues = {};

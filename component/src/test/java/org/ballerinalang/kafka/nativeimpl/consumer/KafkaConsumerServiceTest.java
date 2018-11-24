@@ -51,14 +51,16 @@ public class KafkaConsumerServiceTest {
     public void setup() throws IOException {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
-                .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
+                .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test endpoint bind to a service")
+    @Test(
+            description = "Test endpoint bind to a service",
+            sequential = true
+    )
     public void testKafkaServiceEndpoint() {
         String testString = "test_string";
-        //CountDownLatch completion = new CountDownLatch(1);
         compileResult = BCompileUtil.compileAndSetup("consumer/kafka_consumer_service.bal");
         BServiceUtil.runService(compileResult);
         BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");

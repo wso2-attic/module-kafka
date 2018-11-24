@@ -51,7 +51,10 @@ public class KafkaConsumerGetTopicPartitionsTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test functionality of getTopicPartitions() function")
+    @Test(
+            description = "Test functionality of getTopicPartitions() function",
+            sequential = true
+    )
     public void testKafkaConsumerGetTopicPartitions () {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);

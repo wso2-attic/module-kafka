@@ -56,7 +56,10 @@ public class KafkaConsumerTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(description = "Test Basic consumer polling with subscription and assignment retrieval")
+    @Test(
+            description = "Test Basic consumer polling with subscription and assignment retrieval",
+            sequential = true
+    )
     public void testKafkaConsume() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");

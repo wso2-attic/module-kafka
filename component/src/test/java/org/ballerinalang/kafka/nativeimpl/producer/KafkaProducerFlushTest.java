@@ -29,7 +29,10 @@ public class KafkaProducerFlushTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(description = "Test producer flush function")
+    @Test(
+            description = "Test producer flush function",
+            sequential = true
+    )
     public void testKafkaFlush() {
         result = BCompileUtil.compileAndSetup("producer/kafka_producer_flush.bal");
         BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaTestFlush");

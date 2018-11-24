@@ -32,7 +32,8 @@ public class KafkaProducerCloseTest {
     @Test(
             description = "Test Producer close() action",
             expectedExceptions = BLangRuntimeException.class,
-            expectedExceptionsMessageRegExp = ".*Cannot perform operation after producer has been closed.*"
+            expectedExceptionsMessageRegExp = ".*Cannot perform operation after producer has been closed.*",
+            sequential = true
     )
     public void testKafkaProduce() {
         BValue[] inputBValues = {};

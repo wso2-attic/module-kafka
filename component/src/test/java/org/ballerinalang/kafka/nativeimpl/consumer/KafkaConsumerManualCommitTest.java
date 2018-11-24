@@ -62,7 +62,10 @@ public class KafkaConsumerManualCommitTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test Basic consumer polling with manual offset commit")
+    @Test(
+            description = "Test Basic consumer polling with manual offset commit",
+            sequential = true
+    )
     public void testKafkaConsumeWithManualOffsetCommit() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {

@@ -52,7 +52,10 @@ public class KafkaProducerGetPartitionTest {
         kafkaCluster.createTopic("test_2", 5, 1);
     }
 
-    @Test(description = "Test producer topic partition retrieval")
+    @Test(
+            description = "Test producer topic partition retrieval",
+            sequential = true
+    )
     public void testKafkaTopicPartitionRetrieval() {
         BValue[] inputBValues = {new BString("test")};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);
