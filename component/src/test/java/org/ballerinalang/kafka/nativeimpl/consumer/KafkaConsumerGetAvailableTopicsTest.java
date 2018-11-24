@@ -93,8 +93,6 @@ public class KafkaConsumerGetAvailableTopicsTest {
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BStringArray);
         Assert.assertEquals(((BStringArray) returnBValues[0]).size(), 2);
-        Assert.assertEquals(((BStringArray) returnBValues[0]).get(0), "test-2");
-        Assert.assertEquals(((BStringArray) returnBValues[0]).get(1), "test");
 
         completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test-2", 10, completion::countDown, () -> "test_string");
@@ -115,8 +113,6 @@ public class KafkaConsumerGetAvailableTopicsTest {
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BStringArray);
         Assert.assertEquals(((BStringArray) returnBValues[0]).size(), 2);
-        Assert.assertEquals(((BStringArray) returnBValues[0]).get(0), "test-2");
-        Assert.assertEquals(((BStringArray) returnBValues[0]).get(1), "test");
     }
 
     @AfterClass
