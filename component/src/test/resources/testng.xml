@@ -20,9 +20,10 @@ under the License.
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="ballerina-natives-test-suite">
-    <test name="ballerina-native-functions-unit-tests" parallel="false">
+    <test name="ballerina-native-functions-unit-tests-for-consumer" parallel="false" thread-count="1">
         <classes>
             <!-- Consumer-Related tests -->
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAdvancedServiceTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAssignTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetAvailableTopicsTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetTopicPartitionsTest"/>
@@ -34,7 +35,10 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribeToPatternTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerUnsubscribeTest"/>
-
+        </classes>
+    </test>
+    <test name="ballerina-native-functions-unit-tests-for-producer" parallel="false" thread-count="1">
+        <classes>
             <!-- Producer-Related tests -->
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerAbortTransactionTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCloseTest"/>
