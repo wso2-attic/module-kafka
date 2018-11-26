@@ -17,7 +17,7 @@
 import wso2/kafka;
 import ballerina/io;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
@@ -27,6 +27,8 @@ endpoint kafka:SimpleProducer kafkaProducer {
     noRetries:3,
     transactionalID:"test-transactional-id"
 };
+
+kafka:SimpleProducer kafkaProducer = new (producerConfigs);
 
 public function main(string... args) {
     string msg = "Hello World Transaction";

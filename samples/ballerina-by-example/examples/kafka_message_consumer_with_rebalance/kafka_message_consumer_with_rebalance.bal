@@ -21,12 +21,14 @@ import ballerina/internal;
 import ballerina/task;
 import wso2/kafka;
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     offsetReset:"earliest",
     autoCommit:false
 };
+
+kafka:SimpleConsumer consumer = new (consumerConfigs);
 
 public function main(string... args) {
     // Here we initializes a consumer which connects to remote cluster.

@@ -19,12 +19,14 @@ import ballerina/io;
 import ballerina/log;
 import ballerina/internal;
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     offsetReset:"earliest",
     topics:["test-kafka-topic"]
 };
+
+kafka:SimpleConsumer consumer = new (consumerConfigs);
 
 public function main(string... args) {
     // polling consumer for messages

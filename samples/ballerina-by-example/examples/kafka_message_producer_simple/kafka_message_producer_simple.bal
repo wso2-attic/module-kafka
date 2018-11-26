@@ -16,7 +16,7 @@
 
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
@@ -25,6 +25,8 @@ endpoint kafka:SimpleProducer kafkaProducer {
     acks:"all",
     noRetries:3
 };
+
+kafka:SimpleProducer kafkaProducer = new (producerConfigs);
 
 function main (string... args) {
     string msg = "Hello World, Ballerina";
