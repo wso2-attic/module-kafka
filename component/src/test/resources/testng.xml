@@ -50,12 +50,12 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerServiceTest"/>
         </classes>
     </test>
-    <test name="ballerina-kafka-transaction-tests" parallel="false" thread-count="1">
-        <!-- Kafka transactions related tests -->
+    <!--<test name="ballerina-kafka-transaction-tests" parallel="false" thread-count="1">
+        &lt;!&ndash; Kafka transactions related tests &ndash;&gt;
         <classes>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerAbortTransactionTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerOffsetsTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerTest"/>
         </classes>
-    </test>
+    </test>-->
 </suite>

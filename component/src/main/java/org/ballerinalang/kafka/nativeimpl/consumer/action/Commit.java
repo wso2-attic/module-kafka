@@ -26,7 +26,6 @@ import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.Objects;
@@ -46,7 +45,6 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "commit",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        returnType = {@ReturnType(type = TypeKind.NONE)},
         isPublic = true
 )
 public class Commit implements NativeCallableUnit {

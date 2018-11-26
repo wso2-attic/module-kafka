@@ -27,10 +27,8 @@ import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.HashMap;
@@ -41,7 +39,6 @@ import java.util.Properties;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG;
-import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
@@ -54,13 +51,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
         packageName = PACKAGE_NAME,
         functionName = "commitConsumerOffsets",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "offsets", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                        structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
-                @Argument(name = "groupID", type = TypeKind.STRING)
-        },
-        returnType = {@ReturnType(type = TypeKind.NONE)})
+                structPackage = KAFKA_NATIVE_PACKAGE)
+)
 public class CommitConsumerOffsets extends AbstractTransactionHandler {
 
     @Override

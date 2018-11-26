@@ -30,10 +30,8 @@ import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
@@ -57,14 +55,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         functionName = "getTopicPartitions",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "topic", type = TypeKind.STRING),
-                @Argument(name = "duration", type = TypeKind.INT)
-        },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                structType = TOPIC_PARTITION_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
-                @ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 //Duplicated code here cannot be moved as the Collection<T> has different types
 @SuppressWarnings("Duplicates")
 public class GetTopicPartitions extends AbstractApisWithDuration {

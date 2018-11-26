@@ -26,10 +26,8 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -51,11 +49,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "subscribe",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "topics", type = TypeKind.ARRAY, elementType = TypeKind.STRING)
-        },
-        returnType = {@ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 public class Subscribe implements NativeCallableUnit {
 
     @Override

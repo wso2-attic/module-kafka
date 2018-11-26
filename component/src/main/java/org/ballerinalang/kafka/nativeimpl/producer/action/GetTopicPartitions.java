@@ -30,10 +30,8 @@ import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -55,13 +53,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         packageName = PACKAGE_NAME,
         functionName = "getTopicPartitions",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "topic", type = TypeKind.STRING)
-        },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                structType = TOPIC_PARTITION_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE)})
+                structPackage = KAFKA_NATIVE_PACKAGE)
+)
 public class GetTopicPartitions implements NativeCallableUnit {
 
     @Override

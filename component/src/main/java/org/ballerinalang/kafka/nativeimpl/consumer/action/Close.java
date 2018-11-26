@@ -24,10 +24,8 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
@@ -48,9 +46,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "close",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = @Argument(name = "defaultTimeout", type = TypeKind.INT),
-        returnType = {@ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 public class Close extends AbstractApisWithDuration {
 
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {

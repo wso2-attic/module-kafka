@@ -26,10 +26,8 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.HashMap;
@@ -38,7 +36,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
@@ -55,13 +52,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
         packageName = PACKAGE_NAME,
         functionName = "commitConsumer",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "consumer",
-                        type = TypeKind.RECORD, structType = CONSUMER_STRUCT_NAME,
-                        structPackage = KAFKA_NATIVE_PACKAGE)
-        },
-        returnType = {@ReturnType(type = TypeKind.NONE)})
+                structPackage = KAFKA_NATIVE_PACKAGE)
+)
 public class CommitConsumer extends AbstractTransactionHandler {
 
     @Override

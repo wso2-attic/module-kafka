@@ -27,10 +27,8 @@ import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.Objects;
@@ -51,15 +49,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
         packageName = PACKAGE_NAME,
         functionName = "send",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "value", type = TypeKind.BLOB),
-                @Argument(name = "topic", type = TypeKind.STRING),
-                @Argument(name = "key", type = TypeKind.UNION),
-                @Argument(name = "partition", type = TypeKind.UNION),
-                @Argument(name = "timestamp", type = TypeKind.UNION)
-        },
-        returnType = {@ReturnType(type = TypeKind.NONE)})
+                structPackage = KAFKA_NATIVE_PACKAGE)
+)
 public class Send extends AbstractTransactionHandler {
 
     @Override

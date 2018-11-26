@@ -28,10 +28,8 @@ import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
@@ -46,7 +44,6 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
 
 /**
  * Native function returns end offsets for given partition array.
@@ -57,16 +54,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         functionName = "getEndOffsets",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "partitions", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                        structType = TOPIC_PARTITION_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
-                @Argument(name = "duration", type = TypeKind.INT)
-        },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                structType = OFFSET_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
-                      @ReturnType(type = TypeKind.RECORD)
-        },
-        isPublic = true)
+        isPublic = true
+)
 public class GetEndOffsets extends AbstractGetOffsets {
 
     @Override

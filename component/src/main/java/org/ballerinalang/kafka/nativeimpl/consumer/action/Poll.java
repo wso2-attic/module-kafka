@@ -32,10 +32,8 @@ import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
@@ -59,13 +57,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "poll",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "timeout", type = TypeKind.INT)
-        },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                structPackage = KAFKA_NATIVE_PACKAGE, structType = CONSUMER_RECORD_STRUCT_NAME),
-                @ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 public class Poll implements NativeCallableUnit {
 
     @Override

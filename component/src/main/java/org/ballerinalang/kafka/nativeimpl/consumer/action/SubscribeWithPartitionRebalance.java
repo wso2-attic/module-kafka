@@ -32,10 +32,8 @@ import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.codegen.FunctionInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.program.BLangFunctions;
@@ -63,13 +61,8 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
         functionName = "subscribeWithPartitionRebalance",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "topics", type = TypeKind.ARRAY, elementType = TypeKind.STRING),
-                @Argument(name = "onPartitionsRevoked", type = TypeKind.ANY),
-                @Argument(name = "onPartitionsAssigned", type = TypeKind.ANY)
-        },
-        returnType = {@ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
 
     @Override

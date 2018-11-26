@@ -26,10 +26,8 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 
 import java.time.Duration;
 import java.util.List;
@@ -50,10 +48,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "getAvailableTopics",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = @Argument(name = "duration", type = TypeKind.INT),
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.STRING),
-                @ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 
 public class GetAvailableTopics extends AbstractApisWithDuration {
 
