@@ -21,34 +21,41 @@ under the License.
 
 <suite name="ballerina-natives-test-suite">
     <test name="ballerina-kafka-consumer-tests" parallel="false" thread-count="1">
+        <!-- Consumer-Related tests -->
         <classes>
-            <!-- Consumer-Related tests -->
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAssignTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetAvailableTopicsTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetTopicPartitionsTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerManualCommitTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerManualOffsetCommitTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerPauseTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribeToPatternTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSeekTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerUnsubscribeTest"/>
         </classes>
     </test>
     <test name="ballerina-kafka-producer-tests" parallel="false" thread-count="1">
+        <!-- Producer-Related tests -->
         <classes>
-            <!-- Producer-Related tests -->
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerAbortTransactionTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCloseTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerOffsetsTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerFlushTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerGetPartitionTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>
         </classes>
     </test>
     <test name="ballerina-kafka-services-tests" parallel="false" thread-count="1">
+        <!-- Kafka service related tests -->
         <classes>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerServiceTest"/>
+        </classes>
+    </test>
+    <test name="ballerina-kafka-transaction-tests" parallel="false" thread-count="1">
+        <!-- Kafka transactions related tests -->
+        <classes>
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerAbortTransactionTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerOffsetsTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerTest"/>
         </classes>
     </test>
 </suite>
