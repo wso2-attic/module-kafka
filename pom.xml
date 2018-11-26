@@ -202,6 +202,11 @@
                 <version>${ballerina.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-io</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ballerinax.docker</groupId>
                 <artifactId>docker-extension</artifactId>
                 <version>${ballerina.version}</version>
