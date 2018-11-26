@@ -32,7 +32,6 @@ import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -55,8 +54,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
                 type = TypeKind.OBJECT,
                 structType = CONSUMER_ENDPOINT_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE
-        ),
-        args = {@Argument(name = "serviceType", type = TypeKind.TYPEDESC)}
+        )
 )
 public class RegisterListener implements NativeCallableUnit {
 
