@@ -52,7 +52,6 @@ public class KafkaConsumerServiceTest {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
-        kafkaCluster.createTopic("test", 1, 1);
     }
 
     @Test(
