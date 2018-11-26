@@ -45,7 +45,6 @@ public class KafkaConstants {
 
     public static final String PRODUCER_STRUCT_NAME = "SimpleProducer";
     public static final String PRODUCER_CONFIG_STRUCT_NAME = "ProducerConfig";
-    public static final String PRODUCER_RECORD_STRUCT_NAME = "ProducerRecord";
 
     public static final String PROPERTIES_ARRAY = "properties";
 
