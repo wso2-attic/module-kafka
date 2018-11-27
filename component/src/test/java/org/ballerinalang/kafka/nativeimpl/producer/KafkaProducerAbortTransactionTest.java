@@ -47,7 +47,6 @@ public class KafkaProducerAbortTransactionTest {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
-        kafkaCluster.createTopic("test", 2, 3);
     }
 
     @Test(
