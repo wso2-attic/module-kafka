@@ -59,5 +59,5 @@ function funcKafkaGetResultText() returns string {
 function funcKafkaProduce() {
     string msg = "test_string";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(byteMsg, topic);
+    var result = kafkaProducer->send(byteMsg, topic);
 }
