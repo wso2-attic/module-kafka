@@ -50,8 +50,8 @@ function funcKafkaGetAvailableTopicsCount() returns int|error {
 function funcKafkaProduce() {
     string msg = "Hello World";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(byteMsg, "test1");
-    kafkaProducer->send(byteMsg, "test2");
-    kafkaProducer->send(byteMsg, "tester");
-    kafkaProducer->send(byteMsg, "another-topic");
+    var result = kafkaProducer->send(byteMsg, "test1");
+    result = kafkaProducer->send(byteMsg, "test2");
+    result = kafkaProducer->send(byteMsg, "tester");
+    result = kafkaProducer->send(byteMsg, "another-topic");
 }
