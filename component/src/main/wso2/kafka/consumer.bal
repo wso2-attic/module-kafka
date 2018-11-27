@@ -133,6 +133,18 @@ public type SimpleConsumer client object {
         }
     }
 
+    public function __start() returns error? {
+        return self.start();
+    }
+
+    public function __stop() returns error? {
+        return self->close();
+    }
+
+    public function __attach(service s, map<any> annotationData) returns error? {
+        return self.registerListener(s, annotationData);
+    }
+
     function initEndpoint(ConsumerConfig config) returns error? {
         if (config.bootstrapServers is string) {
             check self->connect();
@@ -143,18 +155,6 @@ public type SimpleConsumer client object {
             check self->subscribe(topics);
         }
         return;
-    }
-
-    public function __start() returns error? {
-        return self.start();
-    }
-
-    public function __stop() returns error? {
-        return ();
-    }
-
-    public function __attach(service s, map<any> annotationData) returns error? {
-        return self.registerListener(s, annotationData);
     }
 
     extern function registerListener(service serviceType, map<any> annotationData) returns error?;
@@ -171,7 +171,7 @@ public type SimpleConsumer client object {
     #
     # + duration - Timeout duration for the close operation execution.
     # + return - Returns an error if encounters an error, returns nil otherwise.
-    public remote  extern function close(int duration = -1) returns error?;
+    public remote extern function close(int duration = -1) returns error?;
 
     # Commits current consumed offsets for consumer.
     public remote extern function commit();

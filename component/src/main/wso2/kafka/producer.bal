@@ -99,7 +99,7 @@ public type SimpleProducer client object {
     # + config - configurations related to the endpoint.
     extern function init(ProducerConfig config);
 
-    public map producerHolder = {};
+    public map<any> producerHolder = {};
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
