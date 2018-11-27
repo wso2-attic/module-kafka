@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 
 public class KafkaProducerCommitConsumerOffsetsTest {
+
     private CompileResult result;
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
@@ -80,7 +81,7 @@ public class KafkaProducerCommitConsumerOffsetsTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2382, 9294);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
         return kafkaCluster;
     }
 }
