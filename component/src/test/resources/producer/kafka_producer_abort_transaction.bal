@@ -15,27 +15,33 @@
 // under the License.
 
 import wso2/kafka;
+import ballerina/transactions;
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers:"localhost:9094, localhost:9095, localhost:9096",
     clientID:"basic-producer",
     acks:"all",
     noRetries:3,
-    transactionalID:"test-transactional-id"
+    transactionalID:"abort-transaction-test-producer"
 };
 
 kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
-function funcKafkaAbortTransactionTest() {
+function funcKafkaAbortTransactionTest() returns boolean {
     string msg = "Hello World Transaction";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
-    kafkaAdvancedTransactionalProduce(serializedMsg);
+    var result = kafkaAdvancedTransactionalProduce(serializedMsg);
+    if (result is error) {
+        return false;
+    }
+    return true;
 }
 
-function kafkaAdvancedTransactionalProduce(byte[] msg) {
+function kafkaAdvancedTransactionalProduce(byte[] msg) returns error? {
+    error? returnValue = ();
     transaction {
-        kafkaProducer->send(msg, "test", partition = 0);
-        kafkaProducer->abortTransaction();
-        kafkaProducer->send(msg, "test", partition = 0);
+        var result = kafkaProducer->send(msg, "test", partition = 0);
+        returnValue = kafkaProducer->abortTransaction();
     }
+    return returnValue;
 }

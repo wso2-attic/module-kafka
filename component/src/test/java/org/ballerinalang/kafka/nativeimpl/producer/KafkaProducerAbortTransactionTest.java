@@ -23,9 +23,8 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
-import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.exceptions.BLangRuntimeException;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -39,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 
 public class KafkaProducerAbortTransactionTest {
+
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
 
@@ -47,26 +47,22 @@ public class KafkaProducerAbortTransactionTest {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
-        kafkaCluster.createTopic("test-topic", 2, 3);
+        kafkaCluster.createTopic("test", 2, 3);
     }
 
     @Test(
             description = "Test abort transaction in producer",
-            expectedExceptions = BLangRuntimeException.class,
-            expectedExceptionsMessageRegExp = ".*failed to send message. Cannot call send in state READY.*",
             sequential = true
     )
     public void testKafkaProduce() {
         CompileResult result = BCompileUtil.compileAndSetup("producer/kafka_producer_abort_transaction.bal");
         BValue[] inputBValues = {};
-        BRunUtil.invokeStateful(result, "funcKafkaAbortTransactionTest", inputBValues);
-
+        BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaAbortTransactionTest", inputBValues);
         try {
             await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
-                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaGetResultText");
                 Assert.assertEquals(returnBValues.length, 1);
-                Assert.assertTrue(returnBValues[0] instanceof BString);
-                return (returnBValues[0].stringValue().equals("success"));
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
             });
         } catch (Throwable e) {
             Assert.fail(e.getMessage());
