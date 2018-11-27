@@ -37,6 +37,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native action closes producer instance.
@@ -66,8 +67,9 @@ public class Close implements NativeCallableUnit {
 
         try {
             kafkaProducer.close();
+            context.setReturnValues();
         } catch (KafkaException e) {
-            throw new BallerinaException("Failed to close the producer " + e.getMessage(), e, context);
+            context.setReturnValues(createError(context, e.getMessage()));
         }
     }
 

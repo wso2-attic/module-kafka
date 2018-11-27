@@ -106,7 +106,7 @@ public type SimpleProducer client object {
     public remote extern function abortTransaction() returns error?;
 
     # Closes producer connection to the external Kafka broker.
-    public remote extern function close();
+    public remote extern function close() returns error?;
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
