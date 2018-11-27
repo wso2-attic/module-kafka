@@ -40,6 +40,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native action produces blob value to given string topic.
@@ -94,11 +95,12 @@ public class Send extends AbstractTransactionHandler {
                     throw new BallerinaException("Failed to send message. " +
                             exception.getMessage(), exception, context);
                 }
-                //kafkaProducer.flush();
                 callableUnitCallback.notifySuccess();
             });
+            context.setReturnValues();
         } catch (IllegalStateException | KafkaException e) {
-            throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
+            context.setReturnValues(createError(context, "Failed to send message." + e.getMessage()));
+            //throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
     }
 }

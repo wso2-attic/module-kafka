@@ -76,7 +76,7 @@ public type ProducerConfig record {
     int connectionsMaxIdle = -1; // CONNECTIONS_MAX_IDLE_MS_CONFIG 16
     int transactionTimeout = -1; // TRANSACTION_TIMEOUT_CONFIG 17
 
-    boolean enableIdempotence = false;          // ENABLE_IDEMPOTENCE_CONFIG 0
+    boolean enableIdempotence = false; // ENABLE_IDEMPOTENCE_CONFIG 0
     !...
 };
 
@@ -89,7 +89,7 @@ public type SimpleProducer client object {
 
     public ProducerConfig? producerConfig = ();
 
-    public function __init (ProducerConfig config) {
+    public function __init(ProducerConfig config) {
         self.producerConfig = config;
         self.init(config);
     }
@@ -103,7 +103,7 @@ public type SimpleProducer client object {
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
-    public remote extern function abortTransaction();
+    public remote extern function abortTransaction() returns error?;
 
     # Closes producer connection to the external Kafka broker.
     public remote extern function close();
@@ -135,6 +135,12 @@ public type SimpleProducer client object {
     # + key - Key that will be included in the record.
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
-    public remote extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
+    public remote extern function send(
+                                          byte[] value,
+                                          string topic,
+                                          byte[]? key = (),
+                                          int? partition = (),
+                                          int? timestamp = ()
+                                      ) returns error?;
 
 };
