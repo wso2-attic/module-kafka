@@ -31,6 +31,6 @@ function funcTestPartitionInfoRetrieval(string topic) returns kafka:TopicPartiti
 
 function getPartitionInfo(string topic) returns kafka:TopicPartition[] {
     kafka:TopicPartition[] partitions = kafkaProducer->getTopicPartitions(topic);
-    kafkaProducer->close();
+    var result = kafkaProducer->close();
     return partitions;
 }

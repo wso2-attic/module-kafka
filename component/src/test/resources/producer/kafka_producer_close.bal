@@ -25,11 +25,14 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
-function funcTestKafkaClose() {
+function funcTestKafkaClose() returns boolean {
     string msg = "Test Message";
     string topic = "test";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(byteMsg, topic);
-    kafkaProducer->close();
-    kafkaProducer->send(byteMsg, topic);
+    var result = kafkaProducer->send(byteMsg, topic);
+    result = kafkaProducer->close();
+    if (result is error) {
+        return false;
+    }
+    return true;
 }

@@ -28,7 +28,7 @@ kafka:SimpleProducer kafkaProducer = new (producerConfigs);
 function funcKafkaTestFlush() returns boolean {
     string msg = "Hello World";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(byteMsg, "test");
+    var result = kafkaProducer->send(byteMsg, "test");
     kafkaProducer->flush();
     return true;
 }

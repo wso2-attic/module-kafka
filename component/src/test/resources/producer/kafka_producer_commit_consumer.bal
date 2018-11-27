@@ -44,7 +44,7 @@ function funcTestKafkaProduce() {
 
 function kafkaProduce(byte[] value, string topic) {
     transaction {
-        kafkaProducer->send(value, topic);
+        var result = kafkaProducer->send(value, topic);
     }
 }
 
