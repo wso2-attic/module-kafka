@@ -15,12 +15,13 @@
 // under the License.
 
 import wso2/kafka;
+import ballerina/transactions;
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
     clientID: "basic-producer",
     acks: "all",
-    transactionalID: "test-transaction-id",
+    transactionalID: "comit-consumer-test-producer",
     noRetries: 3
 };
 
