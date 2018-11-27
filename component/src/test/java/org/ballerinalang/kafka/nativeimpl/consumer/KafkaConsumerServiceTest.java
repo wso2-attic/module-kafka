@@ -51,7 +51,7 @@ public class KafkaConsumerServiceTest {
     public void setup() throws IOException {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
-                .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
+                .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
     @Test(
