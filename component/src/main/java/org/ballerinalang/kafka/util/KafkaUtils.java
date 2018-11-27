@@ -540,4 +540,8 @@ public class KafkaUtils {
         error.put("message", new BString(errorMessage));
         return BLangVMErrors.createError(context, true, BTypes.typeError, errorCode, error);
     }
+
+    public static BError createError(Context context, String errorMessage) {
+        return BLangVMErrors.createError(context, errorMessage);
+    }
 }
