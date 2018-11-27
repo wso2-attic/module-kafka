@@ -5,8 +5,9 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
+import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.exceptions.BLangRuntimeException;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,18 +27,19 @@ public class KafkaProducerCloseTest {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
-        kafkaCluster.createTopic("test", 2, 1);
+        kafkaCluster.createTopic("test", 1, 1);
     }
 
     @Test(
             description = "Test Producer close() action",
-            expectedExceptions = BLangRuntimeException.class,
-            expectedExceptionsMessageRegExp = ".*Cannot perform operation after producer has been closed.*",
             sequential = true
     )
     public void testKafkaProduce() {
         BValue[] inputBValues = {};
-        BRunUtil.invoke(result, "funcTestKafkaClose", inputBValues);
+        BValue[] returnBValue = BRunUtil.invoke(result, "funcTestKafkaClose", inputBValues);
+        Assert.assertEquals(returnBValue.length, 1);
+        Assert.assertTrue(returnBValue[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValue[0]).booleanValue());
     }
 
     @AfterClass
