@@ -16,7 +16,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.ballerinalang</groupId>
         <artifactId>ballerina-kafka-parent</artifactId>
@@ -60,6 +61,80 @@
             <type>zip</type>
             <classifier>ballerina-binary-repo</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-transactions</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-task</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-internal</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-math</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-crypto</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-file</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-reflect</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-auth</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-http</artifactId>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-config-api</artifactId>
+            <version>${ballerina.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-config-api</artifactId>
+            <version>${ballerina.version}</version>
+            <type>zip</type>
+            <classifier>ballerina-sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-config-api</artifactId>
+            <version>${ballerina.version}</version>
+            <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+
         <dependency>
             <groupId>org.ballerinax.docker</groupId>
             <artifactId>docker-extension</artifactId>
@@ -109,6 +184,46 @@
         <dependency>
             <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-transactions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-task</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-internal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-math</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-crypto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-file</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-reflect</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>ballerina-http</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ballerinax.docker</groupId>
@@ -277,7 +392,8 @@
                                 </includes>
                             </artifactSet>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
                                     <resources>
                                         <resource>installation-scripts/install.bat</resource>
                                         <resource>installation-scripts/install.sh</resource>
@@ -302,7 +418,8 @@
                         <processor>org.ballerinalang.codegen.BallerinaAnnotationProcessor</processor>
                     </processors>
                     <options>
-                        <nativeEntityProviderPackage>org.ballerinalang.kafka.generated.providers</nativeEntityProviderPackage>
+                        <nativeEntityProviderPackage>org.ballerinalang.kafka.generated.providers
+                        </nativeEntityProviderPackage>
                         <nativeEntityProviderClass>StandardNativeElementProvider</nativeEntityProviderClass>
                     </options>
                 </configuration>
@@ -486,6 +603,7 @@
     </build>
 
     <properties>
-        <generated.ballerina.source.directory>${project.build.directory}/../src/main/wso2</generated.ballerina.source.directory>
+        <generated.ballerina.source.directory>${project.build.directory}/../src/main/wso2
+        </generated.ballerina.source.directory>
     </properties>
 </project>
