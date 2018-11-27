@@ -24,7 +24,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new (producerConfigs);
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 kafka:ConsumerConfig consumerConfigs1 = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
@@ -34,7 +34,7 @@ kafka:ConsumerConfig consumerConfigs1 = {
     autoCommit: false
 };
 
-kafka:SimpleConsumer kafkaConsumer1 = new (consumerConfigs1);
+kafka:SimpleConsumer kafkaConsumer1 = new(consumerConfigs1);
 
 kafka:ConsumerConfig consumerConfigs2 = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
@@ -44,7 +44,7 @@ kafka:ConsumerConfig consumerConfigs2 = {
     autoCommit: false
 };
 
-kafka:SimpleConsumer kafkaConsumer2 = new (consumerConfigs2);
+kafka:SimpleConsumer kafkaConsumer2 = new(consumerConfigs2);
 
 function funcTestKafkaProduce() {
     string msg = "test-msg";
@@ -60,33 +60,29 @@ function kafkaProduce(byte[] value, string topic) {
 
 function funcTestKafkaCommitOffsets() returns boolean {
     var results = funcGetPartitionOffset(kafkaConsumer1);
-    match results {
-        error e => {
+    if (results is error) {
+        return false;
+    } else {
+        // Had to put this else statement as there was an error:
+        // "function invocation on type 'wso2/kafka:0.0.0:PartitionOffset[]|error' is not supported"
+        if (results.length() == 0) {
             return false;
-        }
-        kafka:PartitionOffset[] offsets => {
-            if (offsets.length() == 0) {
-                return false;
-            } else {
-                kafkaProducer->commitConsumerOffsets(offsets, "test-group");
-                return true;
-            }
+        } else {
+            kafkaProducer->commitConsumerOffsets(results, "test-group");
+            return true;
         }
     }
 }
 
 function funcTestPollAgain() returns boolean {
     var results = funcGetPartitionOffset(kafkaConsumer2);
-    match results {
-        error e => {
-            return false;
-        }
-        kafka:PartitionOffset[] offsets => {
-            if (offsets.length() == 0) {
-                return true;
-            } else {
-                return false; // This should not recieve any records as they are already committed.
-            }
+    if (results is error) {
+        return false;
+    } else {
+        if (results.length() == 0) {
+            return true;
+        } else {
+            return false; // This should not recieve any records as they are already committed.
         }
     }
 }
