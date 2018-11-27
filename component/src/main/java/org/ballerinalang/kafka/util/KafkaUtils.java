@@ -34,7 +34,6 @@ import org.ballerinalang.connector.api.Service;
 import org.ballerinalang.model.types.BArrayType;
 import org.ballerinalang.model.types.BObjectType;
 import org.ballerinalang.model.types.BRecordType;
-import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
