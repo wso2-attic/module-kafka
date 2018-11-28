@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class KafkaProducerFlushTest {
+public class KafkaProducerFlushRecordsTest {
     private CompileResult result;
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
@@ -34,7 +34,7 @@ public class KafkaProducerFlushTest {
             sequential = true
     )
     public void testKafkaFlush() {
-        result = BCompileUtil.compileAndSetup("producer/kafka_producer_flush.bal");
+        result = BCompileUtil.compileAndSetup("producer/kafka_producer_flush_records.bal");
         BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaTestFlush");
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
@@ -59,7 +59,7 @@ public class KafkaProducerFlushTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9199);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
         return kafkaCluster;
     }
 }
