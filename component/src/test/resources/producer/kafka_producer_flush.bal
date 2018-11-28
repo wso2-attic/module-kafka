@@ -29,6 +29,6 @@ function funcKafkaTestFlush() returns boolean {
     string msg = "Hello World";
     byte[] byteMsg = msg.toByteArray("UTF-8");
     var result = kafkaProducer->send(byteMsg, "test");
-    kafkaProducer->flush();
+    kafkaProducer->flushRecords();
     return true;
 }

@@ -43,11 +43,11 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
 @BallerinaFunction(
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
-        functionName = "flush",
+        functionName = "flushRecords",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE)
 )
-public class Flush implements NativeCallableUnit {
+public class FlushRecords implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {

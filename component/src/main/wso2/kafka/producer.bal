@@ -120,7 +120,7 @@ public type SimpleProducer client object {
     public remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
 
     # Flush action which flush batch of records.
-    public remote extern function flush();
+    public remote extern function flushRecords();
 
     # GetTopicPartitions action which returns given topic partition information.
     #
