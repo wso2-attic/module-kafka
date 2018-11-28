@@ -93,7 +93,7 @@ public class KafkaConsumerSubscribeToPatternTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2188, 9098);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
         return kafkaCluster;
     }
 }
