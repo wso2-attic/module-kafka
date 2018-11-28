@@ -15,6 +15,7 @@
 // under the License.
 
 import wso2/kafka;
+import ballerina/io;
 
 string topic = "test";
 
@@ -23,14 +24,15 @@ kafka:ConsumerConfig consumerConfigs = {
     groupId: "test-group",
     clientId: "advanced-service-consumer",
     offsetReset: "earliest",
-    topics: [topic]
+    topics: [topic],
+    autoCommit:false
 };
 
 listener kafka:SimpleConsumer kafkaConsumer = new (consumerConfigs);
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "service-producer",
+    clientID: "advanced-service-producer",
     acks: "all",
     noRetries: 3
 };
@@ -41,13 +43,21 @@ string resultText = "";
 int noOfChars = 11;
 
 service kafkaService on kafkaConsumer {
-    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
+    resource function onMessage(
+        kafka:SimpleConsumer consumer,
+        kafka:ConsumerRecord[] records,
+        kafka:PartitionOffset[] offsets,
+        string groupId
+    ) {
         foreach kafkaRecord in records {
-            byte[] result = kafkaRecord.value;
-            if (result.length() > 0) {
-                resultText = "test_string";
-            } else {
+            byte[] serializedMsg = kafkaRecord.value;
+            io:ReadableByteChannel byteChannel = io:createReadableChannel(serializedMsg);
+            io:ReadableCharacterChannel characterChannel = new io:ReadableCharacterChannel(byteChannel, "UTF-8");
+            var result = characterChannel.read(noOfChars);
+            if (result is error) {
                 resultText = "Failed";
+            } else {
+                resultText = untaint result;
             }
         }
     }

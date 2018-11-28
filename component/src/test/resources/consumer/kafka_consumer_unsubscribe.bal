@@ -20,6 +20,7 @@ function funcKafkaTestUnsubscribe() returns boolean {
     kafka:SimpleConsumer kafkaConsumer = new({
             bootstrapServers: "localhost:9094",
             groupId: "test-group",
+            clientId: "unsubscribe-consumer",
             offsetReset: "earliest",
             topics: ["test1", "test2"]
         });

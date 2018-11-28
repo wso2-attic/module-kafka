@@ -17,16 +17,17 @@
 import wso2/kafka;
 
 kafka:ConsumerConfig consumerConfigs = {
-    bootstrapServers: "localhost:9098",
+    bootstrapServers: "localhost:9094",
     groupId: "test-group",
+    clientId: "subscribe-to-pattern-consumer",
     autoCommit: false
 };
 
 kafka:SimpleConsumer kafkaConsumer = new (consumerConfigs);
 
 kafka:ProducerConfig producerConfigs = {
-    bootstrapServers: "localhost:9098",
-    clientID: "basic-producer",
+    bootstrapServers: "localhost:9094",
+    clientID: "subscribe-to-pattern-producer",
     acks: "all",
     noRetries: 3
 };

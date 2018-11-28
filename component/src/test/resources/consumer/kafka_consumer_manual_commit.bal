@@ -19,6 +19,7 @@ import wso2/kafka;
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
     groupId: "abcd",
+    clientId: "manual-commit-consumer",
     offsetReset: "earliest",
     autoCommit: false,
     topics: ["test"]

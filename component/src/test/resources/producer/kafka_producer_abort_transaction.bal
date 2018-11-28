@@ -19,7 +19,7 @@ import ballerina/transactions;
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers:"localhost:9094, localhost:9095, localhost:9096",
-    clientID:"basic-producer",
+    clientID:"abort-transaction-producer",
     acks:"all",
     noRetries:3,
     transactionalID:"abort-transaction-test-producer"

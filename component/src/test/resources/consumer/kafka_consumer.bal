@@ -19,6 +19,7 @@ import wso2/kafka;
 kafka:ConsumerConfig consumerConfig = {
     bootstrapServers: "localhost:9094",
     groupId: "test-group",
+    clientId: "basic-consumer",
     offsetReset: "earliest",
     topics: ["test"]
 };

@@ -18,7 +18,7 @@ import wso2/kafka;
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "basic-producer",
+    clientID: "close-producer",
     acks: "all",
     noRetries: 3
 };

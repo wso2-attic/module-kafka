@@ -20,6 +20,7 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
     kafka:SimpleConsumer kafkaConsumer = new ({
             bootstrapServers: "localhost:9094",
             groupId: "test-group",
+            clientId: "manual-offset-commit-consumer",
             offsetReset: "earliest",
             topics: ["test"]
         });
