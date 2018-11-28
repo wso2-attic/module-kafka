@@ -21,7 +21,7 @@ string topic = "test";
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
     groupId: "test-group",
-    clientId: "advanced-service-consumer",
+    clientId: "service-consumer",
     offsetReset: "earliest",
     topics: [topic]
 };
@@ -37,10 +37,9 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:SimpleProducer kafkaProducer = new (producerConfigs);
 
-string resultText = "";
-int noOfChars = 11;
+string resultText = "init";
 
-service kafkaService on kafkaConsumer {
+service kafkaTestService on kafkaConsumer {
     resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
         foreach kafkaRecord in records {
             byte[] result = kafkaRecord.value;
