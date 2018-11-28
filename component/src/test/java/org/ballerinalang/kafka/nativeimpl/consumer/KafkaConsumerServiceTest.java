@@ -60,12 +60,13 @@ public class KafkaConsumerServiceTest {
     )
     public void testKafkaServiceEndpoint() {
         String testString = "test_string";
+
         compileResult = BCompileUtil.compileAndSetup("consumer/kafka_consumer_service.bal");
         BServiceUtil.runService(compileResult);
         BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
 
         try {
-            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
                 BValue[] returnBValues = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResultText");
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BString);
