@@ -16,7 +16,6 @@
 
 package org.ballerinalang.kafka.nativeimpl.consumer.action;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
@@ -29,7 +28,6 @@ import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -38,9 +36,9 @@ import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native function commits given offsets of consumer to offset topic.
@@ -57,49 +55,53 @@ public class CommitOffset extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
+        this.context = context;
+        this.consumer = getKafkaConsumer();
 
-        if (Objects.isNull(kafkaConsumer)) {
-            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
-        }
-
-        BRefValueArray offsets = ((BRefValueArray) context.getRefArgument(1));
-        Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
+        Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = getPartitionToMetadataMap();
 
         long apiTimeout = context.getIntArgument(0);
-        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
+        long defaultApiTimeout = getDefaultApiTimeout();
 
+        try {
+            if (apiTimeout > DURATION_UNDEFINED_VALUE) { // API timeout should given the priority over the default value
+                consumerCommitSyncWithDuration(partitionToMetadataMap, apiTimeout);
+            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
+                consumerCommitSyncWithDuration(partitionToMetadataMap, defaultApiTimeout);
+            } else {
+                this.consumer.commitSync(partitionToMetadataMap);
+            }
+        } catch (IllegalArgumentException | KafkaException e) {
+            context.setReturnValues(createError(context, "Failed to commit offsets. " + e.getMessage()));
+        }
+    }
+
+    private Map<TopicPartition, OffsetAndMetadata> getPartitionToMetadataMap() {
+        Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
+        BRefValueArray offsets = ((BRefValueArray) this.context.getRefArgument(1));
         BMap<String, BValue> offset;
-        BMap<String, BValue> partition;
         int offsetValue;
-        String topic;
-        int partitionValue;
+        TopicPartition topicPartition;
 
         if (Objects.nonNull(offsets)) {
             for (int counter = 0; counter < offsets.size(); counter++) {
                 offset = (BMap<String, BValue>) offsets.get(counter);
-                partition = (BMap<String, BValue>) offset.get("partition");
                 offsetValue = ((BInteger) offset.get("offset")).value().intValue();
-                topic = partition.get("topic").stringValue();
-                partitionValue = new Long(((BInteger) partition.get("partition")).intValue()).intValue();
-                partitionToMetadataMap.put(new TopicPartition(topic, partitionValue),
-                        new OffsetAndMetadata(offsetValue));
+                topicPartition = getTopicPartitionFromOffsetBMap(offset);
+                partitionToMetadataMap.put(topicPartition, new OffsetAndMetadata(offsetValue));
             }
         }
+        return partitionToMetadataMap;
+    }
 
-        try {
-            if (apiTimeout > DURATION_UNDEFINED_VALUE) { // API timeout should given the priority over the default value
-                Duration duration = getDurationFromLong(apiTimeout);
-                kafkaConsumer.commitSync(partitionToMetadataMap, duration);
-            } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
-                Duration duration = getDurationFromLong(defaultApiTimeout);
-                kafkaConsumer.commitSync(partitionToMetadataMap, duration);
-            } else {
-                kafkaConsumer.commitSync(partitionToMetadataMap);
-            }
-        } catch (IllegalArgumentException | KafkaException e) {
-            throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
-        }
+    private TopicPartition getTopicPartitionFromOffsetBMap(BMap<String, BValue> offset) {
+        BMap<String, BValue> partition;
+        partition = (BMap<String, BValue>) offset.get("partition");
+        return getTopicPartition(partition);
+    }
+
+    private void consumerCommitSyncWithDuration(Map<TopicPartition, OffsetAndMetadata> metadataMap, long timeout) {
+        Duration duration = getDurationFromLong(timeout);
+        this.consumer.commitSync(metadataMap, duration);
     }
 }

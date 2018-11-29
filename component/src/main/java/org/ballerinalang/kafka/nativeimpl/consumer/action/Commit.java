@@ -26,15 +26,13 @@ import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.util.exceptions.BallerinaException;
-
-import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native function commits a given consumer offsets to offset topic.
@@ -52,17 +50,12 @@ public class Commit implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct
-                .getNativeData(NATIVE_CONSUMER);
-
-        if (Objects.isNull(kafkaConsumer)) {
-            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
-        }
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         try {
             kafkaConsumer.commitSync();
         } catch (KafkaException e) {
-            throw new BallerinaException("Failed to commit offsets. " + e.getMessage(), e, context);
+            context.setReturnValues(createError(context, "Failed to commit offsets: " + e.getMessage()));
         }
     }
 

@@ -127,7 +127,7 @@ public type SimpleConsumer client object {
 
     public function __init (ConsumerConfig config) {
         self.consumerConfig = config;
-        var initResult = self.initEndpoint(config);
+        var initResult = self.init(config);
         if (initResult is error) {
             panic initResult;
         }
@@ -145,17 +145,7 @@ public type SimpleConsumer client object {
         return self.registerListener(s, annotationData);
     }
 
-    function initEndpoint(ConsumerConfig config) returns error? {
-        if (config.bootstrapServers is string) {
-            check self->connect();
-        }
-
-        string[]? topics = config.topics;
-        if (topics is string[]){
-            check self->subscribe(topics);
-        }
-        return;
-    }
+    function init(ConsumerConfig config) returns error?;
 
     extern function registerListener(service serviceType, map<any> annotationData) returns error?;
 
@@ -174,13 +164,13 @@ public type SimpleConsumer client object {
     public remote extern function close(int duration = -1) returns error?;
 
     # Commits current consumed offsets for consumer.
-    public remote extern function commit();
+    public remote extern function commit() returns error?;
 
     # Commits given offsets and partitions for the given topics, for consumer.
     #
     # + duration - Timeout duration for the commit operation execution.
     # + offsets - Offsets to be commited.
-    public remote extern function commitOffset(PartitionOffset[] offsets, int duration = -1);
+    public remote extern function commitOffset(PartitionOffset[] offsets, int duration = -1) returns error?;
 
     # Connects consumer to the provided host in the consumer configs.
     #
@@ -310,3 +300,15 @@ public type SimpleConsumer client object {
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public remote extern function unsubscribe() returns error?;
 };
+
+function SimpleConsumer.init(ConsumerConfig config) returns error? {
+    if (config.bootstrapServers is string) {
+        check self->connect();
+    }
+
+    string[]? topics = config.topics;
+    if (topics is string[]){
+        check self->subscribe(topics);
+    }
+    return;
+}
