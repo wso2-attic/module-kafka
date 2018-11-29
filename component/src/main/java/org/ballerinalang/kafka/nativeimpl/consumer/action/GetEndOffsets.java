@@ -60,11 +60,11 @@ public class GetEndOffsets extends AbstractGetOffsets {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        super.setContext(context);
+        this.context = context;
         BMap<String, BValue> consumerStruct = (BMap<String, BValue> ) context.getRefArgument(0);
-        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
+        this.consumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
-        if (Objects.isNull(kafkaConsumer)) {
+        if (Objects.isNull(consumer)) {
             throw new BallerinaException("Kafka Consumer has not been initialized properly.");
         }
 
@@ -78,12 +78,12 @@ public class GetEndOffsets extends AbstractGetOffsets {
             Map<TopicPartition, Long> offsetMap;
             if (apiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(apiTimeout);
-                offsetMap = kafkaConsumer.endOffsets(partitionList, duration);
+                offsetMap = consumer.endOffsets(partitionList, duration);
             } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
                 Duration duration = getDurationFromLong(defaultApiTimeout);
-                offsetMap = kafkaConsumer.endOffsets(partitionList, duration);
+                offsetMap = consumer.endOffsets(partitionList, duration);
             } else {
-                offsetMap = kafkaConsumer.endOffsets(partitionList);
+                offsetMap = consumer.endOffsets(partitionList);
             }
             List<BMap<String, BValue>> offsetList = super.getOffsetList(offsetMap);
             context.setReturnValues(new BRefValueArray(offsetList.toArray(new BRefType[0]),
