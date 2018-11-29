@@ -54,7 +54,11 @@ function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPa
     return result;
 }
 
-function funcKafkaCommitOffsets(kafka:SimpleConsumer consumer, kafka:PartitionOffset[] offsets) {
+function funcKafkaCommitOffsets(kafka:SimpleConsumer consumer, kafka:PartitionOffset[] offsets) returns boolean {
     kafka:SimpleConsumer consumerEP = consumer;
-    consumerEP->commitOffset(offsets);
+    var result = consumerEP->commitOffset(offsets);
+    if (result is error) {
+        return false;
+    }
+    return true;
 }

@@ -65,6 +65,10 @@ function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPa
     }
 }
 
-function funcKafkaCommit(kafka:SimpleConsumer consumer) {
-    consumer->commit();
+function funcKafkaCommit(kafka:SimpleConsumer consumer) returns boolean {
+    var result = consumer->commit();
+    if (result is error) {
+        return false;
+    }
+    return true;
 }
