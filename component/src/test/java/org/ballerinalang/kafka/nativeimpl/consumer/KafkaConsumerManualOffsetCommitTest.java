@@ -125,7 +125,10 @@ public class KafkaConsumerManualOffsetCommitTest {
                 createOffsetStruct(programFile).getType());
 
         inputBValues = new BValue[]{consumerEndpoint, offsetArray};
-        BRunUtil.invoke(result, "funcKafkaCommitOffsets", inputBValues);
+        returnBValues = BRunUtil.invoke(result, "funcKafkaCommitOffsets", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
 
         // Committed up to 5 th index of topic partition test-0
         inputBValues = new BValue[]{consumerEndpoint, part};
@@ -152,7 +155,10 @@ public class KafkaConsumerManualOffsetCommitTest {
                 createOffsetStruct(programFile).getType());
 
         inputBValues = new BValue[]{consumerEndpoint, offsetArray};
-        BRunUtil.invoke(result, "funcKafkaCommitOffsets", inputBValues);
+        returnBValues = BRunUtil.invoke(result, "funcKafkaCommitOffsets", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
 
         // Committed up to 10 th index of topic partition test-0
         inputBValues = new BValue[]{consumerEndpoint, part};
@@ -183,7 +189,8 @@ public class KafkaConsumerManualOffsetCommitTest {
         Assert.assertNotNull(returnBValues[0]);
         Assert.assertTrue(returnBValues[0] instanceof BError);
         Assert.assertEquals(((BError) returnBValues[0]).getReason(),
-                "You can only check the position for partitions assigned to this consumer.");
+                "Failed to get position offset: " +
+                        "You can only check the position for partitions assigned to this consumer.");
 
         part.put("topic", new BString("test"));
         part.put("partition", new BInteger(0));

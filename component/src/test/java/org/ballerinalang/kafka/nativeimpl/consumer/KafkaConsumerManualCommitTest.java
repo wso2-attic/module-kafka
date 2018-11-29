@@ -114,7 +114,10 @@ public class KafkaConsumerManualCommitTest {
         Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 10);
 
         inputBValues = new BValue[]{consumerEndpoint};
-        BRunUtil.invoke(result, "funcKafkaCommit", inputBValues);
+        returnBValues = BRunUtil.invoke(result, "funcKafkaCommit", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
 
 
         inputBValues = new BValue[]{consumerEndpoint, part};
@@ -144,7 +147,8 @@ public class KafkaConsumerManualCommitTest {
         Assert.assertNotNull(returnBValues[0]);
         Assert.assertTrue(returnBValues[0] instanceof BError);
         Assert.assertEquals(((BError) returnBValues[0]).getReason(),
-                "You can only check the position for partitions assigned to this consumer.");
+                "Failed to get position offset: " +
+                        "You can only check the position for partitions assigned to this consumer.");
 
         part.put("topic", new BString("test"));
         part.put("partition", new BInteger(0));
