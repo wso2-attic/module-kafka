@@ -59,7 +59,6 @@ public class KafkaConsumerServiceTest {
             sequential = true
     )
     public void testKafkaServiceEndpoint() {
-        String testString = "test_string";
         compileResult = BCompileUtil.compileAndSetup("consumer/kafka_consumer_service.bal");
         BServiceUtil.runService(compileResult);
         BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");

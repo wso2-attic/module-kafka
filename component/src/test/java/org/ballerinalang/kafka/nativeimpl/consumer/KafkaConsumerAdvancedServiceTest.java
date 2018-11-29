@@ -31,7 +31,6 @@ public class KafkaConsumerAdvancedServiceTest {
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
-        kafkaCluster.createTopic("test", 1, 1);
     }
 
     @Test(
@@ -39,8 +38,6 @@ public class KafkaConsumerAdvancedServiceTest {
             sequential = true
     )
     public void testKafkaServiceEndpoint() {
-        String testString = "test_string";
-        //CountDownLatch completion = new CountDownLatch(1);
         compileResult = BCompileUtil.compileAndSetup("consumer/kafka_consumer_advanced_service.bal");
         BServiceUtil.runService(compileResult);
         BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
