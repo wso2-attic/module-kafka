@@ -83,7 +83,11 @@ public class Send extends AbstractTransactionHandler {
         }
 
         if (Objects.isNull(producer) || Objects.isNull(kafkaRecord)) {
-            throw new BallerinaException("Kafka producer/record has not been initialized properly.");
+            context.setReturnValues(
+                    createError(
+                            context,
+                            "Failed to send message. Kafka producer/record has not been initialized properly."));
+            return;
         }
 
         try {
