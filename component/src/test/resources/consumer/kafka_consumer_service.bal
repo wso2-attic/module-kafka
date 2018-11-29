@@ -37,23 +37,21 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:SimpleProducer kafkaProducer = new (producerConfigs);
 
-string resultText = "init";
+boolean isSuccess = false;
 
 service kafkaTestService on kafkaConsumer {
     resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
         foreach kafkaRecord in records {
             byte[] result = kafkaRecord.value;
             if (result.length() > 0) {
-                resultText = "test_string";
-            } else {
-                resultText = "Failed";
+                isSuccess = true;
             }
         }
     }
 }
 
-function funcKafkaGetResultText() returns string {
-    return resultText;
+function funcKafkaGetResultText() returns boolean {
+    return isSuccess;
 }
 
 function funcKafkaProduce() {

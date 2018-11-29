@@ -15,7 +15,6 @@
 // under the License.
 
 import wso2/kafka;
-import ballerina/io;
 
 string topic = "test";
 
@@ -39,8 +38,7 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:SimpleProducer kafkaProducer = new (producerConfigs);
 
-string resultText = "";
-int noOfChars = 11;
+boolean isSuccess = false;
 
 service kafkaService on kafkaConsumer {
     resource function onMessage(
@@ -50,21 +48,16 @@ service kafkaService on kafkaConsumer {
         string groupId
     ) {
         foreach kafkaRecord in records {
-            byte[] serializedMsg = kafkaRecord.value;
-            io:ReadableByteChannel byteChannel = io:createReadableChannel(serializedMsg);
-            io:ReadableCharacterChannel characterChannel = new io:ReadableCharacterChannel(byteChannel, "UTF-8");
-            var result = characterChannel.read(noOfChars);
-            if (result is error) {
-                resultText = "Failed";
-            } else {
-                resultText = untaint result;
+            byte[] result = kafkaRecord.value;
+            if (result.length() > 0) {
+                isSuccess = true;
             }
         }
     }
 }
 
-function funcKafkaGetResultText() returns string {
-    return resultText;
+function funcKafkaGetResultText() returns boolean {
+    return isSuccess;
 }
 
 function funcKafkaProduce() {
