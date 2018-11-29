@@ -16,9 +16,7 @@
 
 package org.ballerinalang.kafka.nativeimpl.consumer.action;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
-import org.ballerinalang.bre.Context;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
@@ -36,9 +34,6 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
  * {@code AbstractGetOffsets} is the base class for getting beginning/end offsets for a particular consumer.
  */
 public abstract class AbstractGetOffsets extends AbstractApisWithDuration {
-
-    protected Context context;
-    protected KafkaConsumer<byte[], byte[]> consumer;
 
     public List<BMap<String, BValue>> getOffsetList(Map<TopicPartition, Long> offsetMap) {
         List<BMap<String, BValue>> offsetList = new ArrayList<>();

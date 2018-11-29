@@ -21,7 +21,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
@@ -35,7 +34,6 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.util.codegen.FunctionInfo;
-import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.program.BLangFunctions;
 
 import java.util.ArrayList;
@@ -49,6 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
 
 /**
@@ -82,14 +81,14 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         if (Objects.nonNull(partitionsRevoked) && partitionsRevoked instanceof BFunctionPointer) {
             onPartitionsRevoked = ((BFunctionPointer) context.getRefArgument(2)).value();
         } else {
-            context.setReturnValues(BLangVMErrors.createError(context,
+            context.setReturnValues(createError(context,
                     "The onPartitionsRevoked function is not provided."));
         }
 
         if (Objects.nonNull(partitionsAssigned) && partitionsAssigned instanceof BFunctionPointer) {
             onPartitionsAssigned = ((BFunctionPointer) context.getRefArgument(3)).value();
         } else {
-            context.setReturnValues(BLangVMErrors.createError(context,
+            context.setReturnValues(createError(context,
                     "The onPartitionsAssigned function is not provided."));
         }
 
@@ -98,14 +97,10 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
-        if (Objects.isNull(kafkaConsumer)) {
-            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
-        }
-
         try {
             kafkaConsumer.subscribe(topics, listener);
         } catch (IllegalArgumentException | IllegalStateException | KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+            context.setReturnValues(createError(context, e.getMessage()));
         }
     }
 

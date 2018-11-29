@@ -16,7 +16,6 @@
 
 package org.ballerinalang.kafka.nativeimpl.consumer.action;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
@@ -34,11 +33,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
@@ -60,17 +57,9 @@ public class GetBeginningOffsets extends AbstractGetOffsets {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         this.context = context;
-        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        this.consumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
-
-        if (Objects.isNull(consumer)) {
-            context.setReturnValues(createError(
-                    context, "Failed to get beginning offsets: Kafka Consumer has not been initialized properly.")
-            );
-            return;
-        }
+        this.consumer = getKafkaConsumer();
         long apiTimeout = context.getIntArgument(0);
-        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
+        long defaultApiTimeout = getDefaultApiTimeout();
 
         try {
             BRefValueArray partitions = ((BRefValueArray) context.getRefArgument(1));

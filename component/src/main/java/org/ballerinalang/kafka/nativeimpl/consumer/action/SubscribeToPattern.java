@@ -19,7 +19,6 @@ package org.ballerinalang.kafka.nativeimpl.consumer.action;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
@@ -27,9 +26,7 @@ import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
@@ -37,6 +34,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native function subscribes consumer to given topic pattern.
@@ -57,15 +55,10 @@ public class SubscribeToPattern implements NativeCallableUnit {
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
-        if (Objects.isNull(kafkaConsumer)) {
-            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
-        }
-
         try {
             kafkaConsumer.subscribe(Pattern.compile(topicRegex));
-        } catch (IllegalArgumentException |
-                IllegalStateException | KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+        } catch (IllegalArgumentException | IllegalStateException | KafkaException e) {
+            context.setReturnValues(createError(context, e.getMessage()));
         }
     }
 

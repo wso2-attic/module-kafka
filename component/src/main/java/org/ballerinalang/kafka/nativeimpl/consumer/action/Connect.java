@@ -21,7 +21,6 @@ package org.ballerinalang.kafka.nativeimpl.consumer.action;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
@@ -39,6 +38,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native function connects consumer to remote cluster.
@@ -60,16 +60,18 @@ public class Connect implements NativeCallableUnit {
         BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
         // Check whether consumer configuration is available.
         if (Objects.isNull(consumerConfig)) {
-            context.setReturnValues(BLangVMErrors.
-                    createError(context,
-                     "Kafka consumer is not initialized with consumer configuration."));
+            context.setReturnValues(
+                    createError(context, "Kafka consumer is not initialized with consumer configuration.")
+            );
+            return;
         }
         // Check whether already native consumer is attached to the struct.
         // This can be happen either from Kafka service or via programmatically.
         if (Objects.nonNull(consumerStruct.getNativeData(NATIVE_CONSUMER))) {
-            context.setReturnValues(BLangVMErrors.createError(context,
+            context.setReturnValues(createError(context,
                     "Kafka consumer is already connected to external broker." +
                     " Please close it before re-connecting the external broker again."));
+            return;
         }
 
         Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerConfig);
@@ -78,7 +80,7 @@ public class Connect implements NativeCallableUnit {
             KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<>(consumerProperties);
             consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+            context.setReturnValues(createError(context, "Failed to connect to the kafka server: " + e.getMessage()));
         }
     }
 

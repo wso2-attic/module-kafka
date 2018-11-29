@@ -17,16 +17,21 @@
 package org.ballerinalang.kafka.nativeimpl.consumer.action;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
+import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
+
+import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * {@code AbstractApisWithDuration} is the base class for handle APIs with optional duration parameter.
@@ -38,20 +43,18 @@ import java.util.Properties;
  */
 public abstract class AbstractApisWithDuration implements NativeCallableUnit {
 
-    private Context context;
-    protected static final long DURATION_UNDEFINED_VALUE = -1;
+    protected Context context;
+    KafkaConsumer<byte[], byte[]> consumer;
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
+    protected static final long DURATION_UNDEFINED_VALUE = -1;
 
     protected Duration getDurationFromLong(long value) {
         return Duration.ofMillis(value);
     }
 
-    protected long getDefaultApiTimeout(BMap<String, BValue> consumerStruct) {
+    protected long getDefaultApiTimeout() {
         long duration;
-        Properties consumerProperties = getConsumerProperties(consumerStruct);
+        Properties consumerProperties = getConsumerProperties();
         duration = isDefaultApiTimeoutDefined(consumerProperties) ?
                 getDefaultApiTimeoutConsumerConfig(consumerProperties) : DURATION_UNDEFINED_VALUE;
         return duration;
@@ -65,16 +68,31 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
         return Objects.nonNull(consumerProperties.get(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG));
     }
 
-    private Properties getConsumerProperties(BMap<String, BValue> consumerStruct) {
-        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
+    private Properties getConsumerProperties() {
+        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) getConsumerStruct().get("consumerConfig");
         // Check whether consumer configuration is available.
         if (Objects.isNull(consumerConfig)) {
-            context.setReturnValues(BLangVMErrors.
-                    createError(context,
-                            "Kafka consumer is not initialized with consumer configuration."));
+            context.setReturnValues(createError(
+                    context, "Kafka consumer is not initialized with consumer configuration.")
+            );
         }
         Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerConfig);
         return consumerProperties;
+    }
+
+    protected KafkaConsumer<byte[], byte[]> getKafkaConsumer() {
+        BMap<String, BValue> consumerStruct = getConsumerStruct();
+        return (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
+    }
+
+    protected BMap<String, BValue> getConsumerStruct() {
+        return (BMap<String, BValue>) this.context.getRefArgument(0);
+    }
+
+    protected TopicPartition getTopicPartition(BMap<String, BValue> partition) {
+        String topic = partition.get("topic").stringValue();
+        int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
+        return new TopicPartition(topic, partitionValue);
     }
 
     @Override
