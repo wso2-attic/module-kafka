@@ -100,7 +100,6 @@ public class Send extends AbstractTransactionHandler {
             context.setReturnValues();
         } catch (IllegalStateException | KafkaException e) {
             context.setReturnValues(createError(context, "Failed to send message." + e.getMessage()));
-            //throw new BallerinaException("Failed to send message. " + e.getMessage(), e, context);
         }
     }
 }
