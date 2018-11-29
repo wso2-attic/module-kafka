@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 
 public class KafkaProducerCommitConsumerTest {
+
     private CompileResult result;
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
