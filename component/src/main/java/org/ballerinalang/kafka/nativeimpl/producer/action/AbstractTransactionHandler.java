@@ -27,7 +27,7 @@ import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
-import org.ballerinalang.util.transactions.LocalTransactionInfo;
+import org.ballerinalang.util.transactions.TransactionLocalContext;
 
 import java.util.Map;
 import java.util.Objects;
@@ -57,11 +57,11 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
 
     void initiateTransaction(BMap<String, BValue> producerConnector) {
         String connectorKey = producerConnector.get("connectorID").stringValue();
-        LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
+        TransactionLocalContext localTransactionInfo = context.getLocalTransactionInfo();
         performTransaction(localTransactionInfo, connectorKey);
     }
 
-    private void performTransaction(LocalTransactionInfo localTransactionInfo, String connectorKey) {
+    private void performTransaction(TransactionLocalContext localTransactionInfo, String connectorKey) {
         if (!isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
             KafkaTransactionContext txContext = new KafkaTransactionContext(producer);
             localTransactionInfo.registerTransactionContext(connectorKey, txContext);
@@ -73,7 +73,7 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
         return Objects.nonNull(properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG)) && context.isInTransaction();
     }
 
-    boolean isKafkaTransactionInitiated(LocalTransactionInfo localTransactionInfo, String connectorKey) {
+    boolean isKafkaTransactionInitiated(TransactionLocalContext localTransactionInfo, String connectorKey) {
         return Objects.nonNull(localTransactionInfo.getTransactionContext(connectorKey));
     }
 
