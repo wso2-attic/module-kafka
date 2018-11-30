@@ -25,12 +25,16 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
-function funcTestPartitionInfoRetrieval(string topic) returns kafka:TopicPartition[] {
+function funcTestPartitionInfoRetrieval(string topic) returns kafka:TopicPartition[]? {
     return getPartitionInfo(topic);
 }
 
-function getPartitionInfo(string topic) returns kafka:TopicPartition[] {
-    kafka:TopicPartition[] partitions = kafkaProducer->getTopicPartitions(topic);
+function getPartitionInfo(string topic) returns kafka:TopicPartition[]? {
+    kafka:TopicPartition[]|error partitions = kafkaProducer->getTopicPartitions(topic);
     var result = kafkaProducer->close();
-    return partitions;
+    if (partitions is error) {
+        return;
+    } else {
+        return partitions;
+    }
 }

@@ -522,17 +522,23 @@ public class KafkaUtils {
 
     public static List<BMap<String, BValue>> createPartitionList(Context context,
                                                                  Collection<TopicPartition> partitions) {
+
         List<BMap<String, BValue>> topicPartitionList = new ArrayList<>();
         if (!partitions.isEmpty()) {
             partitions.forEach(assignment -> {
-                BMap<String, BValue> partitionStruct = KafkaUtils.
-                        createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                partitionStruct.put("topic", new BString(assignment.topic()));
-                partitionStruct.put("partition", new BInteger(assignment.partition()));
+                BMap<String, BValue> partitionStruct = getTopicPartitionStruct(context, assignment);
                 topicPartitionList.add(partitionStruct);
             });
         }
         return topicPartitionList;
+    }
+
+    public static BMap<String, BValue> getTopicPartitionStruct(Context context, TopicPartition topicPartition) {
+        BMap<String, BValue> partitionStruct = KafkaUtils
+                .createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
+        partitionStruct.put("topic", new BString(topicPartition.topic()));
+        partitionStruct.put("partition", new BInteger(topicPartition.partition()));
+        return partitionStruct;
     }
 
     public static BError createError(Context context, String errorCode, String errorMessage) {

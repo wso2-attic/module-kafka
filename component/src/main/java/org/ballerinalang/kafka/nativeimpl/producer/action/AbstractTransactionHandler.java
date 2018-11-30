@@ -19,19 +19,21 @@ package org.ballerinalang.kafka.nativeimpl.producer.action;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.transactions.TransactionLocalContext;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+
+import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
+import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG;
 
 /**
  * {@code AbstractCommitConsumer} is the base class for commit consumers.
@@ -40,22 +42,36 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
 
     protected Context context;
     protected KafkaProducer<byte[], byte[]> producer;
+    protected BMap<String, BValue> producerStruct;
+    protected BMap<String, BValue> producerConnector;
+    protected Properties producerProperties;
 
-    void commitConsumer(Properties producerProperties,
-                        BMap<String, BValue> producerConnector,
-                        Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
-                        String groupID) {
-        try {
-            if (isTransactionalProducer(producerProperties)) {
-                initiateTransaction(producerConnector);
-            }
-            producer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
-        } catch (IllegalStateException | KafkaException e) {
-            throw new BallerinaException("Failed to send offsets to transaction. " + e.getMessage(), e, context);
-        }
+    boolean isTransactionalProducer() {
+        return Objects.nonNull(
+                producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG))
+                && context.isInTransaction();
     }
 
-    void initiateTransaction(BMap<String, BValue> producerConnector) {
+    boolean isKafkaTransactionInitiated(TransactionLocalContext localTransactionInfo, String connectorKey) {
+        return Objects.nonNull(localTransactionInfo.getTransactionContext(connectorKey));
+    }
+
+    void initializeClassVariables() {
+        producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
+        BMap producerMap = (BMap) producerConnector.get("producerHolder");
+        producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
+        producer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
+        producerProperties = (Properties) producerStruct.getNativeData(NATIVE_PRODUCER_CONFIG);
+    }
+
+    void commitConsumer(Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap, String groupID) {
+        if (isTransactionalProducer()) {
+            initiateTransaction();
+        }
+        producer.sendOffsetsToTransaction(partitionToMetadataMap, groupID);
+    }
+
+    void initiateTransaction() {
         String connectorKey = producerConnector.get("connectorID").stringValue();
         TransactionLocalContext localTransactionInfo = context.getLocalTransactionInfo();
         performTransaction(localTransactionInfo, connectorKey);
@@ -67,14 +83,6 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
             localTransactionInfo.registerTransactionContext(connectorKey, txContext);
             producer.beginTransaction();
         }
-    }
-
-    boolean isTransactionalProducer(Properties properties) {
-        return Objects.nonNull(properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG)) && context.isInTransaction();
-    }
-
-    boolean isKafkaTransactionInitiated(TransactionLocalContext localTransactionInfo, String connectorKey) {
-        return Objects.nonNull(localTransactionInfo.getTransactionContext(connectorKey));
     }
 
     @Override

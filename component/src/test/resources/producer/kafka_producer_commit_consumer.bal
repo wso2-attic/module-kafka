@@ -48,12 +48,15 @@ function kafkaProduce(byte[] value, string topic) {
     }
 }
 
-function funcTestKafkaConsume() returns string{
+function funcTestKafkaConsume() returns boolean {
     var records = kafkaConsumer->poll(3000);
     if (records is error) {
-        return "failure";
+        return false;
     } else {
-        kafkaProducer->commitConsumer(kafkaConsumer);
-        return "success";
+        var result = kafkaProducer->commitConsumer(kafkaConsumer);
+        if (result is error) {
+            return false;
+        }
+        return true;
     }
 }

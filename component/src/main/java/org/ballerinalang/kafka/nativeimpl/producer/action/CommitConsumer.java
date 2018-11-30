@@ -18,31 +18,26 @@ package org.ballerinalang.kafka.nativeimpl.producer.action;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native action commits the consumer offsets in transaction.
@@ -59,22 +54,9 @@ public class CommitConsumer extends AbstractTransactionHandler {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         this.context = context;
-        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
-
-        BMap producerMap = (BMap) producerConnector.get("producerHolder");
-        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
-
-        this.producer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
-
-        if (Objects.isNull(producer)) {
-            throw new BallerinaException("Kafka producer has not been initialized properly.");
-        }
-
-        Properties producerProperties = (Properties) producerStruct.getNativeData(NATIVE_PRODUCER_CONFIG);
-
+        initializeClassVariables();
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(1);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
-
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
         Set<TopicPartition> topicPartitions = kafkaConsumer.assignment();
 
@@ -82,11 +64,13 @@ public class CommitConsumer extends AbstractTransactionHandler {
             long pos = kafkaConsumer.position(tp);
             partitionToMetadataMap.put(new TopicPartition(tp.topic(), tp.partition()), new OffsetAndMetadata(pos));
         });
-
         BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
         String groupID = consumerConfig.get("groupId").stringValue();
-
-        commitConsumer(producerProperties, producerConnector, partitionToMetadataMap, groupID);
+        try {
+            commitConsumer(partitionToMetadataMap, groupID);
+        } catch (IllegalStateException | KafkaException e) {
+            context.setReturnValues(createError(context, "Failed to commit consumer. " + e.getMessage()));
+        }
         callableUnitCallback.notifySuccess();
     }
 }

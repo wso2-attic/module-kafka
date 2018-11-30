@@ -28,9 +28,6 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.util.exceptions.BallerinaException;
-
-import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
@@ -55,16 +52,9 @@ public class Close implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
-
         BMap producerMap = (BMap) producerConnector.get("producerHolder");
         BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
-
         KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
-
-        if (Objects.isNull(kafkaProducer)) {
-            throw new BallerinaException("Kafka producer has not been initialized properly.");
-        }
-
         try {
             kafkaProducer.close();
             context.setReturnValues();
@@ -78,4 +68,3 @@ public class Close implements NativeCallableUnit {
         return true;
     }
 }
-

@@ -17,7 +17,7 @@
 package org.ballerinalang.kafka.nativeimpl.producer.action;
 
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
@@ -25,23 +25,18 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native action commits the consumer for given offsets in transaction.
@@ -58,40 +53,30 @@ public class CommitConsumerOffsets extends AbstractTransactionHandler {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         this.context = context;
-        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
-
-        BMap producerMap = (BMap) producerConnector.get("producerHolder");
-        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
-
-        this.producer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
-
-        if (Objects.isNull(producer)) {
-            throw new BallerinaException("Kafka Producer has not been initialized properly.");
-        }
-
-        Properties producerProperties = (Properties) producerStruct.getNativeData(NATIVE_PRODUCER_CONFIG);
-
+        initializeClassVariables();
         BRefValueArray offsets = ((BRefValueArray) context.getRefArgument(1));
         String groupID = context.getStringArgument(0);
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
 
-        BMap<String, BValue> offset;
-        BMap<String, BValue> partition;
-        int offsetValue;
-        String topic;
-        int partitionValue;
-
         for (int counter = 0; counter < offsets.size(); counter++) {
-            offset = (BMap<String, BValue>) offsets.get(counter);
-            partition = (BMap<String, BValue>) offset.get("partition");
-            offsetValue = ((BInteger) offset.get("offset")).value().intValue();
-            topic = partition.get("topic").stringValue();
-            partitionValue = ((BInteger) partition.get("partition")).value().intValue();
-            partitionToMetadataMap.put(new TopicPartition(topic, partitionValue), new OffsetAndMetadata(offsetValue));
+            BMap<String, BValue> offset = (BMap<String, BValue>) offsets.get(counter);
+            int offsetValue = ((BInteger) offset.get("offset")).value().intValue();
+            TopicPartition topicPartition = createTopicPartitionFromPartitionOffset(offset);
+            partitionToMetadataMap.put(topicPartition, new OffsetAndMetadata(offsetValue));
         }
-
-        commitConsumer(producerProperties, producerConnector, partitionToMetadataMap, groupID);
+        try {
+            commitConsumer(partitionToMetadataMap, groupID);
+        } catch (IllegalStateException | KafkaException e) {
+            context.setReturnValues(createError(context, "Failed to commit consumer offsets. " + e.getMessage()));
+        }
         callableUnitCallback.notifySuccess();
     }
-}
 
+    private TopicPartition createTopicPartitionFromPartitionOffset(BMap<String, BValue> offset) {
+        BMap<String, BValue> partition = (BMap<String, BValue>) offset.get("partition");
+        String topic = partition.get("topic").stringValue();
+        int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
+
+        return new TopicPartition(topic, partitionValue);
+    }
+}

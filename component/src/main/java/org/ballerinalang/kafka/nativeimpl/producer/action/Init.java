@@ -58,26 +58,21 @@ public class Init implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
-
         BMap<String, BValue> producerConf = (BMap<String, BValue>) context.getRefArgument(1);
         Properties producerProperties = KafkaUtils.processKafkaProducerConfig(producerConf);
-
         try {
             KafkaProducer<byte[], byte[]> kafkaProducer = new KafkaProducer<>(producerProperties);
 
             if (Objects.isNull(kafkaProducer)) {
                 throw new BallerinaException("Kafka producer has not been initialized properly.");
             }
-
             if (producerProperties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG) != null) {
                 kafkaProducer.initTransactions();
             }
-
             BMap producerMap = (BMap) producerConnector.get("producerHolder");
             BMap<String, BValue> producerStruct = KafkaUtils.createKafkaPackageStruct(context, PRODUCER_STRUCT_NAME);
             producerStruct.addNativeData(NATIVE_PRODUCER, kafkaProducer);
             producerStruct.addNativeData(NATIVE_PRODUCER_CONFIG, producerProperties);
-
             producerMap.put(new BString(NATIVE_PRODUCER), producerStruct);
         } catch (IllegalStateException | KafkaException e) {
             throw new BallerinaException("Failed to initialize the producer " + e.getMessage(), e, context);

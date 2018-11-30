@@ -16,24 +16,16 @@
 
 package org.ballerinalang.kafka.nativeimpl.producer.action;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.transaction.KafkaTransactionContext;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.util.transactions.TransactionLocalContext;
 
-import java.util.Properties;
-
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
@@ -54,19 +46,11 @@ public class AbortTransaction extends AbstractTransactionHandler {
     @Override
     public void execute(Context context, CallableUnitCallback callback) {
         this.context = context;
-        BMap<String, BValue> producerConnector = (BMap<String, BValue>) context.getRefArgument(0);
-
-        BMap producerMap = (BMap) producerConnector.get("producerHolder");
-        BMap<String, BValue> producerStruct = (BMap<String, BValue>) producerMap.get(new BString(NATIVE_PRODUCER));
-
+        initializeClassVariables();
         String connectorKey = producerConnector.get("connectorID").stringValue();
-        this.producer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
-        Properties producerProperties = (Properties) producerStruct.getNativeData(NATIVE_PRODUCER_CONFIG);
-
         TransactionLocalContext localTransactionInfo = context.getLocalTransactionInfo();
-
         try {
-            if (isTransactionalProducer(producerProperties)) {
+            if (isTransactionalProducer()) {
                 if (isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
                     KafkaTransactionContext txContext = new KafkaTransactionContext(producer);
                     txContext.rollback();
@@ -82,5 +66,4 @@ public class AbortTransaction extends AbstractTransactionHandler {
     public boolean isBlocking() {
         return true;
     }
-
 }

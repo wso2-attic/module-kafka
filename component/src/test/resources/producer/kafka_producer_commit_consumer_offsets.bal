@@ -69,7 +69,10 @@ function funcTestKafkaCommitOffsets() returns boolean {
         if (results.length() == 0) {
             return false;
         } else {
-            kafkaProducer->commitConsumerOffsets(results, "test-group");
+            var result = kafkaProducer->commitConsumerOffsets(results, "test-group");
+            if (result is error) {
+                return false;
+            }
             return true;
         }
     }

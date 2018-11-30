@@ -111,22 +111,22 @@ public type SimpleProducer client object {
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
     # + consumer - Consumer which needs offsets to be committed.
-    public remote extern function commitConsumer(SimpleConsumer consumer);
+    public remote extern function commitConsumer(SimpleConsumer consumer) returns error?;
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
     # + offsets - Consumer offsets to commit for given transaction.
     # + groupID - Consumer group id.
-    public remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
+    public remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID) returns error?;
 
     # Flush action which flush batch of records.
-    public remote extern function flushRecords();
+    public remote extern function flushRecords() returns error?;
 
     # GetTopicPartitions action which returns given topic partition information.
     #
     # + topic - Topic which the partition information is given.
     # + return - Partitions for the given topic.
-    public remote extern function getTopicPartitions(string topic) returns TopicPartition[];
+    public remote extern function getTopicPartitions(string topic) returns TopicPartition[]|error;
 
     # Simple Send action which produce records to Kafka server.
     #
