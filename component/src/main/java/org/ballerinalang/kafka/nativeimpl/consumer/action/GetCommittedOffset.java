@@ -90,5 +90,3 @@ public class GetCommittedOffset extends AbstractApisWithDuration {
         return this.consumer.committed(topicPartition, duration);
     }
 }
-
-
