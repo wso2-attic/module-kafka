@@ -21,6 +21,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
+import org.ballerinalang.bre.bvm.BVMExecutor;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
@@ -34,7 +35,6 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.util.codegen.FunctionInfo;
-import org.ballerinalang.util.program.BLangFunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -137,10 +137,12 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
          */
         @Override
         public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-            BLangFunctions
-                    .invokeCallable(onPartitionsRevoked,
-                            new BValue[]{consumerStruct, getPartitionsArray(partitions)});
-
+            BValue[] returnArgs = new BValue[]{consumerStruct, getPartitionsArray(partitions)};
+            BVMExecutor.executeFunction(
+                    onPartitionsRevoked.getPackageInfo().getProgramFile(),
+                    onPartitionsRevoked,
+                    returnArgs
+            );
         }
 
         /**
@@ -148,9 +150,12 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
          */
         @Override
         public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-            BLangFunctions.invokeCallable(onPartitionsAssigned,
-                    new BValue[]{consumerStruct, getPartitionsArray(partitions)});
-
+            BValue[] returnArgs = new BValue[]{consumerStruct, getPartitionsArray(partitions)};
+            BVMExecutor.executeFunction(
+                    onPartitionsAssigned.getPackageInfo().getProgramFile(),
+                    onPartitionsAssigned,
+                    returnArgs
+            );
         }
 
         private BRefValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
@@ -158,8 +163,6 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
             return new BRefValueArray(assignmentList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType());
         }
-
     }
-
 }
 
