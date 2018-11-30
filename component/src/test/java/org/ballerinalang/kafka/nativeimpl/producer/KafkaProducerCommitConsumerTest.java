@@ -38,10 +38,9 @@ public class KafkaProducerCommitConsumerTest {
     )
     public void testKafkaProduce() {
         result = BCompileUtil.compileAndSetup("producer/kafka_producer_commit_consumer.bal");
-        BValue[] inputBValues = {};
-        BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
+        BRunUtil.invokeStateful(result, "funcTestKafkaProduce");
         try {
-            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
                 BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaConsume");
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BString);
