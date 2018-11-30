@@ -39,12 +39,12 @@ import java.util.Properties;
 public abstract class AbstractTransactionHandler implements NativeCallableUnit {
 
     protected Context context;
-    protected KafkaProducer producer;
+    protected KafkaProducer<byte[], byte[]> producer;
 
-    public void commitConsumer(Properties producerProperties,
-                               BMap<String, BValue> producerConnector,
-                               Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
-                               String groupID) {
+    void commitConsumer(Properties producerProperties,
+                        BMap<String, BValue> producerConnector,
+                        Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap,
+                        String groupID) {
         try {
             if (isTransactionalProducer(producerProperties)) {
                 initiateTransaction(producerConnector);
@@ -55,7 +55,7 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
         }
     }
 
-    public void initiateTransaction(BMap<String, BValue> producerConnector) {
+    void initiateTransaction(BMap<String, BValue> producerConnector) {
         String connectorKey = producerConnector.get("connectorID").stringValue();
         LocalTransactionInfo localTransactionInfo = context.getLocalTransactionInfo();
         performTransaction(localTransactionInfo, connectorKey);
@@ -69,11 +69,11 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
         }
     }
 
-    public boolean isTransactionalProducer(Properties properties) {
+    boolean isTransactionalProducer(Properties properties) {
         return Objects.nonNull(properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG)) && context.isInTransaction();
     }
 
-    public boolean isKafkaTransactionInitiated(LocalTransactionInfo localTransactionInfo, String connectorKey) {
+    boolean isKafkaTransactionInitiated(LocalTransactionInfo localTransactionInfo, String connectorKey) {
         return Objects.nonNull(localTransactionInfo.getTransactionContext(connectorKey));
     }
 
