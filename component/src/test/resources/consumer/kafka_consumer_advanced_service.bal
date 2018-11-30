@@ -16,11 +16,11 @@
 
 import wso2/kafka;
 
-string topic = "test";
+string topic = "advanced-service-test";
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
-    groupId: "test-group",
+    groupId: "advanced-service-test-group",
     clientId: "advanced-service-consumer",
     offsetReset: "earliest",
     topics: [topic],
