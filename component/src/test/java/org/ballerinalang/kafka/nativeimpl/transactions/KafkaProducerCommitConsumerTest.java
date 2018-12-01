@@ -37,7 +37,7 @@ public class KafkaProducerCommitConsumerTest {
             sequential = true
     )
     public void testKafkaProduce() {
-        result = BCompileUtil.compileAndSetup("transactions/kafka_producer_commit_consumer.bal");
+        result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_commit_consumer.bal");
         BRunUtil.invokeStateful(result, "funcTestKafkaProduce");
         try {
             await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {

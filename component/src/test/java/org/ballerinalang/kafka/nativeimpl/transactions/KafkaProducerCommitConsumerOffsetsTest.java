@@ -37,7 +37,7 @@ public class KafkaProducerCommitConsumerOffsetsTest {
             sequential = true
     )
     public void testKafkaCommitConsumerOffsetsTest() {
-        result = BCompileUtil.compileAndSetup("transactions/kafka_producer_commit_consumer_offsets.bal");
+        result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_commit_consumer_offsets.bal");
         BValue[] inputBValues = {};
         BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
         try {

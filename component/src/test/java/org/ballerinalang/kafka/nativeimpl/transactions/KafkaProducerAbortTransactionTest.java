@@ -54,7 +54,7 @@ public class KafkaProducerAbortTransactionTest {
             sequential = true
     )
     public void testKafkaProduce() {
-        CompileResult result = BCompileUtil.compileAndSetup("transactions/kafka_producer_abort_transaction.bal");
+        CompileResult result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_abort_transaction.bal");
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaAbortTransactionTest", inputBValues);
         try {
