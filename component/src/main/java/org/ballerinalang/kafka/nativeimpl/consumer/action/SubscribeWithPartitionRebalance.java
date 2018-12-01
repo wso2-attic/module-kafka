@@ -29,9 +29,8 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BFunctionPointer;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.util.codegen.FunctionInfo;
@@ -67,10 +66,10 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        BStringArray topicArray = (BStringArray) context.getRefArgument(1);
+        BValueArray topicArray = (BValueArray) context.getRefArgument(1);
         ArrayList<String> topics = new ArrayList<String>();
         for (int counter = 0; counter < topicArray.size(); counter++) {
-            topics.add(topicArray.get(counter));
+            topics.add(topicArray.getString(counter));
         }
 
         FunctionInfo onPartitionsRevoked = null;
@@ -158,9 +157,9 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
             );
         }
 
-        private BRefValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
+        private BValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
             List<BMap<String, BValue>> assignmentList = createPartitionList(context, partitions);
-            return new BRefValueArray(assignmentList.toArray(new BRefType[0]),
+            return new BValueArray(assignmentList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType());
         }
     }

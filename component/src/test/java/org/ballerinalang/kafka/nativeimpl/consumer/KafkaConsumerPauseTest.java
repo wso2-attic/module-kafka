@@ -30,9 +30,9 @@ import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.util.codegen.ProgramFile;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -103,7 +103,7 @@ public class KafkaConsumerPauseTest {
 
         ArrayList<BMap<String, BValue>> structArray = new ArrayList<>();
         structArray.add(part);
-        BRefValueArray partitionArray = new BRefValueArray(structArray.toArray(new BRefType[0]),
+        BValueArray partitionArray = new BValueArray(structArray.toArray(new BRefType[0]),
                 createPartitionStruct(programFile).getType());
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPausedPartitions", inputBValues);
@@ -174,8 +174,8 @@ public class KafkaConsumerPauseTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-pause-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
     }
 

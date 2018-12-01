@@ -25,13 +25,12 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BByteArray;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -77,7 +76,7 @@ public class Poll implements NativeCallableUnit {
                     recordsList.add(recordStruct);
                 });
             }
-            context.setReturnValues(new BRefValueArray(recordsList.toArray(new BRefType[0]),
+            context.setReturnValues(new BValueArray(recordsList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, CONSUMER_RECORD_STRUCT_NAME).getType()));
         } catch (IllegalStateException |
                 IllegalArgumentException | KafkaException e) {
@@ -93,9 +92,9 @@ public class Poll implements NativeCallableUnit {
     private BMap<String, BValue> getRecordStruct(Context context, ConsumerRecord<byte[],  byte[]> record) {
         BMap<String, BValue> recordStruct = KafkaUtils.createKafkaPackageStruct(context, CONSUMER_RECORD_STRUCT_NAME);
         if (record.key() != null) {
-            recordStruct.put("key", new BByteArray(record.key()));
+            recordStruct.put("key", new BValueArray(record.key()));
         }
-        recordStruct.put("value", new BByteArray(record.value()));
+        recordStruct.put("value", new BValueArray(record.value()));
         recordStruct.put("offset", new BInteger(record.offset()));
         recordStruct.put("partition", new BInteger(record.partition()));
         recordStruct.put("timestamp", new BInteger(record.timestamp()));

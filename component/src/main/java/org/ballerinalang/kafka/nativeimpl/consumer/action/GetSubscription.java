@@ -21,10 +21,11 @@ import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.NativeCallableUnit;
+import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -57,7 +58,7 @@ public class GetSubscription implements NativeCallableUnit {
 
         try {
             Set<String> subscriptions = kafkaConsumer.subscription();
-            BStringArray subscriptionArray = new BStringArray();
+            BValueArray subscriptionArray = new BValueArray(BTypes.typeString);
             if (!subscriptions.isEmpty()) {
                 int i = 0;
                 for (String subscription : subscriptions) {

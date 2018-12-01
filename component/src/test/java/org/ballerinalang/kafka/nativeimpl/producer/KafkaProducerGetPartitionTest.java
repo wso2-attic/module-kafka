@@ -88,7 +88,7 @@ public class KafkaProducerGetPartitionTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer-get-partitions-test");
         kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
         return kafkaCluster;
     }

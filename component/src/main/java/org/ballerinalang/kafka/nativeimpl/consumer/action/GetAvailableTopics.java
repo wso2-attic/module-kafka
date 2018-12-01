@@ -21,8 +21,9 @@ import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.PartitionInfo;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
+import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BStringArray;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -68,7 +69,7 @@ public class GetAvailableTopics extends AbstractApisWithDuration {
             } else {
                 topics = this.consumer.listTopics();
             }
-            BStringArray availableTopics = getBStringArrayFromMap(topics);
+            BValueArray availableTopics = getBValueArrayFromMap(topics);
             context.setReturnValues(availableTopics);
         } catch (KafkaException e) {
             context.setReturnValues(createError(context, "Failed to retrieve available topics: " + e.getMessage()));
@@ -81,14 +82,14 @@ public class GetAvailableTopics extends AbstractApisWithDuration {
         return kafkaConsumer.listTopics(duration);
     }
 
-    private BStringArray getBStringArrayFromMap(Map<String, List<PartitionInfo>> map) {
-        BStringArray bStringArray = new BStringArray();
+    private BValueArray getBValueArrayFromMap(Map<String, List<PartitionInfo>> map) {
+        BValueArray bValueArray = new BValueArray(BTypes.typeString);
         if (!map.keySet().isEmpty()) {
             int i = 0;
             for (String topic : map.keySet()) {
-                bStringArray.add(i++, topic);
+                bValueArray.add(i++, topic);
             }
         }
-        return bStringArray;
+        return bValueArray;
     }
 }

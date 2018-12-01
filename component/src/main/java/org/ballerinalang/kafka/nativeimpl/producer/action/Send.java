@@ -21,8 +21,8 @@ import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BByteArray;
 import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -51,8 +51,8 @@ public class Send extends AbstractTransactionHandler {
         this.context = context;
         initializeClassVariables();
         String topic = context.getStringArgument(0);
-        byte[] value = ((BByteArray) context.getRefArgument(1)).getBytes();
-        BByteArray bKey = (BByteArray) context.getNullableRefArgument(2);
+        byte[] value = ((BValueArray) context.getRefArgument(1)).getBytes();
+        BValueArray bKey = (BValueArray) context.getNullableRefArgument(2);
         BInteger bPartition = (BInteger) context.getNullableRefArgument(3);
         BInteger bTimestamp = (BInteger) context.getNullableRefArgument(4);
         byte[] key = Objects.nonNull(bKey) ? bKey.getBytes() : null;

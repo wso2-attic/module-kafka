@@ -27,8 +27,8 @@ import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -88,9 +88,9 @@ public class KafkaConsumerTest {
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetSubscription", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertTrue(returnBValues[0] instanceof BStringArray);
-        Assert.assertEquals(((BStringArray) returnBValues[0]).size(), 1);
-        Assert.assertEquals(((BStringArray) returnBValues[0]).get(0), "test");
+        Assert.assertTrue(returnBValues[0] instanceof BValueArray);
+        Assert.assertEquals(((BValueArray) returnBValues[0]).size(), 1);
+        Assert.assertEquals(((BValueArray) returnBValues[0]).getString(0), "test");
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetAssignment", inputBValues);
 
@@ -122,8 +122,8 @@ public class KafkaConsumerTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
     }
 

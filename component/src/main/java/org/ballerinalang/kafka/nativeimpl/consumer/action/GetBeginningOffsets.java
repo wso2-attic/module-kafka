@@ -24,8 +24,8 @@ import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -62,7 +62,7 @@ public class GetBeginningOffsets extends AbstractGetOffsets {
         long defaultApiTimeout = getDefaultApiTimeout();
 
         try {
-            BRefValueArray partitions = ((BRefValueArray) context.getRefArgument(1));
+            BValueArray partitions = ((BValueArray) context.getRefArgument(1));
             ArrayList<TopicPartition> partitionList = KafkaUtils.getTopicPartitionList(partitions);
             Map<TopicPartition, Long> offsetMap;
 
@@ -74,7 +74,7 @@ public class GetBeginningOffsets extends AbstractGetOffsets {
                 offsetMap = consumer.beginningOffsets(partitionList);
             }
             List<BMap<String, BValue>> offsetList = super.getOffsetList(offsetMap);
-            context.setReturnValues(new BRefValueArray(offsetList.toArray(new BRefType[0]),
+            context.setReturnValues(new BValueArray(offsetList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME).getType()));
         } catch (KafkaException e) {
             context.setReturnValues(createError(context, "Failed to get beginning offsets: " + e.getMessage()));

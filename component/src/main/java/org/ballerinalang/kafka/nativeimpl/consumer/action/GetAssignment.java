@@ -26,8 +26,8 @@ import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -65,7 +65,7 @@ public class GetAssignment implements NativeCallableUnit {
             Set<TopicPartition> assignments = kafkaConsumer.assignment();
             List<BMap<String, BValue>> assignmentList = createPartitionList(context, assignments);
             context.setReturnValues(
-                    new BRefValueArray(
+                    new BValueArray(
                             assignmentList.toArray(new BRefType[0]),
                             KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType()));
         } catch (KafkaException e) {

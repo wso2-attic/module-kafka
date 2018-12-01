@@ -37,15 +37,13 @@ import org.ballerinalang.model.types.BRecordType;
 import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
-import org.ballerinalang.model.values.BByteArray;
 import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.util.codegen.ProgramFile;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
@@ -173,7 +171,7 @@ public class KafkaUtils {
         return bValues;
     }
 
-    private static BRefValueArray createRecordStructArray(Resource resource,
+    private static BValueArray createRecordStructArray(Resource resource,
                                                           ConsumerRecords<byte[], byte[]> records) {
         // Create records struct array.
         List<BMap<String, BValue>> recordsList = new ArrayList<>();
@@ -184,9 +182,9 @@ public class KafkaUtils {
                     KAFKA_NATIVE_PACKAGE,
                     CONSUMER_RECORD_STRUCT_NAME);
             if (record.key() != null) {
-                recordStruct.put("key", new BByteArray(record.key()));
+                recordStruct.put("key", new BValueArray(record.key()));
             }
-            recordStruct.put("value", new BByteArray(record.value()));
+            recordStruct.put("value", new BValueArray(record.value()));
             recordStruct.put("offset", new BInteger(record.offset()));
             recordStruct.put("partition", new BInteger(record.partition()));
             recordStruct.put("timestamp", new BInteger(record.timestamp()));
@@ -197,7 +195,7 @@ public class KafkaUtils {
         BMap<String, BValue> consumerRecordStruct = BLangConnectorSPIUtil.createBStruct(programFile,
                 KAFKA_NATIVE_PACKAGE,
                 CONSUMER_RECORD_STRUCT_NAME);
-        return new BRefValueArray(recordsList.toArray(new BRefType[0]), consumerRecordStruct.getType());
+        return new BValueArray(recordsList.toArray(new BRefType[0]), consumerRecordStruct.getType());
     }
 
     private static BMap<String, BValue> createConsumerStruct(Resource resource,
@@ -210,7 +208,7 @@ public class KafkaUtils {
         return consumerStruct;
     }
 
-    private static BRefValueArray createOffsetStructArray(Resource resource,
+    private static BValueArray createOffsetStructArray(Resource resource,
                                                           ConsumerRecords<byte[], byte[]> records) {
         // Create offsets struct array.
         Map<TopicPartition, Long> partitionToUncommittedOffsetMap = new HashMap<>();
@@ -239,7 +237,7 @@ public class KafkaUtils {
             offsetList.add(offsetStruct);
         });
 
-        return new BRefValueArray(offsetList.toArray(new BRefType[0]),
+        return new BValueArray(offsetList.toArray(new BRefType[0]),
                 BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
                         OFFSET_STRUCT_NAME).getType());
     }
@@ -470,11 +468,11 @@ public class KafkaUtils {
                                                      BMap<String, BValue> bStruct,
                                                      Properties configParams,
                                                      String key) {
-        BStringArray bArray = (BStringArray) bStruct.get(key);
+        BValueArray bArray = (BValueArray) bStruct.get(key);
         List<String> values = new ArrayList<>();
         if (bArray != null && bArray.size() != 0) {
             for (int i = 0; i < bArray.size(); i++) {
-                values.add(bArray.get(i));
+                values.add(bArray.getString(i));
             }
             configParams.put(paramName, values);
         }
@@ -507,11 +505,11 @@ public class KafkaUtils {
                 structName);
     }
 
-    public static ArrayList<TopicPartition> getTopicPartitionList(BRefValueArray partitions) {
-        ArrayList<TopicPartition> partitionList = new ArrayList<TopicPartition>();
+    public static ArrayList<TopicPartition> getTopicPartitionList(BValueArray partitions) {
+        ArrayList<TopicPartition> partitionList = new ArrayList<>();
         if (partitions != null) {
             for (int counter = 0; counter < partitions.size(); counter++) {
-                BMap<String, BValue> partition = (BMap<String, BValue>) partitions.get(counter);
+                BMap<String, BValue> partition = (BMap<String, BValue>) partitions.getRefValue(counter);
                 String topic = partition.get("topic").stringValue();
                 int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
                 partitionList.add(new TopicPartition(topic, partitionValue));

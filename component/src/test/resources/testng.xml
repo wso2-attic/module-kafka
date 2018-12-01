@@ -47,16 +47,16 @@ under the License.
     <test name="ballerina-kafka-services-tests" parallel="false" thread-count="1">
         <!-- Kafka service related tests -->
         <classes>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAdvancedServiceTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerServiceTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.services.KafkaConsumerAdvancedServiceTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.services.KafkaConsumerServiceTest"/>
         </classes>
     </test>
     <test name="ballerina-kafka-transaction-tests" parallel="false" thread-count="1">
         <!-- Kafka transactions related tests -->
         <classes>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerAbortTransactionTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerOffsetsTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCommitConsumerTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerAbortTransactionTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerCommitConsumerOffsetsTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerCommitConsumerTest"/>
         </classes>
     </test>
 </suite>

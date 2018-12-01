@@ -1,4 +1,4 @@
-package org.ballerinalang.kafka.nativeimpl.producer;
+package org.ballerinalang.kafka.nativeimpl.transactions;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -37,7 +37,7 @@ public class KafkaProducerCommitConsumerTest {
             sequential = true
     )
     public void testKafkaProduce() {
-        result = BCompileUtil.compileAndSetup("producer/kafka_producer_commit_consumer.bal");
+        result = BCompileUtil.compileAndSetup("transactions/kafka_producer_commit_consumer.bal");
         BRunUtil.invokeStateful(result, "funcTestKafkaProduce");
         try {
             await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
@@ -68,8 +68,8 @@ public class KafkaProducerCommitConsumerTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer-commit-consumer-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
         return kafkaCluster;
     }
 

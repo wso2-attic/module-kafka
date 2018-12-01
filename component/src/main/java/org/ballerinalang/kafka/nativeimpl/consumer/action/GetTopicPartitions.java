@@ -25,9 +25,9 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -76,7 +76,7 @@ public class GetTopicPartitions extends AbstractApisWithDuration {
             }
             List<BMap<String, BValue>> infoList = getInfoList(partitionInfoList);
             context.setReturnValues(
-                    new BRefValueArray(
+                    new BValueArray(
                             infoList.toArray(new BRefType[0]),
                             KafkaUtils.
                                     createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType()));

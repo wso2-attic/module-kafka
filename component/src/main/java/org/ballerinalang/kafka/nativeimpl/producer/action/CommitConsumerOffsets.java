@@ -24,8 +24,8 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -54,12 +54,12 @@ public class CommitConsumerOffsets extends AbstractTransactionHandler {
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         this.context = context;
         initializeClassVariables();
-        BRefValueArray offsets = ((BRefValueArray) context.getRefArgument(1));
+        BValueArray offsets = ((BValueArray) context.getRefArgument(1));
         String groupID = context.getStringArgument(0);
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
 
         for (int counter = 0; counter < offsets.size(); counter++) {
-            BMap<String, BValue> offset = (BMap<String, BValue>) offsets.get(counter);
+            BMap<String, BValue> offset = (BMap<String, BValue>) offsets.getRefValue(counter);
             int offsetValue = ((BInteger) offset.get("offset")).value().intValue();
             TopicPartition topicPartition = createTopicPartitionFromPartitionOffset(offset);
             partitionToMetadataMap.put(topicPartition, new OffsetAndMetadata(offsetValue));

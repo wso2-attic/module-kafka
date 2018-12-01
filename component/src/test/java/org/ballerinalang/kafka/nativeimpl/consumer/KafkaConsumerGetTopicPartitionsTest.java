@@ -86,8 +86,8 @@ public class KafkaConsumerGetTopicPartitionsTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-get-topic-partitions-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
     }
 }

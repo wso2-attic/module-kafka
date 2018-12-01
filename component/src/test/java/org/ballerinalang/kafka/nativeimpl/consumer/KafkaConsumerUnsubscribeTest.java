@@ -64,8 +64,8 @@ public class KafkaConsumerUnsubscribeTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-unsubscribe-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
     }
 

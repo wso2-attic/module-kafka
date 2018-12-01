@@ -26,8 +26,8 @@ import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -57,7 +57,7 @@ public class SeekToEnd implements NativeCallableUnit {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
-        BRefValueArray partitions = ((BRefValueArray) context.getRefArgument(1));
+        BValueArray partitions = ((BValueArray) context.getRefArgument(1));
         ArrayList<TopicPartition> partitionList = KafkaUtils.getTopicPartitionList(partitions);
 
         try {

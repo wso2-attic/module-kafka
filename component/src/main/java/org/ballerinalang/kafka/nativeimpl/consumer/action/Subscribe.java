@@ -23,8 +23,8 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -53,10 +53,10 @@ public class Subscribe implements NativeCallableUnit {
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        BStringArray topicArray = (BStringArray) context.getRefArgument(1);
+        BValueArray topicArray = (BValueArray) context.getRefArgument(1);
         ArrayList<String> topics = new ArrayList<String>();
         for (int counter = 0; counter < topicArray.size(); counter++) {
-            topics.add(topicArray.get(counter));
+            topics.add(topicArray.getString(counter));
         }
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);

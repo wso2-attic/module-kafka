@@ -1,22 +1,4 @@
-/*
- *   Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- *  WSO2 Inc. licenses this file to you under the Apache License,
- *  Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
-package org.ballerinalang.kafka.nativeimpl.producer;
+package org.ballerinalang.kafka.nativeimpl.transactions;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -37,8 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
-public class KafkaProducerAbortTransactionTest {
+public class KafkaProducerCommitConsumerOffsetsTest {
 
+    private CompileResult result;
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
 
@@ -50,15 +33,27 @@ public class KafkaProducerAbortTransactionTest {
     }
 
     @Test(
-            description = "Test abort transaction in producer",
+            description = "Test kafka producer commitConsumerOffsets() function",
             sequential = true
     )
-    public void testKafkaProduce() {
-        CompileResult result = BCompileUtil.compileAndSetup("producer/kafka_producer_abort_transaction.bal");
+    public void testKafkaCommitConsumerOffsetsTest() {
+        result = BCompileUtil.compileAndSetup("transactions/kafka_producer_commit_consumer_offsets.bal");
         BValue[] inputBValues = {};
-        BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaAbortTransactionTest", inputBValues);
+        BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
+        try {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaCommitOffsets");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+
         try {
             await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestPollAgain");
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BBoolean);
                 return ((BBoolean) returnBValues[0]).booleanValue();
@@ -85,8 +80,8 @@ public class KafkaProducerAbortTransactionTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer-commit-consumer-offsets-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
         return kafkaCluster;
     }
 }

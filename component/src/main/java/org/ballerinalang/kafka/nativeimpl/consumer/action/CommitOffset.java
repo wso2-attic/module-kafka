@@ -24,8 +24,8 @@ import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
@@ -78,14 +78,14 @@ public class CommitOffset extends AbstractApisWithDuration {
 
     private Map<TopicPartition, OffsetAndMetadata> getPartitionToMetadataMap() {
         Map<TopicPartition, OffsetAndMetadata> partitionToMetadataMap = new HashMap<>();
-        BRefValueArray offsets = ((BRefValueArray) this.context.getRefArgument(1));
+        BValueArray offsets = ((BValueArray) this.context.getRefArgument(1));
         BMap<String, BValue> offset;
         int offsetValue;
         TopicPartition topicPartition;
 
         if (Objects.nonNull(offsets)) {
             for (int counter = 0; counter < offsets.size(); counter++) {
-                offset = (BMap<String, BValue>) offsets.get(counter);
+                offset = (BMap<String, BValue>) offsets.getRefValue(counter);
                 offsetValue = ((BInteger) offset.get("offset")).value().intValue();
                 topicPartition = getTopicPartitionFromOffsetBMap(offset);
                 partitionToMetadataMap.put(topicPartition, new OffsetAndMetadata(offsetValue));

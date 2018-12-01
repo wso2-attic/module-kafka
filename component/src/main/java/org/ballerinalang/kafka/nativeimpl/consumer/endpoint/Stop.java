@@ -34,13 +34,12 @@ import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 
 /**
- * Start server connector.
+ * Stops the Kafka service endpoint
  */
-
 @BallerinaFunction(
         orgName = ORG_NAME,
         packageName = PACKAGE_NAME,
-        functionName = "start",
+        functionName = "stop",
         receiver = @Receiver(
                 type = TypeKind.OBJECT,
                 structType = CONSUMER_ENDPOINT_STRUCT_NAME,
@@ -48,19 +47,22 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         ),
         isPublic = true
 )
-public class Start extends BlockingNativeCallableUnit {
-
+public class Stop extends BlockingNativeCallableUnit {
     @Override
     public void execute(Context context) {
         Struct service = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
         KafkaServerConnectorImpl serverConnector = (KafkaServerConnectorImpl) service
                 .getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
+        boolean isStopped = false;
         try {
-            serverConnector.start();
+            isStopped = serverConnector.stop();
         } catch (KafkaConnectorException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
             return;
+        } finally {
+            if (!isStopped) {
+                context.setReturnValues(BLangVMErrors.createError(context, "Failed to stop the service"));
+            }
         }
-        context.setReturnValues();
     }
 }

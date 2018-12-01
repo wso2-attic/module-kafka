@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.nativeimpl.services;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -59,7 +59,7 @@ public class KafkaConsumerServiceTest {
             sequential = true
     )
     public void testKafkaServiceEndpoint() {
-        compileResult = BCompileUtil.compileAndSetup("consumer/kafka_consumer_service.bal");
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_consumer_service.bal");
         BServiceUtil.runService(compileResult);
         BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
 
@@ -92,8 +92,8 @@ public class KafkaConsumerServiceTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-service-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2183, 9094);
         return kafkaCluster;
     }
 }
