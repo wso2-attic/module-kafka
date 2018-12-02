@@ -33,7 +33,7 @@ import wso2/kafka;
 import ballerina/io;
 import ballerina/internal;
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:ConsumerConfig consumerConfig = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     topics:["test-kafka-topic"],
@@ -41,15 +41,17 @@ endpoint kafka:SimpleConsumer consumer {
     autoCommit:false
 };
 
-service<kafka:Consumer> kafkaService bind consumer {
+listener kafka:SimpleConsumer consumer = new (consumerConfig);
 
-    onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+service kafkaService on consumer {
+
+    resource function onMessage(kafka:SimpleConsumer simpleConsumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
         foreach kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        consumerAction.commit();
+        simpleConsumer.commit();
     }
 }
 
@@ -68,7 +70,7 @@ Following example demonstrates a way to publish a message to a specified topic. 
 ```ballerina
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfig = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
@@ -77,6 +79,8 @@ endpoint kafka:SimpleProducer kafkaProducer {
     acks:"all",
     noRetries:3
 };
+
+kafka:SimpleProducer kafkaProducer = new (producerConfig);
 
 function main (string... args) {
     string msg = "Hello World Advance";
