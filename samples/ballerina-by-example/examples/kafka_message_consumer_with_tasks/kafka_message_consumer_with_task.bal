@@ -37,14 +37,9 @@ public function main(string... args) {
     // We subscribes the consumer to topic test-kafka
     string[] topics = ["test-kafka-topic"];
     var subErr = consumer->subscribe(topics);
-    match subErr {
-        () => {
-            // do nothing
-        }
-        error e => {
-            log:printError("Error occurred while subscribing", err = e);
-            return;
-        }
+    if (subErr is error) {
+        log:printError("Error occurred while subscribing", err = e);
+        return;
     }
 
     // Consumer poll() function will be called every time the timer goes off.
@@ -64,16 +59,11 @@ public function main(string... args) {
 
 function poll() {
     var results = consumer->poll(1000);
-    match results {
-        // returns records if exists
-        kafka:ConsumerRecord[] records => {
-            foreach kafkaRecord in records {
-                processKafkaRecord(kafkaRecord);
-            }
-        }
-        // returns error if something goes wrong
-        error e => {
-            log:printError("Error occurred while polling ", err = e);
+    if (results is error) {
+        log:printError("Error occurred while polling ", err = results);
+    } else {
+        foreach kafkaRecord in results {
+            processKafkaRecord(kafkaRecord);
         }
     }
     consumer->commit();
