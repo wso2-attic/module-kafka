@@ -103,23 +103,31 @@ public type SimpleProducer client object {
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
+    #
+    # + return - error if aborting the transaction failed, none otherwise.
     public remote extern function abortTransaction() returns error?;
 
     # Closes producer connection to the external Kafka broker.
+    #
+    # + return - error if closing the producer failed, none otherwise.
     public remote extern function close() returns error?;
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
     # + consumer - Consumer which needs offsets to be committed.
+    # + return - error if committing the consumer failed, none otherwise.
     public remote extern function commitConsumer(SimpleConsumer consumer) returns error?;
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
     # + offsets - Consumer offsets to commit for given transaction.
     # + groupID - Consumer group id.
+    # + return - error if committing consumer offsets failed, none otherwise.
     public remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID) returns error?;
 
     # Flush action which flush batch of records.
+    #
+    # + return - error if records couldn't be flushed, none otherwise.
     public remote extern function flushRecords() returns error?;
 
     # GetTopicPartitions action which returns given topic partition information.
@@ -135,6 +143,7 @@ public type SimpleProducer client object {
     # + key - Key that will be included in the record.
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
+    # + return - returns error if send action fails to send data, none otherwise.
     public remote extern function send(
                                           byte[] value,
                                           string topic,
