@@ -80,7 +80,7 @@ kafka:ProducerConfig producerConfig = {
     noRetries:3
 };
 
-kafka:SimpleProducer kafkaProducer = new (producerConfig);
+kafka:SimpleProducer kafkaProducer = new(producerConfig);
 
 function main (string... args) {
     string msg = "Hello World Advance";
