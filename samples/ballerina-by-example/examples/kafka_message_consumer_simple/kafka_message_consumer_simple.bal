@@ -26,7 +26,7 @@ kafka:ConsumerConfig consumerConfigs = {
     topics:["test-kafka-topic"]
 };
 
-kafka:SimpleConsumer consumer = new (consumerConfigs);
+kafka:SimpleConsumer consumer = new(consumerConfigs);
 
 public function main(string... args) {
     // polling consumer for messages

@@ -38,7 +38,7 @@ kafka:ConsumerConfig consumerConfig = {
     pollingInterval:1000
 };
 
-listener kafka:SimpleConsumer consumer = new (consumerConfig);
+listener kafka:SimpleConsumer consumer = new(consumerConfig);
 
 service kafkaService on consumer {
 

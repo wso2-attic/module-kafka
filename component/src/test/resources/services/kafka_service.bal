@@ -26,7 +26,7 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:SimpleConsumer kafkaConsumer = new (consumerConfigs);
+listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
@@ -35,7 +35,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new (producerConfigs);
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 boolean isSuccess = false;
 

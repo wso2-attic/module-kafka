@@ -25,7 +25,7 @@ kafka:ConsumerConfig consumerConfigs = {
 };
 
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer kafkaConsumer = new (consumerConfigs);
+    kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
     return kafkaConsumer;
 }
 

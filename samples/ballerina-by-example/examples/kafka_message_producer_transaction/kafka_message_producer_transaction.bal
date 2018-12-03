@@ -28,7 +28,7 @@ kafka:ProducerConfig producerConfigs = {
     transactionalID:"test-transactional-id"
 };
 
-kafka:SimpleProducer kafkaProducer = new (producerConfigs);
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 public function main(string... args) {
     string msg = "Hello World Transaction";

@@ -23,7 +23,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new (producerConfigs);
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 function funcKafkaTestFlush() returns boolean {
     string msg = "Hello World";

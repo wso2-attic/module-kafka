@@ -28,7 +28,7 @@ kafka:ConsumerConfig consumerConfigs = {
     autoCommit:false
 };
 
-kafka:SimpleConsumer consumer = new (consumerConfigs);
+kafka:SimpleConsumer consumer = new(consumerConfigs);
 
 public function main(string... args) {
     // Here we initializes a consumer which connects to remote cluster.

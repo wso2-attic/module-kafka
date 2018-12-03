@@ -26,7 +26,7 @@ kafka:ConsumerConfig consumerConfigs = {
     autoCommit: false
 };
 
-listener kafka:SimpleConsumer consumer = new (consumerConfigs);
+listener kafka:SimpleConsumer consumer = new(consumerConfigs);
 
 service kafkaService on consumer {
 

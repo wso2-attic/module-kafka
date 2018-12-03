@@ -26,7 +26,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries:3
 };
 
-kafka:SimpleProducer kafkaProducer = new (producerConfigs);
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 function main (string... args) {
     string msg = "Hello World Advanced";

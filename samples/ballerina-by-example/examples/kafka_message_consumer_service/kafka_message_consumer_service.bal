@@ -25,7 +25,7 @@ kafka:ConsumerConfig consumerConfigs = {
     pollingInterval: 1000
 };
 
-listener kafka:SimpelConsumer consumer = new (consumerConfigs);
+listener kafka:SimpelConsumer consumer = new(consumerConfigs);
 
 service kafkaService on consumer {
     resource function onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
