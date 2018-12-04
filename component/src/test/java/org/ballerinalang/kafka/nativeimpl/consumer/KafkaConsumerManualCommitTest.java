@@ -68,9 +68,7 @@ public class KafkaConsumerManualCommitTest {
     )
     public void testKafkaConsumeWithManualOffsetCommit() {
         CountDownLatch completion = new CountDownLatch(1);
-        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {
-            return "test_string";
-        });
+        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
         try {
             completion.await();
         } catch (Exception ex) {
