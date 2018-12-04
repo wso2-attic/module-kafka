@@ -91,13 +91,16 @@ public type SimpleProducer client object {
 
     public function __init(ProducerConfig config) {
         self.producerConfig = config;
-        self.init(config);
+        var initResult = self.init(config);
+        if (initResult is error) {
+            panic initResult;
+        }
     }
 
     # Initialize the producer endpoint.
     #
     # + config - configurations related to the endpoint.
-    extern function init(ProducerConfig config);
+    extern function init(ProducerConfig config) returns error?;
 
     public map<any> producerHolder = {};
     public string connectorID = system:uuid();

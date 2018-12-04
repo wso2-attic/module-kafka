@@ -31,7 +31,6 @@ import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.Properties;
 
@@ -41,6 +40,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER_CONFIG
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native action initializes a producer instance for connector.
@@ -70,7 +70,7 @@ public class Init implements NativeCallableUnit {
             producerStruct.addNativeData(NATIVE_PRODUCER_CONFIG, producerProperties);
             producerMap.put(new BString(NATIVE_PRODUCER), producerStruct);
         } catch (IllegalStateException | KafkaException e) {
-            throw new BallerinaException("Failed to initialize the producer " + e.getMessage(), e, context);
+            context.setReturnValues(createError(context, "Failed to initialize the producer " + e.getMessage()));
         }
         callableUnitCallback.notifySuccess();
     }
