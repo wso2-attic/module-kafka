@@ -98,7 +98,7 @@ function funcGetPartitionOffset(kafka:SimpleConsumer consumer) returns kafka:Par
     } else {
         kafka:PartitionOffset[] offsets = [];
         int i = 0;
-        foreach kafkaRecord in result {
+        foreach kafka:ConsumerRecord kafkaRecord in result {
             kafka:TopicPartition partition = { topic: kafkaRecord.topic, partition: kafkaRecord.partition };
             kafka:PartitionOffset offset = { partition: partition, offset: kafkaRecord.offset };
             offsets[i] = offset;

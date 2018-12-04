@@ -41,7 +41,7 @@ boolean isSuccess = false;
 
 service kafkaTestService on kafkaConsumer {
     resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
-        foreach kafkaRecord in records {
+        foreach kafka:ConsumerRecord kafkaRecord in records {
             byte[] result = kafkaRecord.value;
             if (result.length() > 0) {
                 isSuccess = true;
