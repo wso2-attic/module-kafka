@@ -50,7 +50,7 @@ public type ProducerConfig record {
     string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks = (); // ACKS_CONFIG 1
     string? compressionType = (); // COMPRESSION_TYPE_CONFIG 2
-    string? clientID; // CLIENT_ID_CONFIG 3
+    string? clientID = (); // CLIENT_ID_CONFIG 3
     string? metricsRecordingLevel = (); // METRICS_RECORDING_LEVEL_CONFIG 4
     string? metricReporterClasses = (); // METRIC_REPORTER_CLASSES_CONFIG 5
     string? partitionerClass = (); // PARTITIONER_CLASS_CONFIG 6
