@@ -100,7 +100,7 @@ public class KafkaProducerCommitConsumerOffsetsTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer-commit-consumer-offsets-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2184, 9094);
         return kafkaCluster;
     }
 }
