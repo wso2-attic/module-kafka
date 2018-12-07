@@ -26,6 +26,7 @@ import org.ballerinalang.launcher.util.BServiceUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.util.exceptions.BLangRuntimeException;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -71,6 +72,16 @@ public class KafkaConsumerServiceTest {
         } catch (Throwable e) {
             Assert.fail(e.getMessage());
         }
+    }
+
+    @Test(
+            description = "Test endpoint bind to a service returning invalid return type",
+            expectedExceptions = BLangRuntimeException.class,
+            expectedExceptionsMessageRegExp = ".* Invalid return type for the resource function.*"
+    )
+    public void testKafkaServiceInvalidReturnType() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_return_type.bal");
+        BServiceUtil.runService(compileResult);
     }
 
     @AfterClass

@@ -34,6 +34,7 @@ import org.ballerinalang.connector.api.Service;
 import org.ballerinalang.model.types.BArrayType;
 import org.ballerinalang.model.types.BObjectType;
 import org.ballerinalang.model.types.BRecordType;
+import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
@@ -96,6 +97,8 @@ public class KafkaUtils {
 
         Resource mainResource = resources[0];
         List<ParamDetail> paramDetails = mainResource.getParamDetails();
+        BType[] returnParams = mainResource.getResourceInfo().getRetParamTypes();
+        validateReturnTypes(returnParams);
 
         if (paramDetails.size() == 0 || paramDetails.size() == 1) {
             throw new BallerinaException("Kafka resource signature does not comply with param standard sequence.");
@@ -111,6 +114,16 @@ public class KafkaUtils {
             }
         }
         return resources[0];
+    }
+
+    private static void validateReturnTypes(BType[] returnParamTypes) {
+        for (BType returnParamType : returnParamTypes) {
+            if (returnParamType != BTypes.typeNull && returnParamType != BTypes.typeError) {
+                throw new BallerinaException("Invalid return type for the resource function: Expected error? Found "
+                        + returnParamType.getName()
+                );
+            }
+        }
     }
 
     private static void validateConsumerParam(ParamDetail param) {
