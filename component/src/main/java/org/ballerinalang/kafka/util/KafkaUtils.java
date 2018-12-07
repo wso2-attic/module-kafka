@@ -57,8 +57,11 @@ import java.util.Properties;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_CONCURRENT_CONSUMERS;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_DECOUPLE_PROCESSING;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_OFFSET;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_POLLING_INTERVAL;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_POLLING_TIMEOUT;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPICS;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_CONFIG_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_RECORD_STRUCT_NAME;
@@ -185,10 +188,10 @@ public class KafkaUtils {
                 recordStruct.put("key", new BValueArray(record.key()));
             }
             recordStruct.put("value", new BValueArray(record.value()));
-            recordStruct.put("offset", new BInteger(record.offset()));
-            recordStruct.put("partition", new BInteger(record.partition()));
+            recordStruct.put(ALIAS_OFFSET, new BInteger(record.offset()));
+            recordStruct.put(ALIAS_PARTITION, new BInteger(record.partition()));
             recordStruct.put("timestamp", new BInteger(record.timestamp()));
-            recordStruct.put("topic", new BString(record.topic()));
+            recordStruct.put(ALIAS_TOPIC, new BString(record.topic()));
             recordsList.add(recordStruct);
         });
 
@@ -230,10 +233,10 @@ public class KafkaUtils {
             BMap<String, BValue> partitionStruct = BLangConnectorSPIUtil.createBStruct(programFile,
                     KAFKA_NATIVE_PACKAGE,
                     TOPIC_PARTITION_STRUCT_NAME);
-            partitionStruct.put("topic", new BString(offset.getKey().topic()));
-            partitionStruct.put("partition", new BInteger(offset.getKey().partition()));
-            offsetStruct.put("partition", partitionStruct);
-            offsetStruct.put("offset", new BInteger(offset.getValue().offset()));
+            partitionStruct.put(ALIAS_TOPIC, new BString(offset.getKey().topic()));
+            partitionStruct.put(ALIAS_PARTITION, new BInteger(offset.getKey().partition()));
+            offsetStruct.put(ALIAS_PARTITION, partitionStruct);
+            offsetStruct.put(ALIAS_OFFSET, new BInteger(offset.getValue().offset()));
             offsetList.add(offsetStruct);
         });
 
@@ -510,8 +513,8 @@ public class KafkaUtils {
         if (partitions != null) {
             for (int counter = 0; counter < partitions.size(); counter++) {
                 BMap<String, BValue> partition = (BMap<String, BValue>) partitions.getRefValue(counter);
-                String topic = partition.get("topic").stringValue();
-                int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
+                String topic = partition.get(ALIAS_TOPIC).stringValue();
+                int partitionValue = ((BInteger) partition.get(ALIAS_PARTITION)).value().intValue();
                 partitionList.add(new TopicPartition(topic, partitionValue));
             }
         }
@@ -534,8 +537,8 @@ public class KafkaUtils {
     public static BMap<String, BValue> getTopicPartitionStruct(Context context, TopicPartition topicPartition) {
         BMap<String, BValue> partitionStruct = KafkaUtils
                 .createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-        partitionStruct.put("topic", new BString(topicPartition.topic()));
-        partitionStruct.put("partition", new BInteger(topicPartition.partition()));
+        partitionStruct.put(ALIAS_TOPIC, new BString(topicPartition.topic()));
+        partitionStruct.put(ALIAS_PARTITION, new BInteger(topicPartition.partition()));
         return partitionStruct;
     }
 

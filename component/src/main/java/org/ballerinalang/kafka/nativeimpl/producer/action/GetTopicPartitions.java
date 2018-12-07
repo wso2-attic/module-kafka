@@ -36,6 +36,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
@@ -94,7 +95,7 @@ public class GetTopicPartitions implements NativeCallableUnit {
     private BMap<String, BValue> getPartitionInfoStruct(Context context, PartitionInfo partitionInfo) {
         BMap<String, BValue> infoStruct = KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
         infoStruct.put("topic", new BString(partitionInfo.topic()));
-        infoStruct.put("partition", new BInteger(partitionInfo.partition()));
+        infoStruct.put(ALIAS_PARTITION, new BInteger(partitionInfo.partition()));
         return infoStruct;
     }
 }

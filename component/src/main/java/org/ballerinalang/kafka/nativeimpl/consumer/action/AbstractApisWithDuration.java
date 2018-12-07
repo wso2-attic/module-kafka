@@ -30,6 +30,8 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
@@ -90,8 +92,8 @@ public abstract class AbstractApisWithDuration implements NativeCallableUnit {
     }
 
     protected TopicPartition getTopicPartition(BMap<String, BValue> partition) {
-        String topic = partition.get("topic").stringValue();
-        int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
+        String topic = partition.get(ALIAS_TOPIC).stringValue();
+        int partitionValue = ((BInteger) partition.get(ALIAS_PARTITION)).value().intValue();
         return new TopicPartition(topic, partitionValue);
     }
 

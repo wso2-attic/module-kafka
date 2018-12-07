@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_OFFSET;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
 
@@ -50,16 +53,16 @@ public abstract class AbstractGetOffsets extends AbstractApisWithDuration {
     private BMap<String, BValue> getPartitionStruct(Map.Entry<TopicPartition, Long> offset) {
         BMap<String, BValue> partitionStruct = KafkaUtils.createKafkaPackageStruct(context,
                 TOPIC_PARTITION_STRUCT_NAME);
-        partitionStruct.put("topic", new BString(offset.getKey().topic()));
-        partitionStruct.put("partition", new BInteger(offset.getKey().partition()));
+        partitionStruct.put(ALIAS_TOPIC, new BString(offset.getKey().topic()));
+        partitionStruct.put(ALIAS_PARTITION, new BInteger(offset.getKey().partition()));
         return partitionStruct;
     }
 
     private BMap<String, BValue> getOffsetStruct(BMap<String, BValue> partitionStruct,
                                                  Map.Entry<TopicPartition, Long> offset) {
         BMap<String, BValue> offsetStruct = KafkaUtils.createKafkaPackageStruct(context, OFFSET_STRUCT_NAME);
-        offsetStruct.put("partition", partitionStruct);
-        offsetStruct.put("offset", new BInteger(offset.getValue()));
+        offsetStruct.put(ALIAS_PARTITION, partitionStruct);
+        offsetStruct.put(ALIAS_OFFSET, new BInteger(offset.getValue()));
         return offsetStruct;
     }
 }

@@ -38,6 +38,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_OFFSET;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_RECORD_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
@@ -95,10 +98,10 @@ public class Poll implements NativeCallableUnit {
             recordStruct.put("key", new BValueArray(record.key()));
         }
         recordStruct.put("value", new BValueArray(record.value()));
-        recordStruct.put("offset", new BInteger(record.offset()));
-        recordStruct.put("partition", new BInteger(record.partition()));
+        recordStruct.put(ALIAS_OFFSET, new BInteger(record.offset()));
+        recordStruct.put(ALIAS_PARTITION, new BInteger(record.partition()));
         recordStruct.put("timestamp", new BInteger(record.timestamp()));
-        recordStruct.put("topic", new BString(record.topic()));
+        recordStruct.put(ALIAS_TOPIC, new BString(record.topic()));
         return recordStruct;
     }
 }

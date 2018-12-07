@@ -29,6 +29,9 @@ import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_OFFSET;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
@@ -55,10 +58,10 @@ public class Seek implements NativeCallableUnit {
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         BMap<String, BValue> offset = (BMap<String, BValue>) context.getRefArgument(1);
-        BMap<String, BValue> partition = (BMap<String, BValue>) offset.get("partition");
-        long offsetValue = ((BInteger) offset.get("offset")).intValue();
-        String topic = partition.get("topic").stringValue();
-        int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
+        BMap<String, BValue> partition = (BMap<String, BValue>) offset.get(ALIAS_PARTITION);
+        long offsetValue = ((BInteger) offset.get(ALIAS_OFFSET)).intValue();
+        String topic = partition.get(ALIAS_TOPIC).stringValue();
+        int partitionValue = ((BInteger) partition.get(ALIAS_PARTITION)).value().intValue();
 
         try {
             kafkaConsumer.seek(new TopicPartition(topic, partitionValue), offsetValue);

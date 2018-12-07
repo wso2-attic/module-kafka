@@ -32,6 +32,9 @@ import org.ballerinalang.natives.annotations.Receiver;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_OFFSET;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
@@ -60,7 +63,7 @@ public class CommitConsumerOffsets extends AbstractTransactionHandler {
 
         for (int counter = 0; counter < offsets.size(); counter++) {
             BMap<String, BValue> offset = (BMap<String, BValue>) offsets.getRefValue(counter);
-            int offsetValue = ((BInteger) offset.get("offset")).value().intValue();
+            int offsetValue = ((BInteger) offset.get(ALIAS_OFFSET)).value().intValue();
             TopicPartition topicPartition = createTopicPartitionFromPartitionOffset(offset);
             partitionToMetadataMap.put(topicPartition, new OffsetAndMetadata(offsetValue));
         }
@@ -73,9 +76,9 @@ public class CommitConsumerOffsets extends AbstractTransactionHandler {
     }
 
     private TopicPartition createTopicPartitionFromPartitionOffset(BMap<String, BValue> offset) {
-        BMap<String, BValue> partition = (BMap<String, BValue>) offset.get("partition");
-        String topic = partition.get("topic").stringValue();
-        int partitionValue = ((BInteger) partition.get("partition")).value().intValue();
+        BMap<String, BValue> partition = (BMap<String, BValue>) offset.get(ALIAS_PARTITION);
+        String topic = partition.get(ALIAS_TOPIC).stringValue();
+        int partitionValue = ((BInteger) partition.get(ALIAS_PARTITION)).value().intValue();
 
         return new TopicPartition(topic, partitionValue);
     }

@@ -35,6 +35,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
@@ -96,8 +98,8 @@ public class GetTopicPartitions extends AbstractApisWithDuration {
             partitionInfoList.forEach(partitionInfo -> {
                 BMap<String, BValue> partitionStruct = KafkaUtils
                         .createKafkaPackageStruct(this.context, TOPIC_PARTITION_STRUCT_NAME);
-                partitionStruct.put("topic", new BString(partitionInfo.topic()));
-                partitionStruct.put("partition", new BInteger(partitionInfo.partition()));
+                partitionStruct.put(ALIAS_TOPIC, new BString(partitionInfo.topic()));
+                partitionStruct.put(ALIAS_PARTITION, new BInteger(partitionInfo.partition()));
                 infoList.add(partitionStruct);
             });
         }

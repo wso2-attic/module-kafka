@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_OFFSET;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
@@ -86,7 +88,7 @@ public class CommitOffset extends AbstractApisWithDuration {
         if (Objects.nonNull(offsets)) {
             for (int counter = 0; counter < offsets.size(); counter++) {
                 offset = (BMap<String, BValue>) offsets.getRefValue(counter);
-                offsetValue = ((BInteger) offset.get("offset")).value().intValue();
+                offsetValue = ((BInteger) offset.get(ALIAS_OFFSET)).value().intValue();
                 topicPartition = getTopicPartitionFromOffsetBMap(offset);
                 partitionToMetadataMap.put(topicPartition, new OffsetAndMetadata(offsetValue));
             }
@@ -96,7 +98,7 @@ public class CommitOffset extends AbstractApisWithDuration {
 
     private TopicPartition getTopicPartitionFromOffsetBMap(BMap<String, BValue> offset) {
         BMap<String, BValue> partition;
-        partition = (BMap<String, BValue>) offset.get("partition");
+        partition = (BMap<String, BValue>) offset.get(ALIAS_PARTITION);
         return getTopicPartition(partition);
     }
 

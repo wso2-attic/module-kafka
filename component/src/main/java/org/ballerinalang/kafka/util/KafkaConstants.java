@@ -51,6 +51,9 @@ public class KafkaConstants {
     public static final String ALIAS_POLLING_TIMEOUT = "pollingTimeout";
     public static final String ALIAS_POLLING_INTERVAL = "pollingInterval";
     public static final String ALIAS_DECOUPLE_PROCESSING = "decoupleProcessing";
+    public static final String ALIAS_TOPIC = "topic";
+    public static final String ALIAS_PARTITION = "partition";
+    public static final String ALIAS_OFFSET = "offset";
 
     public static final String DEFAULT_KEY_DESERIALIZER
             = "org.apache.kafka.common.serialization.ByteArrayDeserializer";
