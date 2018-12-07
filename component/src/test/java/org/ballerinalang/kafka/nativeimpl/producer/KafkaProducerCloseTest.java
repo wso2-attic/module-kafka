@@ -34,6 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Test cases for Kafka Producer close
+ */
+@Test(singleThreaded = true)
 public class KafkaProducerCloseTest {
     private CompileResult result;
     private static File dataDir;
@@ -48,10 +52,7 @@ public class KafkaProducerCloseTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(
-            description = "Test Producer close() action",
-            sequential = true
-    )
+    @Test(description = "Test Producer close() action")
     public void testKafkaProduce() {
         BValue[] inputBValues = {};
         BValue[] returnBValue = BRunUtil.invoke(result, "funcTestKafkaClose", inputBValues);

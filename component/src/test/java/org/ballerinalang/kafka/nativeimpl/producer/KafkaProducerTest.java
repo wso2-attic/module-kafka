@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Test cases for ballerina.net.kafka producer connector.
  */
+@Test(singleThreaded = true)
 public class KafkaProducerTest {
 
     private CompileResult result;
@@ -54,10 +55,7 @@ public class KafkaProducerTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(
-            description = "Test Basic produce",
-            sequential = true
-    )
+    @Test(description = "Test Basic produce")
     public void testKafkaProduce() {
         BValue[] inputBValues = {};
         BRunUtil.invoke(result, "funcTestKafkaProduce", inputBValues);

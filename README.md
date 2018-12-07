@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/package-kafka.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-kafka)
+[![Build Status](https://travis-ci.org/wso2-ballerina/module-kafka.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-kafka)
 
 # **Ballerina Kafka Client Endpoint**
 
@@ -8,8 +8,8 @@ This connector is compatible with Kafka 1.x and Kafka 2.0.0 versions.
 Steps to Configure
 ==================================
 
-Extract wso2-kafka-<version>.zip and  Run the install.sh script to install the package.
-You can uninstall the package by running uninstall.sh.
+Extract wso2-kafka-<version>.zip and  Run the install.sh script to install the module.
+You can uninstall the module by running uninstall.sh.
 
 Building From the Source
 ==================================
@@ -19,8 +19,8 @@ If you want to build Ballerina Kafka client endpoint from the source code:
     https://github.com/wso2-ballerina/module-kafka
 2. Run the following Maven command from the ballerina directory:
     mvn clean install
-3. Extract the distribution created at `/component/target/wso2-kafka-<version>.zip`. Run the install.{sh/bat} script to install the package.
-You can uninstall the package by running uninstall.{sh/bat}.
+3. Extract the distribution created at `/component/target/wso2-kafka-<version>.zip`. Run the install.{sh/bat} script to install the module.
+You can uninstall the module by running uninstall.{sh/bat}.
 `
 
 ## Ballerina as a Kafka Consumer
@@ -47,11 +47,11 @@ service kafkaService on consumer {
 
     resource function onMessage(kafka:SimpleConsumer simpleConsumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
-        foreach kafkaRecord in records {
+        foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        simpleConsumer.commit();
+        simpleConsumer->commit();
     }
 }
 

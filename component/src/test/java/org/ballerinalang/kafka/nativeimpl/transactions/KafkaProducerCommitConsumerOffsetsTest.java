@@ -37,6 +37,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
+/**
+ * Test cases for Kafka commitConsumerOffsets method on kafka producer
+ */
+@Test(singleThreaded = true)
 public class KafkaProducerCommitConsumerOffsetsTest {
 
     private CompileResult result;
@@ -50,10 +54,7 @@ public class KafkaProducerCommitConsumerOffsetsTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
     }
 
-    @Test(
-            description = "Test kafka producer commitConsumerOffsets() function",
-            sequential = true
-    )
+    @Test(description = "Test kafka producer commitConsumerOffsets() function")
     public void testKafkaCommitConsumerOffsetsTest() {
         result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_commit_consumer_offsets.bal");
         BValue[] inputBValues = {};

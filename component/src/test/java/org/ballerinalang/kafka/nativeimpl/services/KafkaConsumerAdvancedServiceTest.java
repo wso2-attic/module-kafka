@@ -38,6 +38,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
+/**
+ * Test cases for Kafka Advanced Service on Kafka Consumer
+ */
+@Test(singleThreaded = true)
 public class KafkaConsumerAdvancedServiceTest {
 
     private CompileResult compileResult;
@@ -51,10 +55,7 @@ public class KafkaConsumerAdvancedServiceTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
-    @Test(
-            description = "Test endpoint bind to a service",
-            sequential = true
-    )
+    @Test(description = "Test endpoint bind to a service")
     public void testKafkaServiceEndpoint() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_advanced.bal");
         BServiceUtil.runService(compileResult);

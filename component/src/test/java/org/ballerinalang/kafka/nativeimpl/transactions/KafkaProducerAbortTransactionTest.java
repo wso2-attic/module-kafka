@@ -37,6 +37,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
+/**
+ * Test cases for Kafka abortTransaction method on kafka producer
+ */
+@Test(singleThreaded = true)
 public class KafkaProducerAbortTransactionTest {
 
     private static File dataDir;
@@ -49,10 +53,7 @@ public class KafkaProducerAbortTransactionTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
     }
 
-    @Test(
-            description = "Test abort transaction in producer",
-            sequential = true
-    )
+    @Test(description = "Test abort transaction in producer")
     public void testKafkaProduce() {
         CompileResult result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_abort_transaction.bal");
         BValue[] inputBValues = {};

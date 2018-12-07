@@ -41,6 +41,7 @@ import static org.awaitility.Awaitility.await;
 /**
  * Test cases for ballerina kafka consumer endpoint bind to a service .
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerServiceTest {
 
     private CompileResult compileResult;
@@ -54,10 +55,7 @@ public class KafkaConsumerServiceTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
-    @Test(
-            description = "Test endpoint bind to a service",
-            sequential = true
-    )
+    @Test(description = "Test endpoint bind to a service")
     public void testKafkaServiceEndpoint() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service.bal");
         BServiceUtil.runService(compileResult);

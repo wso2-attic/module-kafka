@@ -35,8 +35,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Test cassds for Kafka Consumer assign() function
+ * Test cases for Kafka Consumer assign() function
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerAssignTest {
     private CompileResult result;
     private static File dataDir;
@@ -51,10 +52,7 @@ public class KafkaConsumerAssignTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(
-            description = "Test assign functions functionality",
-            sequential = true
-    )
+    @Test(description = "Test assign functions functionality")
     public void testKafkaConsumerAssign() {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);

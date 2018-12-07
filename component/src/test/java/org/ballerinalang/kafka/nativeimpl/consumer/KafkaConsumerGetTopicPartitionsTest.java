@@ -37,6 +37,7 @@ import java.util.Properties;
 /**
  * Test cases for ballerina.net.kafka consumer for get list of topic partitions using getTopicPartitions function
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerGetTopicPartitionsTest {
     private CompileResult result;
     private static File dataDir;
@@ -51,10 +52,7 @@ public class KafkaConsumerGetTopicPartitionsTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(
-            description = "Test functionality of getTopicPartitions() function",
-            sequential = true
-    )
+    @Test(description = "Test functionality of getTopicPartitions() function")
     public void testKafkaConsumerGetTopicPartitions () {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);

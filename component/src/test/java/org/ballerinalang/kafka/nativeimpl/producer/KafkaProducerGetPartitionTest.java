@@ -37,6 +37,7 @@ import java.util.Properties;
 /**
  * Test cases for ballerina.net.kafka producer connector/partition retrieval.
  */
+@Test(singleThreaded = true)
 public class KafkaProducerGetPartitionTest {
     private CompileResult result;
     private static File dataDir;
@@ -52,10 +53,7 @@ public class KafkaProducerGetPartitionTest {
         kafkaCluster.createTopic("test_2", 5, 1);
     }
 
-    @Test(
-            description = "Test producer topic partition retrieval",
-            sequential = true
-    )
+    @Test(description = "Test producer topic partition retrieval")
     public void testKafkaTopicPartitionRetrieval() {
         BValue[] inputBValues = {new BString("test")};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);

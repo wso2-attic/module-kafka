@@ -41,6 +41,7 @@ import java.util.concurrent.CountDownLatch;
  * Test cases for ballerina.net.kafka consumer for get list of available topics
  * using getAvailableTopics() native function.
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerGetAvailableTopicsTest {
     private CompileResult result;
     private static File dataDir;
@@ -55,10 +56,7 @@ public class KafkaConsumerGetAvailableTopicsTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(
-            description = "Test functionality of getAvailableTopics() function",
-            sequential = true
-    )
+    @Test(description = "Test functionality of getAvailableTopics() function")
     public void testKafkaConsumerGetAvailableTopics () {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");

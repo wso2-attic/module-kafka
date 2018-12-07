@@ -40,6 +40,10 @@ import java.util.Properties;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
+/**
+ * Test cases for kafka consumer unsubscribe
+ */
+@Test(singleThreaded = true)
 public class KafkaConsumerUnsubscribeTest {
     private CompileResult result;
     private static File dataDir;
@@ -52,10 +56,7 @@ public class KafkaConsumerUnsubscribeTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
-    @Test(
-            description = "Test functionality of getAvailableTopics() function",
-            sequential = true
-    )
+    @Test(description = "Test functionality of getAvailableTopics() function")
     public void testKafkaConsumerUnsubscribe () {
         result = BCompileUtil.compileAndSetup("consumer/kafka_consumer_unsubscribe.bal");
         BValue[] inputBValues = {};

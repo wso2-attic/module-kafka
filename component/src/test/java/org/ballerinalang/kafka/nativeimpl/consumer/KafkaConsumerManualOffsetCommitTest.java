@@ -51,6 +51,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
  * Test cases for ballerina.net.kafka consumer ( with manual commit enabled )  manual offset commit
  * using  commitOffset() native function.
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerManualOffsetCommitTest {
     private CompileResult result;
     private static File dataDir;
@@ -65,10 +66,7 @@ public class KafkaConsumerManualOffsetCommitTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(
-            description = "Test Basic consumer polling with manual offset commit",
-            sequential = true
-    )
+    @Test(description = "Test Basic consumer polling with manual offset commit")
     public void testKafkaConsumeWithManualOffsetCommit() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");

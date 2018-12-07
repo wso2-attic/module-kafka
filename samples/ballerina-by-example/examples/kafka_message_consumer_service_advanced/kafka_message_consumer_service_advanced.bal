@@ -36,7 +36,7 @@ service kafkaService on consumer {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        consumerAction.commit();
+        consumerAction->commit();
     }
 }
 

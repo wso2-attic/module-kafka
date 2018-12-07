@@ -51,7 +51,7 @@ service kafkaService on consumer {
         byte[] serializedMsg = msg.toByteArray("UTF-8");
 
         kafkaTransactionalCTP(serializedMsg, simpleConsumer);
-        // Please note we have omitted calling consumer.commit() ( enable.auto.commit = false ) now this is handled inside the
+        // Please note we have omitted calling consumer->commit() ( enable.auto.commit = false ) now this is handled inside the
         // transaction block as these offsets are committed part of transaction.
     }
 }

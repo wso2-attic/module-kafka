@@ -34,6 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Test cases for kafka producer flushRecords
+ */
+@Test(singleThreaded = true)
 public class KafkaProducerFlushRecordsTest {
     private CompileResult result;
     private static File dataDir;
@@ -47,10 +51,7 @@ public class KafkaProducerFlushRecordsTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(
-            description = "Test producer flush function",
-            sequential = true
-    )
+    @Test(description = "Test producer flush function")
     public void testKafkaFlush() {
         result = BCompileUtil.compileAndSetup("producer/kafka_producer_flush_records.bal");
         BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaTestFlush");

@@ -24,6 +24,7 @@ import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
+@Test(singleThreaded = true)
 public class KafkaConsumerSubscribeToPatternTest {
     private CompileResult result;
     private static File dataDir;
@@ -49,44 +51,53 @@ public class KafkaConsumerSubscribeToPatternTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
-    @Test(
-            description = "Test functionality of getAvailableTopics() function",
-            sequential = true
-    )
+    @Test(description = "Test functionality of getAvailableTopics() function")
     public void testKafkaConsumerSubscribeToPattern () {
         result = BCompileUtil.compileAndSetup("consumer/kafka_consumer_subscribe_to_pattern.bal");
-        BValue[] inputBValues = {};
+        BValue[] kafkaConsumerValue = BRunUtil.invoke(result, "funcKafkaGetKafkaConsumer");
+        Assert.assertEquals(kafkaConsumerValue.length, 1);
+        Assert.assertTrue(kafkaConsumerValue[0] instanceof BMap);
+        // adding kafka endpoint as the input parameter
+        BValue[] kafkaConsumer = new BValue[]{kafkaConsumerValue[0]};
         try {
             await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValuesAll = BRunUtil
+                        .invokeStateful(result, "funcKafkaGetAvailableTopicsCount", kafkaConsumer);
+                Assert.assertEquals(returnBValuesAll.length, 1);
+                Assert.assertTrue(returnBValuesAll[0] instanceof BInteger);
+                long availableTopicCount = ((BInteger) returnBValuesAll[0]).intValue();
+
                 BValue[] returnBValues = BRunUtil
-                        .invokeStateful(result, "funcKafkaTestGetTopicCount", inputBValues);
+                        .invokeStateful(result, "funcKafkaTestGetSubscribedTopicCount", kafkaConsumer);
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BInteger);
                 long topicCount = ((BInteger) returnBValues[0]).intValue();
-                return (topicCount == 0);
+                return (topicCount == 0 && availableTopicCount == 0);
             });
         } catch (Throwable e) {
             Assert.fail(e.getMessage());
         }
 
-        BRunUtil.invokeStateful(result, "funcKafkaProduce");
-        BRunUtil.invokeStateful(result, "funcKafkaTestSubscribeToPattern");
+        kafkaCluster.createTopic("test1", 1, 1);
+        kafkaCluster.createTopic("test2", 1, 1);
+        kafkaCluster.createTopic("tester", 1, 1);
+        kafkaCluster.createTopic("another-topic", 1, 1);
 
         try {
-            await().atMost(20000, TimeUnit.MILLISECONDS).until(() -> {
-                BValue[] returnBValues = BRunUtil.
-                        invokeStateful(result, "funcKafkaGetAvailableTopicsCount", inputBValues);
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BRunUtil.invokeStateful(result, "funcKafkaTestSubscribeToPattern", kafkaConsumer);
+                BValue[] returnBValues = BRunUtil
+                        .invokeStateful(result, "funcKafkaTestGetSubscribedTopicCount", kafkaConsumer);
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BInteger);
-                long topicCount = ((BInteger) returnBValues[0]).intValue();
-                Assert.assertEquals(topicCount, 4);
+                long subscribedTopicCount = ((BInteger) returnBValues[0]).intValue();
 
-                returnBValues = BRunUtil
-                        .invokeStateful(result, "funcKafkaTestGetTopicCount", inputBValues);
-                Assert.assertEquals(returnBValues.length, 1);
-                Assert.assertTrue(returnBValues[0] instanceof BInteger);
-                topicCount = ((BInteger) returnBValues[0]).intValue();
-                return (topicCount == 3);
+                BValue[] returnBValuesAll = BRunUtil
+                        .invokeStateful(result, "funcKafkaGetAvailableTopicsCount", kafkaConsumer);
+                Assert.assertEquals(returnBValuesAll.length, 1);
+                Assert.assertTrue(returnBValuesAll[0] instanceof BInteger);
+                long availableTopicCount = ((BInteger) returnBValuesAll[0]).intValue();
+                return (subscribedTopicCount == 3 && availableTopicCount == 4);
             });
         } catch (Throwable e) {
             Assert.fail(e.getMessage());

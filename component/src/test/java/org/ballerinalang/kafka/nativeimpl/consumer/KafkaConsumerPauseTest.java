@@ -50,6 +50,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 /**
  * Test cases for ballerina.net.kafka consumer ( with Pause ) native functions.
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerPauseTest {
     private CompileResult result;
     private static File dataDir;
@@ -64,10 +65,7 @@ public class KafkaConsumerPauseTest {
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(
-            description = "Test Basic consumer with seek",
-            sequential = true
-    )
+    @Test(description = "Test Basic consumer with seek")
     public void testKafkaConsumeWithPause() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");

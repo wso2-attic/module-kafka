@@ -20,39 +20,24 @@ kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
     groupId: "test-group",
     clientId: "subscribe-to-pattern-consumer",
-    autoCommit: false
+    metadataMaxAge: 100,
+    defaultApiTimeout: 100
 };
 
-kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+function funcKafkaGetKafkaConsumer() returns kafka:SimpleConsumer {
+    return new(consumerConfigs);
+}
 
-kafka:ProducerConfig producerConfigs = {
-    bootstrapServers: "localhost:9094",
-    clientID: "subscribe-to-pattern-producer",
-    acks: "all",
-    noRetries: 3
-};
-
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
-
-function funcKafkaTestSubscribeToPattern() {
+function funcKafkaTestSubscribeToPattern(kafka:SimpleConsumer kafkaConsumer) {
     var result = kafkaConsumer->subscribeToPattern("test.*");
 }
 
-function funcKafkaTestGetTopicCount() returns int|error {
+function funcKafkaTestGetSubscribedTopicCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
     string[] subscribedTopics = check kafkaConsumer->getSubscription();
     return (subscribedTopics.length());
 }
 
-function funcKafkaGetAvailableTopicsCount() returns int|error {
-    string[] availableTopics = check kafkaConsumer->getAvailableTopics();
+function funcKafkaGetAvailableTopicsCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
+    string[] availableTopics = check kafkaConsumer->getAvailableTopics(duration = 100);
     return (availableTopics.length());
-}
-
-function funcKafkaProduce() {
-    string msg = "Hello World";
-    byte[] byteMsg = msg.toByteArray("UTF-8");
-    var result = kafkaProducer->send(byteMsg, "test1");
-    result = kafkaProducer->send(byteMsg, "test2");
-    result = kafkaProducer->send(byteMsg, "tester");
-    result = kafkaProducer->send(byteMsg, "another-topic");
 }

@@ -37,6 +37,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
+/**
+ * Test cases for Kafka commitConsumer method on kafka producer
+ */
+@Test(singleThreaded = true)
 public class KafkaProducerCommitConsumerTest {
 
     private CompileResult result;
@@ -50,10 +54,7 @@ public class KafkaProducerCommitConsumerTest {
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
     }
 
-    @Test(
-            description = "Test producer commit consumer functionality",
-            sequential = true
-    )
+    @Test(description = "Test producer commit consumer functionality")
     public void testKafkaProduce() {
         result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_commit_consumer.bal");
         BRunUtil.invokeStateful(result, "funcTestKafkaProduce");

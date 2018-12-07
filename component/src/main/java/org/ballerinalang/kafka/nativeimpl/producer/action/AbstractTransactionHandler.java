@@ -74,10 +74,10 @@ public abstract class AbstractTransactionHandler implements NativeCallableUnit {
     void initiateTransaction() {
         String connectorKey = producerConnector.get("connectorID").stringValue();
         TransactionLocalContext localTransactionInfo = context.getLocalTransactionInfo();
-        performTransaction(localTransactionInfo, connectorKey);
+        beginTransaction(localTransactionInfo, connectorKey);
     }
 
-    private void performTransaction(TransactionLocalContext localTransactionInfo, String connectorKey) {
+    private void beginTransaction(TransactionLocalContext localTransactionInfo, String connectorKey) {
         if (!isKafkaTransactionInitiated(localTransactionInfo, connectorKey)) {
             KafkaTransactionContext txContext = new KafkaTransactionContext(producer);
             localTransactionInfo.registerTransactionContext(connectorKey, txContext);

@@ -42,6 +42,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Test cases for ballerina.kafka consumer native functions.
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerTest {
     private CompileResult result;
     private static File dataDir;
@@ -56,10 +57,7 @@ public class KafkaConsumerTest {
         kafkaCluster.createTopic("test", 2, 1);
     }
 
-    @Test(
-            description = "Test Basic consumer polling with subscription and assignment retrieval",
-            sequential = true
-    )
+    @Test(description = "Test Basic consumer polling with subscription and assignment retrieval")
     public void testKafkaConsume() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
