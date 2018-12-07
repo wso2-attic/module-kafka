@@ -82,7 +82,7 @@ kafka:ProducerConfig producerConfig = {
 
 kafka:SimpleProducer kafkaProducer = new(producerConfig);
 
-function main (string... args) {
+public function main() {
     string msg = "Hello World Advance";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
     kafkaProducer->send(serializedMsg, "test-kafka-topic", partition = 0);
