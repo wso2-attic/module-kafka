@@ -203,7 +203,7 @@ public class KafkaUtils {
         // Create consumer struct.
         ProgramFile programFile = resource.getResourceInfo().getPackageInfo().getProgramFile();
         BMap<String, BValue> consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
-                CONSUMER_STRUCT_NAME);
+              CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
         return consumerStruct;
     }
@@ -248,7 +248,7 @@ public class KafkaUtils {
         // Create consumer struct.
         ProgramFile programFile = resource.getResourceInfo().getPackageInfo().getProgramFile();
         BMap<String, BValue> consumerStruct = BLangConnectorSPIUtil.createBStruct(programFile, KAFKA_NATIVE_PACKAGE,
-                CONSUMER_STRUCT_NAME);
+              CONSUMER_STRUCT_NAME);
         consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
 
         BMap<String, BValue> consumerConfigStruct = BLangConnectorSPIUtil.createBStruct(

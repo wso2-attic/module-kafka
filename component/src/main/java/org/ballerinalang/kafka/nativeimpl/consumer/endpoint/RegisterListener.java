@@ -37,8 +37,8 @@ import org.ballerinalang.natives.annotations.Receiver;
 
 import java.util.Properties;
 
-import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_ENDPOINT_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_SERVER_CONNECTOR_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
@@ -52,7 +52,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "registerListener",
         receiver = @Receiver(
                 type = TypeKind.OBJECT,
-                structType = CONSUMER_ENDPOINT_STRUCT_NAME,
+                structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE
         )
 )
