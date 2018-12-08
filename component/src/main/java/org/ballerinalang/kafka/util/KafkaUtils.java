@@ -36,6 +36,7 @@ import org.ballerinalang.model.types.BObjectType;
 import org.ballerinalang.model.types.BRecordType;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.types.BTypes;
+import org.ballerinalang.model.types.BUnionType;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BError;
@@ -118,12 +119,29 @@ public class KafkaUtils {
 
     private static void validateReturnTypes(BType[] returnParamTypes) {
         for (BType returnParamType : returnParamTypes) {
-            if (returnParamType != BTypes.typeNull && returnParamType != BTypes.typeError) {
-                throw new BallerinaException("Invalid return type for the resource function: Expected error? Found "
+            if (returnParamType instanceof BUnionType) {
+                for (BType memberType:((BUnionType) returnParamType).getMemberTypes()) {
+                    if (!isParameterTypeErrorOrNull(memberType)) {
+                        throw new BallerinaException("Invalid return type for the resource function:" +
+                                "Expected error? or subset of error? but found: "
+                                + returnParamType.getName()
+                        );
+                    }
+                }
+            } else if (!isParameterTypeErrorOrNull(returnParamType)) {
+                throw new BallerinaException("Invalid return type for the resource function:" +
+                        "Expected error? or subset of error? but found: "
                         + returnParamType.getName()
                 );
             }
         }
+    }
+
+    private static boolean isParameterTypeErrorOrNull(BType paramType) {
+        if (paramType == BTypes.typeNull || paramType == BTypes.typeError) {
+            return true;
+        }
+        return false;
     }
 
     private static void validateConsumerParam(ParamDetail param) {
