@@ -18,7 +18,7 @@ import wso2/kafka;
 import ballerina/io;
 import ballerina/internal;
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     topics:["test-kafka-topic"],
@@ -27,15 +27,17 @@ endpoint kafka:SimpleConsumer consumer {
     isolationLevel:"read_committed"
 };
 
-service<kafka:Consumer> kafkaService bind consumer {
+listener kafka:SimpleConsumer consumer = new(consumerConfigs);
 
-    onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+service kafkaService on consumer {
+
+    resource function onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
         foreach kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        consumerAction.commit();
+        consumerAction->commit();
     }
 }
 

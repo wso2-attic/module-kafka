@@ -29,9 +29,9 @@ import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.util.codegen.ProgramFile;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -49,6 +49,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 /**
  * Test cases for ballerina.net.kafka consumer ( with seek ) native functions.
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerSeekTest {
     private CompileResult result;
     private static File dataDir;
@@ -66,9 +67,7 @@ public class KafkaConsumerSeekTest {
     @Test(description = "Test Basic consumer with seek")
     public void testKafkaConsumeWithSeek() {
         CountDownLatch completion = new CountDownLatch(1);
-        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {
-            return "test_string";
-        });
+        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
         try {
             completion.await();
         } catch (Exception ex) {
@@ -124,7 +123,7 @@ public class KafkaConsumerSeekTest {
 
         ArrayList<BMap<String, BValue>> structArray = new ArrayList<>();
         structArray.add(part);
-        BRefValueArray partitionArray = new BRefValueArray(structArray.toArray(new BRefType[0]),
+        BValueArray partitionArray = new BValueArray(structArray.toArray(new BRefType[0]),
                 createPartitionStruct(programFile).getType());
 
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
@@ -187,8 +186,8 @@ public class KafkaConsumerSeekTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-seek-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
     }
 

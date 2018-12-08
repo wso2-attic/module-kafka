@@ -1,20 +1,20 @@
 /*
-*   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ *   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 package org.ballerinalang.kafka.nativeimpl.producer;
 
@@ -39,7 +39,9 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Test cases for ballerina.net.kafka producer connector.
  */
+@Test(singleThreaded = true)
 public class KafkaProducerTest {
+
     private CompileResult result;
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
@@ -90,7 +92,7 @@ public class KafkaProducerTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer-test");
         kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
         return kafkaCluster;
     }

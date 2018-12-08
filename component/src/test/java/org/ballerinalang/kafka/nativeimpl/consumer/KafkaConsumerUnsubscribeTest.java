@@ -16,15 +16,20 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.producer;
+package org.ballerinalang.kafka.nativeimpl.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
+import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
+import org.ballerinalang.kafka.util.KafkaConstants;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
+import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.exceptions.BLangRuntimeException;
+import org.ballerinalang.util.codegen.ProgramFile;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -32,35 +37,33 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
-public class KafkaProducerAbortTransactionTest {
+import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
+
+/**
+ * Test cases for kafka consumer unsubscribe
+ */
+@Test(singleThreaded = true)
+public class KafkaConsumerUnsubscribeTest {
     private CompileResult result;
     private static File dataDir;
-    protected static KafkaCluster kafkaCluster;
+    private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("producer/kafka_producer_abort_transaction.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
-                .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(3).startup();
-        kafkaCluster.createTopic("test-topic", 2, 3);
+                .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
     }
 
-    @Test(description = "Test abort transaction in producer", expectedExceptions = BLangRuntimeException.class)
-    public void testKafkaProduce() {
-        CountDownLatch completion = new CountDownLatch(1);
-        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {
-            return "test_string";
-        });
-        try {
-            completion.await();
-        } catch (Exception ex) {
-            //Ignore
-        }
+    @Test(description = "Test functionality of getAvailableTopics() function")
+    public void testKafkaConsumerUnsubscribe () {
+        result = BCompileUtil.compileAndSetup("consumer/kafka_consumer_unsubscribe.bal");
         BValue[] inputBValues = {};
-        BRunUtil.invoke(result, "funcKafkaAbortTransactionTest", inputBValues);
+        BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaTestUnsubscribe", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
     }
 
     @AfterClass
@@ -76,12 +79,18 @@ public class KafkaProducerAbortTransactionTest {
         }
     }
 
-    protected static KafkaCluster kafkaCluster() {
+    private static KafkaCluster kafkaCluster() {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-unsubscribe-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
+    }
+
+    private BMap<String, BValue> createPartitionStruct(ProgramFile programFile) {
+        return BLangConnectorSPIUtil.createBStruct(programFile,
+                KAFKA_NATIVE_PACKAGE,
+                KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
     }
 }

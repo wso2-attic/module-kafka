@@ -16,12 +16,14 @@
 
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
     clientID: "basic-producer",
     acks: "all",
     noRetries: 3
 };
+
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 function funcTestKafkaProduce() {
     string msg = "Hello World";
@@ -34,5 +36,5 @@ function funcTestKafkaProduce() {
 }
 
 function kafkaProduce(byte[] value, string topic) {
-    kafkaProducer->send(value, topic);
+    var result = kafkaProducer->send(value, topic);
 }

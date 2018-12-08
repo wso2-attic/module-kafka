@@ -26,6 +26,7 @@ import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
@@ -47,6 +48,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
  * Test cases for ballerina.net.kafka consumer ( with manual commit enabled ) manual offset commit
  * using commit() native function.
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerManualCommitTest {
     private CompileResult result;
     private static File dataDir;
@@ -64,9 +66,7 @@ public class KafkaConsumerManualCommitTest {
     @Test(description = "Test Basic consumer polling with manual offset commit")
     public void testKafkaConsumeWithManualOffsetCommit() {
         CountDownLatch completion = new CountDownLatch(1);
-        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> {
-            return "test_string";
-        });
+        kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
         try {
             completion.await();
         } catch (Exception ex) {
@@ -110,7 +110,10 @@ public class KafkaConsumerManualCommitTest {
         Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 10);
 
         inputBValues = new BValue[]{consumerEndpoint};
-        BRunUtil.invoke(result, "funcKafkaCommit", inputBValues);
+        returnBValues = BRunUtil.invoke(result, "funcKafkaCommit", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
 
 
         inputBValues = new BValue[]{consumerEndpoint, part};
@@ -138,9 +141,10 @@ public class KafkaConsumerManualCommitTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BMap);
-        Assert.assertEquals(((BMap) returnBValues[0]).get("message").stringValue(),
-                "You can only check the position for partitions assigned to this consumer.");
+        Assert.assertTrue(returnBValues[0] instanceof BError);
+        Assert.assertEquals(((BError) returnBValues[0]).getReason(),
+                "Failed to get position offset: " +
+                        "You can only check the position for partitions assigned to this consumer.");
 
         part.put("topic", new BString("test"));
         part.put("partition", new BInteger(0));
@@ -169,8 +173,8 @@ public class KafkaConsumerManualCommitTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-manual-commit-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
     }
 

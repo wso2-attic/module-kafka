@@ -21,7 +21,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.TopicPartition;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
+import org.ballerinalang.bre.bvm.BVMExecutor;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
@@ -29,16 +29,11 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BFunctionPointer;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.util.codegen.FunctionInfo;
-import org.ballerinalang.util.exceptions.BallerinaException;
-import org.ballerinalang.util.program.BLangFunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +46,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
 
 /**
@@ -63,22 +59,17 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
         functionName = "subscribeWithPartitionRebalance",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "topics", type = TypeKind.ARRAY, elementType = TypeKind.STRING),
-                @Argument(name = "onPartitionsRevoked", type = TypeKind.ANY),
-                @Argument(name = "onPartitionsAssigned", type = TypeKind.ANY)
-        },
-        returnType = {@ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        BStringArray topicArray = (BStringArray) context.getRefArgument(1);
+        BValueArray topicArray = (BValueArray) context.getRefArgument(1);
         ArrayList<String> topics = new ArrayList<String>();
         for (int counter = 0; counter < topicArray.size(); counter++) {
-            topics.add(topicArray.get(counter));
+            topics.add(topicArray.getString(counter));
         }
 
         FunctionInfo onPartitionsRevoked = null;
@@ -89,14 +80,14 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
         if (Objects.nonNull(partitionsRevoked) && partitionsRevoked instanceof BFunctionPointer) {
             onPartitionsRevoked = ((BFunctionPointer) context.getRefArgument(2)).value();
         } else {
-            context.setReturnValues(BLangVMErrors.createError(context,
+            context.setReturnValues(createError(context,
                     "The onPartitionsRevoked function is not provided."));
         }
 
         if (Objects.nonNull(partitionsAssigned) && partitionsAssigned instanceof BFunctionPointer) {
             onPartitionsAssigned = ((BFunctionPointer) context.getRefArgument(3)).value();
         } else {
-            context.setReturnValues(BLangVMErrors.createError(context,
+            context.setReturnValues(createError(context,
                     "The onPartitionsAssigned function is not provided."));
         }
 
@@ -105,14 +96,10 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
-        if (Objects.isNull(kafkaConsumer)) {
-            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
-        }
-
         try {
             kafkaConsumer.subscribe(topics, listener);
         } catch (IllegalArgumentException | IllegalStateException | KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+            context.setReturnValues(createError(context, e.getMessage()));
         }
     }
 
@@ -149,10 +136,12 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
          */
         @Override
         public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-            BLangFunctions
-                    .invokeCallable(onPartitionsRevoked,
-                            new BValue[]{consumerStruct, getPartitionsArray(partitions)});
-
+            BValue[] returnArgs = new BValue[]{consumerStruct, getPartitionsArray(partitions)};
+            BVMExecutor.executeFunction(
+                    onPartitionsRevoked.getPackageInfo().getProgramFile(),
+                    onPartitionsRevoked,
+                    returnArgs
+            );
         }
 
         /**
@@ -160,18 +149,19 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
          */
         @Override
         public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-            BLangFunctions.invokeCallable(onPartitionsAssigned,
-                    new BValue[]{consumerStruct, getPartitionsArray(partitions)});
-
+            BValue[] returnArgs = new BValue[]{consumerStruct, getPartitionsArray(partitions)};
+            BVMExecutor.executeFunction(
+                    onPartitionsAssigned.getPackageInfo().getProgramFile(),
+                    onPartitionsAssigned,
+                    returnArgs
+            );
         }
 
-        private BRefValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
+        private BValueArray getPartitionsArray(Collection<TopicPartition> partitions) {
             List<BMap<String, BValue>> assignmentList = createPartitionList(context, partitions);
-            return new BRefValueArray(assignmentList.toArray(new BRefType[0]),
+            return new BValueArray(assignmentList.toArray(new BRefType[0]),
                     KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType());
         }
-
     }
-
 }
 

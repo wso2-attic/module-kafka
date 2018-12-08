@@ -16,22 +16,23 @@
 
 import wso2/kafka;
 
-string topic = "test-topic";
-
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "basic-producer",
-    transactionalID: "transactional-producer-test"
+    clientID: "close-producer",
+    acks: "all",
+    noRetries: 3
 };
 
-function funcKafkaAbortTransactionTest() {
-    string msg = "test-message-1";
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+
+function funcTestKafkaClose() returns boolean {
+    string msg = "Test Message";
+    string topic = "test";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(byteMsg, topic);
-
-    kafkaProducer->abortTransaction();
-
-    msg = "test-message-2";
-    byteMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(byteMsg, topic);
+    var result = kafkaProducer->send(byteMsg, topic);
+    result = kafkaProducer->close();
+    if (result is error) {
+        return false;
+    }
+    return true;
 }

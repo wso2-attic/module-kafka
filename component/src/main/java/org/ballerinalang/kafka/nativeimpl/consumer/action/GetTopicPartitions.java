@@ -16,37 +16,33 @@
 
 package org.ballerinalang.kafka.nativeimpl.consumer.action;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.PartitionInfo;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
-import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native function returns partition array for given topic.
@@ -57,64 +53,56 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         functionName = "getTopicPartitions",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "topic", type = TypeKind.STRING),
-                @Argument(name = "duration", type = TypeKind.INT)
-        },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                structType = TOPIC_PARTITION_STRUCT_NAME, structPackage = KAFKA_NATIVE_PACKAGE),
-                @ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 //Duplicated code here cannot be moved as the Collection<T> has different types
 @SuppressWarnings("Duplicates")
 public class GetTopicPartitions extends AbstractApisWithDuration {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
+        this.context = context;
+        this.consumer = getKafkaConsumer();
         String topic = context.getStringArgument(0);
-        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
-
-        if (Objects.isNull(kafkaConsumer)) {
-            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
-        }
-
         long apiTimeout = context.getIntArgument(0);
-        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
+        long defaultApiTimeout = getDefaultApiTimeout();
 
         try {
-            List<PartitionInfo> partitionInfos;
+            List<PartitionInfo> partitionInfoList;
             if (apiTimeout > DURATION_UNDEFINED_VALUE) {
-                Duration duration = getDurationFromLong(apiTimeout);
-                partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
+                partitionInfoList = getPartitionInfoList(topic, apiTimeout);
             } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
-                Duration duration = getDurationFromLong(defaultApiTimeout);
-                partitionInfos = kafkaConsumer.partitionsFor(topic, duration);
+                partitionInfoList = getPartitionInfoList(topic, defaultApiTimeout);
             } else {
-                partitionInfos = kafkaConsumer.partitionsFor(topic);
+                partitionInfoList = this.consumer.partitionsFor(topic);
             }
-            List<BMap<String, BValue>> infoList = new ArrayList<>();
-            if (!partitionInfos.isEmpty()) {
-                partitionInfos.forEach(partitionInfo -> {
-                    BMap<String, BValue> partitionStruct =
-                            KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    partitionStruct.put("topic", new BString(partitionInfo.topic()));
-                    partitionStruct.put("partition", new BInteger(partitionInfo.partition()));
-                    infoList.add(partitionStruct);
-                });
-            }
+            List<BMap<String, BValue>> infoList = getInfoList(partitionInfoList);
             context.setReturnValues(
-                    new BRefValueArray(
+                    new BValueArray(
                             infoList.toArray(new BRefType[0]),
                             KafkaUtils.
                                     createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME).getType()));
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+            context.setReturnValues(createError(context, e.getMessage()));
         }
     }
 
-    @Override
-    public boolean isBlocking() {
-        return true;
+    private List<PartitionInfo> getPartitionInfoList(String topic, long timeout) {
+        Duration duration = getDurationFromLong(timeout);
+        return this.consumer.partitionsFor(topic, duration);
+    }
+
+    private List<BMap<String, BValue>> getInfoList(List<PartitionInfo> partitionInfoList) {
+        List<BMap<String, BValue>> infoList = new ArrayList<>();
+        if (!partitionInfoList.isEmpty()) {
+            partitionInfoList.forEach(partitionInfo -> {
+                BMap<String, BValue> partitionStruct = KafkaUtils
+                        .createKafkaPackageStruct(this.context, TOPIC_PARTITION_STRUCT_NAME);
+                partitionStruct.put(ALIAS_TOPIC, new BString(partitionInfo.topic()));
+                partitionStruct.put(ALIAS_PARTITION, new BInteger(partitionInfo.partition()));
+                infoList.add(partitionStruct);
+            });
+        }
+        return infoList;
     }
 }

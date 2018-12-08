@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,25 +27,23 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native action retrieves partitions for given Topic via remote call.
@@ -55,13 +53,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT
         packageName = PACKAGE_NAME,
         functionName = "getTopicPartitions",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE),
-        args = {
-                @Argument(name = "topic", type = TypeKind.STRING)
-        },
-        returnType = {@ReturnType(type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
-                structType = TOPIC_PARTITION_STRUCT_NAME,
-                structPackage = KAFKA_NATIVE_PACKAGE)})
+                structPackage = KAFKA_NATIVE_PACKAGE)
+)
 public class GetTopicPartitions implements NativeCallableUnit {
 
     @Override
@@ -74,28 +67,22 @@ public class GetTopicPartitions implements NativeCallableUnit {
 
         try {
             KafkaProducer<byte[], byte[]> kafkaProducer = (KafkaProducer) producerStruct.getNativeData(NATIVE_PRODUCER);
-
-            if (Objects.isNull(kafkaProducer)) {
-                throw new BallerinaException("Kafka producer has not been initialized properly.");
-            }
-
             List<PartitionInfo> partitionInfos = kafkaProducer.partitionsFor(topic);
             List<BMap<String, BValue>> infoList = new ArrayList<>();
             if (!partitionInfos.isEmpty()) {
                 partitionInfos.forEach(partitionInfo -> {
-                    BMap<String, BValue> infoStruct = KafkaUtils.
-                            createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
-                    infoStruct.put("topic", new BString(partitionInfo.topic()));
-                    infoStruct.put("partition", new BInteger(partitionInfo.partition()));
+                    BMap<String, BValue> infoStruct = getPartitionInfoStruct(context, partitionInfo);
                     infoList.add(infoStruct);
                 });
                 context.setReturnValues(
-                        new BRefValueArray(infoList.toArray(new BRefType[0]),
+                        new BValueArray(infoList.toArray(new BRefType[0]),
                                 KafkaUtils.createKafkaPackageStruct(
                                         context, TOPIC_PARTITION_STRUCT_NAME).getType()));
             }
         } catch (KafkaException e) {
-            throw new BallerinaException("Failed to fetch partitions from the producer " + e.getMessage(), e, context);
+            context.setReturnValues(
+                    createError(context, "Failed to fetch partitions from the producer " + e.getMessage())
+            );
         }
         callableUnitCallback.notifySuccess();
     }
@@ -103,5 +90,12 @@ public class GetTopicPartitions implements NativeCallableUnit {
     @Override
     public boolean isBlocking() {
         return false;
+    }
+
+    private BMap<String, BValue> getPartitionInfoStruct(Context context, PartitionInfo partitionInfo) {
+        BMap<String, BValue> infoStruct = KafkaUtils.createKafkaPackageStruct(context, TOPIC_PARTITION_STRUCT_NAME);
+        infoStruct.put("topic", new BString(partitionInfo.topic()));
+        infoStruct.put(ALIAS_PARTITION, new BInteger(partitionInfo.partition()));
+        return infoStruct;
     }
 }

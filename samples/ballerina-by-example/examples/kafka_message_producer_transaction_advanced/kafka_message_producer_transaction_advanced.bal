@@ -18,7 +18,7 @@ import wso2/kafka;
 import ballerina/io;
 import ballerina/internal;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfig = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
@@ -29,16 +29,20 @@ endpoint kafka:SimpleProducer kafkaProducer {
     transactionalID:"test-transactional-id"
 };
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:SimpleProducer kafkaProducer = new(producerConfig);
+
+kafka:ConsumerConfig consumerConfig = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     topics:["test-kafka-topic"],
     pollingInterval:1000
 };
 
-service<kafka:Consumer> kafkaService bind consumer {
+listener kafka:SimpleConsumer consumer = new(consumerConfig);
 
-    onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+service kafkaService on consumer {
+
+    resource function onMessage(kafka:SimpleConsumer simpleConsumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
         foreach kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
@@ -46,13 +50,13 @@ service<kafka:Consumer> kafkaService bind consumer {
         string msg = "Hello World Advanced Transaction";
         byte[] serializedMsg = msg.toByteArray("UTF-8");
 
-        kafkaTransactionalCTP(serializedMsg, consumerAction);
-        // Please note we have omitted calling consumer.commit() ( enable.auto.commit = false ) now this is handled inside the
+        kafkaTransactionalCTP(serializedMsg, simpleConsumer);
+        // Please note we have omitted calling consumer->commit() ( enable.auto.commit = false ) now this is handled inside the
         // transaction block as these offsets are committed part of transaction.
     }
 }
 
-function kafkaTransactionalCTP(byte[] msg, kafka:ConsumerAction consumer) {
+function kafkaTransactionalCTP(byte[] msg, kafka:SimpleConsumer consumer) {
     // Here we do several produces and consumer commit atomically.
     transaction with oncommit = onCommitFunction, onabort = onAbortFunction {
         kafkaProducer->send(msg, "test-kafka-topic", partition = 0);

@@ -47,15 +47,15 @@ import ballerina/system;
 # + transactionTimeout - Timeout for transaction status update from the producer.
 # + enableIdempotence - Exactly one copy of each message is written in the stream when enabled.
 public type ProducerConfig record {
-    string? bootstrapServers; // BOOTSTRAP_SERVERS_CONFIG 0
-    string? acks; // ACKS_CONFIG 1
-    string? compressionType; // COMPRESSION_TYPE_CONFIG 2
-    string? clientID; // CLIENT_ID_CONFIG 3
-    string? metricsRecordingLevel; // METRICS_RECORDING_LEVEL_CONFIG 4
-    string? metricReporterClasses; // METRIC_REPORTER_CLASSES_CONFIG 5
-    string? partitionerClass; // PARTITIONER_CLASS_CONFIG 6
-    string? interceptorClasses; // INTERCEPTOR_CLASSES_CONFIG 7
-    string? transactionalID; // TRANSACTIONAL_ID_CONFIG 8
+    string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
+    string? acks = (); // ACKS_CONFIG 1
+    string? compressionType = (); // COMPRESSION_TYPE_CONFIG 2
+    string? clientID = (); // CLIENT_ID_CONFIG 3
+    string? metricsRecordingLevel = (); // METRICS_RECORDING_LEVEL_CONFIG 4
+    string? metricReporterClasses = (); // METRIC_REPORTER_CLASSES_CONFIG 5
+    string? partitionerClass = (); // PARTITIONER_CLASS_CONFIG 6
+    string? interceptorClasses = (); // INTERCEPTOR_CLASSES_CONFIG 7
+    string? transactionalID = (); // TRANSACTIONAL_ID_CONFIG 8
 
     int bufferMemory = -1; // BUFFER_MEMORY_CONFIG 0
     int noRetries = -1; // RETRIES_CONFIG 1
@@ -76,88 +76,68 @@ public type ProducerConfig record {
     int connectionsMaxIdle = -1; // CONNECTIONS_MAX_IDLE_MS_CONFIG 16
     int transactionTimeout = -1; // TRANSACTION_TIMEOUT_CONFIG 17
 
-    boolean enableIdempotence = false;          // ENABLE_IDEMPOTENCE_CONFIG 0
+    boolean enableIdempotence = false; // ENABLE_IDEMPOTENCE_CONFIG 0
+    !...
 };
 
 # Represent a Kafka producer endpoint.
 #
-# + producerActions - Handle all the actions related to the endpoint.
+# + producerHolder - List of producers available.
+# + connectorID - Unique ID for a particular connector.
 # + producerConfig - Used to store configurations related to a Kafka connection.
-public type SimpleProducer object {
+public type SimpleProducer client object {
 
-    public ProducerAction producerActions;
-    public ProducerConfig producerConfig;
+    public ProducerConfig? producerConfig = ();
+
+    public function __init(ProducerConfig config) {
+        self.producerConfig = config;
+        var initResult = self.init(config);
+        if (initResult is error) {
+            panic initResult;
+        }
+    }
 
     # Initialize the producer endpoint.
     #
     # + config - configurations related to the endpoint.
-    public function init(ProducerConfig config) {
-        self.producerConfig = config;
-        self.producerActions.init(config);
-    }
+    extern function init(ProducerConfig config) returns error?;
 
-    # Registers producer endpoint in the service.
-    #
-    # + serviceType - type descriptor of the service.
-    public function register (typedesc serviceType) {
-
-    }
-
-    # Starts the consumer endpoint.
-    public function start () {}
-
-    # Returns the action object of ProducerAction.
-    #
-    # + return - Producer actions.
-    public function getCallerActions () returns ProducerAction {
-        return producerActions;
-    }
-
-    # Stops the consumer endpoint.
-    public function stop () {
-        self.producerActions.close();
-    }
-
-};
-
-# Kafka producer action handling object.
-#
-# + producerHolder - List of producers available.
-# + connectorID - Unique ID for a particular connector.
-public type ProducerAction object {
-
-    public map producerHolder;
+    public map<any> producerHolder = {};
     public string connectorID = system:uuid();
 
     # Aborts ongoing transaction, if transaction is initialized.
     #
-    # + consumer - Consumer which needs to abort the transaction.
-    public extern function abortTransaction();
+    # + return - error if aborting the transaction failed, none otherwise.
+    public remote extern function abortTransaction() returns error?;
 
     # Closes producer connection to the external Kafka broker.
-    public extern function close();
+    #
+    # + return - error if closing the producer failed, none otherwise.
+    public remote extern function close() returns error?;
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
     # + consumer - Consumer which needs offsets to be committed.
-    public extern function commitConsumer(ConsumerAction consumer);
+    # + return - error if committing the consumer failed, none otherwise.
+    public remote extern function commitConsumer(SimpleConsumer consumer) returns error?;
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
     # + offsets - Consumer offsets to commit for given transaction.
     # + groupID - Consumer group id.
-    public extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID);
+    # + return - error if committing consumer offsets failed, none otherwise.
+    public remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID) returns error?;
 
     # Flush action which flush batch of records.
-    public extern function flush();
+    #
+    # + return - error if records couldn't be flushed, none otherwise.
+    public remote extern function flushRecords() returns error?;
 
     # GetTopicPartitions action which returns given topic partition information.
     #
     # + topic - Topic which the partition information is given.
     # + return - Partitions for the given topic.
-    public extern function getTopicPartitions(string topic) returns TopicPartition[];
-
-    extern function init(ProducerConfig config);
+    public remote extern function getTopicPartitions(string topic) returns TopicPartition[]|error;
 
     # Simple Send action which produce records to Kafka server.
     #
@@ -166,7 +146,13 @@ public type ProducerAction object {
     # + key - Key that will be included in the record.
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
-    public extern function send(byte[] value, string topic, byte[]? key = (), int? partition = (), int? timestamp = ());
-};
+    # + return - returns error if send action fails to send data, none otherwise.
+    public remote extern function send(
+                                          byte[] value,
+                                          string topic,
+                                          byte[]? key = (),
+                                          int? partition = (),
+                                          int? timestamp = ()
+                                      ) returns error?;
 
-public type Producer object {};
+};

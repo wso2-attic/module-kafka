@@ -16,19 +16,25 @@
 
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "basic-producer",
+    clientID: "partition-retrieval-producer",
     acks: "all",
     noRetries: 3
 };
 
-function funcTestPartitionInfoRetrieval(string topic) returns kafka:TopicPartition[] {
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+
+function funcTestPartitionInfoRetrieval(string topic) returns kafka:TopicPartition[]? {
     return getPartitionInfo(topic);
 }
 
-function getPartitionInfo(string topic) returns kafka:TopicPartition[] {
-    kafka:TopicPartition[] partitions = kafkaProducer->getTopicPartitions(topic);
-    kafkaProducer->close();
-    return partitions;
+function getPartitionInfo(string topic) returns kafka:TopicPartition[]? {
+    kafka:TopicPartition[]|error partitions = kafkaProducer->getTopicPartitions(topic);
+    var result = kafkaProducer->close();
+    if (partitions is error) {
+        return;
+    } else {
+        return partitions;
+    }
 }

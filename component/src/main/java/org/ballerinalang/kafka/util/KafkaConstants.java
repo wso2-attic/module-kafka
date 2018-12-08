@@ -38,13 +38,11 @@ public class KafkaConstants {
     public static final String OFFSET_STRUCT_NAME = "PartitionOffset";
 
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
-    public static final String CONSUMER_STRUCT_NAME = "ConsumerAction";
+    public static final String CONSUMER_STRUCT_NAME = "SimpleConsumer";
     public static final String CONSUMER_CONFIG_STRUCT_NAME = "ConsumerConfig";
-    public static final String CONSUMER_ENDPOINT_STRUCT_NAME = "SimpleConsumer";
+    public static final String CONSUMER_SERVER_CONNECTOR_NAME = "serverConnector";
 
-    public static final String PRODUCER_STRUCT_NAME = "ProducerAction";
-    public static final String PRODUCER_CONFIG_STRUCT_NAME = "ProducerConfig";
-    public static final String PRODUCER_RECORD_STRUCT_NAME = "ProducerRecord";
+    public static final String PRODUCER_STRUCT_NAME = "SimpleProducer";
 
     public static final String PROPERTIES_ARRAY = "properties";
 
@@ -53,6 +51,9 @@ public class KafkaConstants {
     public static final String ALIAS_POLLING_TIMEOUT = "pollingTimeout";
     public static final String ALIAS_POLLING_INTERVAL = "pollingInterval";
     public static final String ALIAS_DECOUPLE_PROCESSING = "decoupleProcessing";
+    public static final String ALIAS_TOPIC = "topic";
+    public static final String ALIAS_PARTITION = "partition";
+    public static final String ALIAS_OFFSET = "offset";
 
     public static final String DEFAULT_KEY_DESERIALIZER
             = "org.apache.kafka.common.serialization.ByteArrayDeserializer";

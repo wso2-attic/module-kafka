@@ -37,6 +37,7 @@ import java.util.Properties;
 /**
  * Test cases for ballerina.net.kafka producer connector/partition retrieval.
  */
+@Test(singleThreaded = true)
 public class KafkaProducerGetPartitionTest {
     private CompileResult result;
     private static File dataDir;
@@ -85,7 +86,7 @@ public class KafkaProducerGetPartitionTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer");
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer-get-partitions-test");
         kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
         return kafkaCluster;
     }

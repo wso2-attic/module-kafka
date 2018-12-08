@@ -8,8 +8,8 @@ This connector is compatible with Kafka 1.x and Kafka 2.0.0 versions.
 Steps to Configure
 ==================================
 
-Extract wso2-kafka-<version>.zip and  Run the install.sh script to install the package.
-You can uninstall the package by running uninstall.sh.
+Extract wso2-kafka-<version>.zip and  Run the install.sh script to install the module.
+You can uninstall the module by running uninstall.sh.
 
 Building From the Source
 ==================================
@@ -19,8 +19,8 @@ If you want to build Ballerina Kafka client endpoint from the source code:
     https://github.com/wso2-ballerina/module-kafka
 2. Run the following Maven command from the ballerina directory:
     mvn clean install
-3. Extract the distribution created at `/component/target/wso2-kafka-<version>.zip`. Run the install.{sh/bat} script to install the package.
-You can uninstall the package by running uninstall.{sh/bat}.
+3. Extract the distribution created at `/component/target/wso2-kafka-<version>.zip`. Run the install.{sh/bat} script to install the module.
+You can uninstall the module by running uninstall.{sh/bat}.
 `
 
 ## Ballerina as a Kafka Consumer
@@ -33,7 +33,7 @@ import wso2/kafka;
 import ballerina/io;
 import ballerina/internal;
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:ConsumerConfig consumerConfig = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     topics:["test-kafka-topic"],
@@ -41,15 +41,17 @@ endpoint kafka:SimpleConsumer consumer {
     autoCommit:false
 };
 
-service<kafka:Consumer> kafkaService bind consumer {
+listener kafka:SimpleConsumer consumer = new(consumerConfig);
 
-    onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+service kafkaService on consumer {
+
+    resource function onMessage(kafka:SimpleConsumer simpleConsumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
-        foreach kafkaRecord in records {
+        foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        consumerAction.commit();
+        simpleConsumer->commit();
     }
 }
 
@@ -68,7 +70,7 @@ Following example demonstrates a way to publish a message to a specified topic. 
 ```ballerina
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfig = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
@@ -78,7 +80,9 @@ endpoint kafka:SimpleProducer kafkaProducer {
     noRetries:3
 };
 
-function main (string... args) {
+kafka:SimpleProducer kafkaProducer = new(producerConfig);
+
+public function main() {
     string msg = "Hello World Advance";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
     kafkaProducer->send(serializedMsg, "test-kafka-topic", partition = 0);

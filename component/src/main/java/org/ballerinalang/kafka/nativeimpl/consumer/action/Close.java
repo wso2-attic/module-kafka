@@ -19,25 +19,19 @@ package org.ballerinalang.kafka.nativeimpl.consumer.action;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.time.Duration;
-import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native function to close a given consumer.
@@ -48,31 +42,29 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "close",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        args = @Argument(name = "defaultTimeout", type = TypeKind.INT),
-        returnType = {@ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 public class Close extends AbstractApisWithDuration {
 
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
-        BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
+        this.context = context;
+        this.consumer = getKafkaConsumer();
+
         long apiTimeout = context.getIntArgument(0);
-        long defaultApiTimeout = getDefaultApiTimeout(consumerStruct);
-        if (Objects.isNull(kafkaConsumer)) {
-            throw new BallerinaException("Kafka Consumer has not been initialized properly.");
-        }
+        long defaultApiTimeout = getDefaultApiTimeout();
+
         // Clears the reference to Kafka Native consumer.
-        consumerStruct.addNativeData(NATIVE_CONSUMER, null);
+        getConsumerStruct().addNativeData(NATIVE_CONSUMER, null);
         try {
             if (apiTimeout > DURATION_UNDEFINED_VALUE) { // API timeout should given the priority over the default value
-                closeWithDuration(kafkaConsumer, apiTimeout);
+                closeWithDuration(consumer, apiTimeout);
             } else if (defaultApiTimeout > DURATION_UNDEFINED_VALUE) {
-                closeWithDuration(kafkaConsumer, defaultApiTimeout);
+                closeWithDuration(consumer, defaultApiTimeout);
             } else {
-                kafkaConsumer.close();
+                consumer.close();
             }
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+            context.setReturnValues(createError(context, e.getMessage()));
         }
     }
 

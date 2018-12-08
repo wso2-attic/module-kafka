@@ -35,8 +35,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Test cassds for Kafka Consumer assign() function
+ * Test cases for Kafka Consumer assign() function
  */
+@Test(singleThreaded = true)
 public class KafkaConsumerAssignTest {
     private CompileResult result;
     private static File dataDir;
@@ -88,8 +89,8 @@ public class KafkaConsumerAssignTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2185, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-assign-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
         return kafkaCluster;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,6 @@ package org.ballerinalang.kafka.nativeimpl.consumer.action;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.kafka.util.KafkaUtils;
 import org.ballerinalang.model.NativeCallableUnit;
@@ -30,7 +29,6 @@ import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
-import org.ballerinalang.natives.annotations.ReturnType;
 
 import java.util.Objects;
 import java.util.Properties;
@@ -40,6 +38,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
+import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
  * Native function connects consumer to remote cluster.
@@ -50,27 +49,29 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         functionName = "connect",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
-        returnType = {@ReturnType(type = TypeKind.RECORD)},
-        isPublic = true)
+        isPublic = true
+)
 public class Connect implements NativeCallableUnit {
 
     @Override
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         // Consumer initialization.
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
-        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("config");
+        BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
         // Check whether consumer configuration is available.
         if (Objects.isNull(consumerConfig)) {
-            context.setReturnValues(BLangVMErrors.
-                    createError(context,
-                     "Kafka consumer is not initialized with consumer configuration."));
+            context.setReturnValues(
+                    createError(context, "Kafka consumer is not initialized with consumer configuration.")
+            );
+            return;
         }
         // Check whether already native consumer is attached to the struct.
         // This can be happen either from Kafka service or via programmatically.
         if (Objects.nonNull(consumerStruct.getNativeData(NATIVE_CONSUMER))) {
-            context.setReturnValues(BLangVMErrors.createError(context,
+            context.setReturnValues(createError(context,
                     "Kafka consumer is already connected to external broker." +
                     " Please close it before re-connecting the external broker again."));
+            return;
         }
 
         Properties consumerProperties = KafkaUtils.processKafkaConsumerConfig(consumerConfig);
@@ -79,7 +80,7 @@ public class Connect implements NativeCallableUnit {
             KafkaConsumer<byte[], byte[]> kafkaConsumer = new KafkaConsumer<>(consumerProperties);
             consumerStruct.addNativeData(NATIVE_CONSUMER, kafkaConsumer);
         } catch (KafkaException e) {
-            context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
+            context.setReturnValues(createError(context, "Failed to connect to the kafka server: " + e.getMessage()));
         }
     }
 

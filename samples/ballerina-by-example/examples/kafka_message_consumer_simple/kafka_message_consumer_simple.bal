@@ -19,29 +19,26 @@ import ballerina/io;
 import ballerina/log;
 import ballerina/internal;
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     offsetReset:"earliest",
     topics:["test-kafka-topic"]
 };
 
-function main(string... args) {
+kafka:SimpleConsumer consumer = new(consumerConfigs);
+
+public function main(string... args) {
     // polling consumer for messages
     var results = consumer->poll(1000);
-    match results {
-        // returns records if exists
-        kafka:ConsumerRecord[] records => {
-            foreach kafkaRecord in records {
-                // convert byte[] to string
-                byte[] serializedMsg = kafkaRecord.value;
-                string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
-                io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
-            }
-        }
-        // returns error if something goes wrong
-        error e => {
-            log:printError("Error occurred while polling ", err = e);
+    if (results is error) {
+        log:printError("Error occurred while polling ", err = results);
+    } else {
+        foreach kafkaRecord in results {
+            // convert byte[] to string
+            byte[] serializedMsg = kafkaRecord.value;
+            string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
+            io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
         }
     }
 }
