@@ -17,6 +17,8 @@
 import wso2/kafka;
 import ballerina/transactions;
 
+string topic = "commit-consumer-test-topic";
+
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
     clientID: "commit-producer",
@@ -29,9 +31,9 @@ kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
-    groupId: "test-group",
+    groupId: "commit-consumer-test-group",
     offsetReset: "earliest",
-    topics: ["test"]
+    topics: [topic]
 };
 
 kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
@@ -39,10 +41,10 @@ kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 function funcTestKafkaProduce() {
     string msg = "Hello World";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProduce(byteMsg, "test");
+    kafkaProduce(byteMsg);
 }
 
-function kafkaProduce(byte[] value, string topic) {
+function kafkaProduce(byte[] value) {
     transaction {
         var result = kafkaProducer->send(value, topic);
     }

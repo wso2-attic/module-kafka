@@ -41,10 +41,11 @@ import static org.awaitility.Awaitility.await;
  * Test cases for Kafka abortTransaction method on kafka producer
  */
 @Test(singleThreaded = true)
-public class KafkaProducerAbortTransactionTest {
+public class KafkaProducerTransactionsTest {
 
     private static File dataDir;
     protected static KafkaCluster kafkaCluster;
+    CompileResult result;
 
     @BeforeClass
     public void setup() throws IOException {
@@ -55,7 +56,7 @@ public class KafkaProducerAbortTransactionTest {
 
     @Test(description = "Test abort transaction in producer")
     public void testKafkaProduce() {
-        CompileResult result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_abort_transaction.bal");
+        result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_abort_transaction.bal");
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaAbortTransactionTest", inputBValues);
         try {
@@ -63,6 +64,50 @@ public class KafkaProducerAbortTransactionTest {
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BBoolean);
                 return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test(description = "Test kafka producer commitConsumerOffsets() function")
+    public void testKafkaCommitConsumerOffsetsTest() {
+        result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_commit_consumer_offsets.bal");
+        BValue[] inputBValues = {};
+        BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
+        try {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaCommitOffsets");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+
+        try {
+            await().atMost(5000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestPollAgain");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test(description = "Test producer commit consumer functionality")
+    public void testKafkaCommitConsumerTest() {
+        result = BCompileUtil.compileAndSetup("transactions/kafka_transactions_commit_consumer.bal");
+        BRunUtil.invokeStateful(result, "funcTestKafkaProduce");
+        try {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcTestKafkaConsume");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return (((BBoolean) returnBValues[0]).booleanValue());
             });
         } catch (Throwable e) {
             Assert.fail(e.getMessage());

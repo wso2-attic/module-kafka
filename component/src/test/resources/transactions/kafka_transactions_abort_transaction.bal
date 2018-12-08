@@ -17,6 +17,8 @@
 import wso2/kafka;
 import ballerina/transactions;
 
+string topic = "abort-transaction-topic";
+
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers:"localhost:9094, localhost:9095, localhost:9096",
     clientID:"abort-transaction-producer",
@@ -40,7 +42,7 @@ function funcKafkaAbortTransactionTest() returns boolean {
 function kafkaAdvancedTransactionalProduce(byte[] msg) returns error? {
     error? returnValue = ();
     transaction {
-        var result = kafkaProducer->send(msg, "test", partition = 0);
+        var result = kafkaProducer->send(msg, topic, partition = 0);
         returnValue = kafkaProducer->abortTransaction();
     }
     return returnValue;
