@@ -123,15 +123,13 @@ public class KafkaUtils {
                 for (BType memberType:((BUnionType) returnParamType).getMemberTypes()) {
                     if (!isParameterTypeErrorOrNull(memberType)) {
                         throw new BallerinaException("Invalid return type for the resource function:" +
-                                "Expected error? or subset of error? but found: "
-                                + returnParamType.getName()
+                                "Expected error? or subset of error? but found: " + returnParamType.getName()
                         );
                     }
                 }
             } else if (!isParameterTypeErrorOrNull(returnParamType)) {
                 throw new BallerinaException("Invalid return type for the resource function:" +
-                        "Expected error? or subset of error? but found: "
-                        + returnParamType.getName()
+                        "Expected error? or subset of error? but found: " + returnParamType.getName()
                 );
             }
         }
