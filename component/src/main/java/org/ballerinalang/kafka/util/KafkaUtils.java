@@ -78,6 +78,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PROPERTIES_ARRAY;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.model.types.TypeTags.UNION_TAG;
 
 /**
  * Utility class for Kafka Connector Implementation.
@@ -119,12 +120,19 @@ public class KafkaUtils {
 
     private static void validateReturnTypes(BType[] returnParamTypes) {
         for (BType returnParamType : returnParamTypes) {
-            if (returnParamType instanceof BUnionType) {
-                for (BType memberType:((BUnionType) returnParamType).getMemberTypes()) {
-                    if (!isParameterTypeErrorOrNull(memberType)) {
-                        throw new BallerinaException("Invalid return type for the resource function:" +
-                                "Expected error? or subset of error? but found: " + returnParamType.getName()
-                        );
+            if (returnParamType.getTag() == UNION_TAG) {
+                List<BType> memberTypes = ((BUnionType) returnParamType).getMemberTypes();
+                if (memberTypes.size() > 2) {
+                    throw new BallerinaException("Invalid return type for the resource function:" +
+                            "Expected error? or subset of error? but found: " + returnParamType.getName()
+                    );
+                } else {
+                    for (BType memberType:memberTypes) {
+                        if (!isParameterTypeErrorOrNull(memberType)) {
+                            throw new BallerinaException("Invalid return type for the resource function:" +
+                                    "Expected error? or subset of error? but found: " + returnParamType.getName()
+                            );
+                        }
                     }
                 }
             } else if (!isParameterTypeErrorOrNull(returnParamType)) {
