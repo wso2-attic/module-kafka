@@ -16,12 +16,12 @@
 
 import wso2/kafka;
 
-string topic = "service-invalid-return-type-test";
+string topic = "service-validate-custom-error-type-test";
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
-    groupId: "service-test-invalid-return-type-group",
-    clientId: "service-invalid-return-consumer",
+    groupId: "service-test-validate-custom-error-group",
+    clientId: "service-validate-rcustom-error-consumer",
     offsetReset: "earliest",
     topics: [topic]
 };
@@ -39,15 +39,27 @@ kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 boolean isSuccess = false;
 
+type CustomError error<string, CustomErrorData>;
+
+type CustomErrorData record {
+    string message = "";
+    error? cause = ();
+    string data = "";
+    !...
+};
+
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns int {
+    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns error? {
         foreach kafka:ConsumerRecord kafkaRecord in records {
             byte[] result = kafkaRecord.value;
             if (result.length() > 0) {
                 isSuccess = true;
+            } else {
+                CustomError e = error("Custom Error", {data: "sample"});
+                return e;
             }
         }
-        return 1;
+        return;
     }
 }
 
@@ -60,4 +72,5 @@ function funcKafkaProduce() {
     byte[] byteMsg = msg.toByteArray("UTF-8");
     var result = kafkaProducer->send(byteMsg, topic);
 }
+
 

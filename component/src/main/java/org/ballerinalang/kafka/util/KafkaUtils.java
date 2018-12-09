@@ -36,6 +36,7 @@ import org.ballerinalang.model.types.BObjectType;
 import org.ballerinalang.model.types.BRecordType;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.types.BTypes;
+import org.ballerinalang.model.types.BUnionType;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BError;
@@ -77,6 +78,7 @@ import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PROPERTIES_ARRAY;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
+import static org.ballerinalang.model.types.TypeTags.UNION_TAG;
 
 /**
  * Utility class for Kafka Connector Implementation.
@@ -118,12 +120,34 @@ public class KafkaUtils {
 
     private static void validateReturnTypes(BType[] returnParamTypes) {
         for (BType returnParamType : returnParamTypes) {
-            if (returnParamType != BTypes.typeNull && returnParamType != BTypes.typeError) {
-                throw new BallerinaException("Invalid return type for the resource function: Expected error? Found "
-                        + returnParamType.getName()
+            if (returnParamType.getTag() == UNION_TAG) {
+                List<BType> memberTypes = ((BUnionType) returnParamType).getMemberTypes();
+                if (memberTypes.size() > 2) {
+                    throw new BallerinaException("Invalid return type for the resource function:" +
+                            "Expected error? or subset of error? but found: " + returnParamType.getName()
+                    );
+                } else {
+                    for (BType memberType:memberTypes) {
+                        if (!isParameterTypeErrorOrNull(memberType)) {
+                            throw new BallerinaException("Invalid return type for the resource function:" +
+                                    "Expected error? or subset of error? but found: " + returnParamType.getName()
+                            );
+                        }
+                    }
+                }
+            } else if (!isParameterTypeErrorOrNull(returnParamType)) {
+                throw new BallerinaException("Invalid return type for the resource function:" +
+                        "Expected error? or subset of error? but found: " + returnParamType.getName()
                 );
             }
         }
+    }
+
+    private static boolean isParameterTypeErrorOrNull(BType paramType) {
+        if (paramType == BTypes.typeNull || paramType == BTypes.typeError) {
+            return true;
+        }
+        return false;
     }
 
     private static void validateConsumerParam(ParamDetail param) {

@@ -100,6 +100,7 @@ public type SimpleProducer client object {
     # Initialize the producer endpoint.
     #
     # + config - configurations related to the endpoint.
+    # + return - error if initialization failed, none otherwise.
     extern function init(ProducerConfig config) returns error?;
 
     public map<any> producerHolder = {};

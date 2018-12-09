@@ -16,12 +16,12 @@
 
 import wso2/kafka;
 
-string topic = "service-invalid-return-type-test";
+string topic = "service-validate-return-type-test";
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
-    groupId: "service-test-invalid-return-type-group",
-    clientId: "service-invalid-return-consumer",
+    groupId: "service-test-validate-return-type-group",
+    clientId: "service-validate-return-type-consumer",
     offsetReset: "earliest",
     topics: [topic]
 };
@@ -40,14 +40,17 @@ kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 boolean isSuccess = false;
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns int {
+    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns error? {
         foreach kafka:ConsumerRecord kafkaRecord in records {
             byte[] result = kafkaRecord.value;
             if (result.length() > 0) {
                 isSuccess = true;
+            } else {
+                error e = error("New Error");
+                return e;
             }
         }
-        return 1;
+        return;
     }
 }
 

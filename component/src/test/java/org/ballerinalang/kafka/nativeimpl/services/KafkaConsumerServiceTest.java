@@ -84,6 +84,42 @@ public class KafkaConsumerServiceTest {
         BServiceUtil.runService(compileResult);
     }
 
+    @Test(description = "Test endpoint bind to a service returning valid return type")
+    public void testKafkaServiceValidateReturnType() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_validate_return_type.bal");
+        BServiceUtil.runService(compileResult);
+        BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
+
+        try {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResultText");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test(description = "Test endpoint bind to a service returning custom error type")
+    public void testKafkaServiceValidateCustomErrorType() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_custom_error_return_type_validation.bal");
+        BServiceUtil.runService(compileResult);
+        BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
+
+        try {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] returnBValues = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResultText");
+                Assert.assertEquals(returnBValues.length, 1);
+                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+                return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
     @AfterClass
     public void tearDown() {
         if (kafkaCluster != null) {
