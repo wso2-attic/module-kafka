@@ -137,7 +137,7 @@ public type SimpleProducer client object {
     # GetTopicPartitions action which returns given topic partition information.
     #
     # + topic - Topic which the partition information is given.
-    # + return - Partitions for the given topic.
+    # + return - Partitions for the given topic, returns error if operation fails.
     public remote extern function getTopicPartitions(string topic) returns TopicPartition[]|error;
 
     # Simple Send action which produce records to Kafka server.
