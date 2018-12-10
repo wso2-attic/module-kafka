@@ -190,7 +190,7 @@ public type SimpleConsumer client object {
     # Returns the available list of topics for a particular consumer.
     #
     # + duration - Timeout duration for the get available topics execution.
-    # + return - Array of topics currently available (authorized) for the consumer to subscribe.
+    # + return - Array of topics currently available (authorized) for the consumer to subscribe, returns error if the operation fails..
     public remote extern function getAvailableTopics(int duration = -1) returns string[]|error;
 
     # Returns start offsets for given set of partitions.
@@ -226,7 +226,7 @@ public type SimpleConsumer client object {
     #
     # + partition - Topic partition in which the position is required.
     # + duration - Timeout duration for the get position offset operation to execute.
-    # + return - Offset which will be fetched next (if a records exists in that offset).
+    # + return - Offset which will be fetched next (if a records exists in that offset), returns error if the operation fails.
     public remote extern function getPositionOffset(TopicPartition partition, int duration = -1) returns int|error;
 
     # Returns set of topics wich are currently subscribed by the consumer.
