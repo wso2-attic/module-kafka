@@ -41,7 +41,6 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Test cases for ballerina.net.kafka producer connector.
  */
-@Test(singleThreaded = true)
 public class KafkaProducerTest {
 
     private CompileResult result;

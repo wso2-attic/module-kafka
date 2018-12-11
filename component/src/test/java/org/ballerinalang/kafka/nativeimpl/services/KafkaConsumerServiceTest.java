@@ -42,7 +42,6 @@ import static org.awaitility.Awaitility.await;
 /**
  * Test cases for ballerina kafka consumer endpoint bind to a service .
  */
-@Test(singleThreaded = true)
 public class KafkaConsumerServiceTest {
 
     private CompileResult compileResult;

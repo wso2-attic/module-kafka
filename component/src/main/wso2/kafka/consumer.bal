@@ -296,8 +296,8 @@ public type SimpleConsumer client object {
     # + onPartitionsAssigned - Function which will be executed if partitions are assigned this consumer.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public remote extern function subscribeWithPartitionRebalance(string[] topics,
-                           function(TopicPartition[] partitions) onPartitionsRevoked,
-                           function(TopicPartition[] partitions) onPartitionsAssigned)
+                           function(SimpleConsumer consumer, TopicPartition[] partitions) onPartitionsRevoked,
+                           function(SimpleConsumer consumer, TopicPartition[] partitions) onPartitionsAssigned)
                            returns error?;
 
     # Unsubscribe the consumer from all the topic subscriptions.

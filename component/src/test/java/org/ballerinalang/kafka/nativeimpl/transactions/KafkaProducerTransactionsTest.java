@@ -40,7 +40,6 @@ import static org.awaitility.Awaitility.await;
 /**
  * Test cases for Kafka abortTransaction method on kafka producer
  */
-@Test(singleThreaded = true)
 public class KafkaProducerTransactionsTest {
 
     private static File dataDir;

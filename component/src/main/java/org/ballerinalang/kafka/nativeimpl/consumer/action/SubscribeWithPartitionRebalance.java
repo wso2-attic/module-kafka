@@ -67,7 +67,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         BValueArray topicArray = (BValueArray) context.getRefArgument(1);
-        ArrayList<String> topics = new ArrayList<String>();
+        ArrayList<String> topics = new ArrayList<>();
         for (int counter = 0; counter < topicArray.size(); counter++) {
             topics.add(topicArray.getString(counter));
         }

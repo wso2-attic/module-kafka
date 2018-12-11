@@ -19,7 +19,7 @@ under the License.
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="ballerina-natives-test-suite" parallel="false" thread-count="1">
+<suite name="ballerina-natives-test-suite">
     <test name="ballerina-kafka-consumer-tests" parallel="false" thread-count="1">
         <!-- Consumer-Related tests -->
         <classes>
@@ -32,6 +32,7 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribeToPatternTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSeekTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribePartitionRebalanceTest"/>
         </classes>
     </test>
     <test name="ballerina-kafka-advanced-tests">
