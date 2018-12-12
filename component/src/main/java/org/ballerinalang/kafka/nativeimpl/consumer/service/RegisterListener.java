@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer.endpoint;
+package org.ballerinalang.kafka.nativeimpl.consumer.service;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;

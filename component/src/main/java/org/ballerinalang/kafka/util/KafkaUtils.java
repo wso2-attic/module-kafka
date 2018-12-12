@@ -75,7 +75,6 @@ import static org.ballerinalang.kafka.util.KafkaConstants.DEFAULT_VALUE_SERIALIZ
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PROPERTIES_ARRAY;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
 import static org.ballerinalang.model.types.TypeTags.UNION_TAG;
@@ -578,13 +577,6 @@ public class KafkaUtils {
         partitionStruct.put(ALIAS_PARTITION, new BInteger(topicPartition.partition()));
         return partitionStruct;
     }
-
-    public static BError createError(Context context, String errorCode, String errorMessage) {
-        BMap<String, BValue> error = BLangConnectorSPIUtil.createBStruct(context, PACKAGE_NAME, "KafkaError");
-        error.put("message", new BString(errorMessage));
-        return BLangVMErrors.createError(context, true, BTypes.typeError, errorCode, error);
-    }
-
     public static BError createError(Context context, String errorMessage) {
         return BLangVMErrors.createError(context, errorMessage);
     }
