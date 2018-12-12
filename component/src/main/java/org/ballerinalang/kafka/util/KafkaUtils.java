@@ -31,13 +31,6 @@ import org.ballerinalang.connector.api.BallerinaConnectorException;
 import org.ballerinalang.connector.api.ParamDetail;
 import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.connector.api.Service;
-import org.ballerinalang.model.types.BArrayType;
-import org.ballerinalang.model.types.BObjectType;
-import org.ballerinalang.model.types.BRecordType;
-import org.ballerinalang.model.types.BType;
-import org.ballerinalang.model.types.BTypes;
-import org.ballerinalang.model.types.BUnionType;
-import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
@@ -47,7 +40,6 @@ import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,7 +69,6 @@ import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PROPERTIES_ARRAY;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
-import static org.ballerinalang.model.types.TypeTags.UNION_TAG;
 
 /**
  * Utility class for Kafka Connector Implementation.
@@ -86,114 +77,7 @@ public class KafkaUtils {
 
     public static Resource extractKafkaResource(Service service) throws BallerinaConnectorException {
         Resource[] resources = service.getResources();
-
-        if (resources.length == 0) {
-            throw new BallerinaException("No resources found to handle the Kafka records in " + service.getName());
-        }
-
-        if (resources.length > 1) {
-            throw new BallerinaException("More than one resources found in Kafka service " + service.getName()
-                    + ". Kafka Service should only have one resource");
-        }
-
-        Resource mainResource = resources[0];
-        List<ParamDetail> paramDetails = mainResource.getParamDetails();
-        BType[] returnParams = mainResource.getResourceInfo().getRetParamTypes();
-        validateReturnTypes(returnParams);
-
-        if (paramDetails.size() == 0 || paramDetails.size() == 1) {
-            throw new BallerinaException("Kafka resource signature does not comply with param standard sequence.");
-        } else {
-            validateConsumerParam(paramDetails.get(0));
-            validateRecordsParam(paramDetails.get(1));
-            if (paramDetails.size() > 2) {
-                validateOffsetsParam(paramDetails.get(2));
-                if (paramDetails.size() > 3) {
-                    validateGroupIDParam(paramDetails.get(3));
-                }
-
-            }
-        }
         return resources[0];
-    }
-
-    private static void validateReturnTypes(BType[] returnParamTypes) {
-        for (BType returnParamType : returnParamTypes) {
-            if (returnParamType.getTag() == UNION_TAG) {
-                List<BType> memberTypes = ((BUnionType) returnParamType).getMemberTypes();
-                if (memberTypes.size() > 2) {
-                    throw new BallerinaException("Invalid return type for the resource function:" +
-                            "Expected error? or subset of error? but found: " + returnParamType.getName()
-                    );
-                } else {
-                    for (BType memberType:memberTypes) {
-                        if (!isParameterTypeErrorOrNull(memberType)) {
-                            throw new BallerinaException("Invalid return type for the resource function:" +
-                                    "Expected error? or subset of error? but found: " + returnParamType.getName()
-                            );
-                        }
-                    }
-                }
-            } else if (!isParameterTypeErrorOrNull(returnParamType)) {
-                throw new BallerinaException("Invalid return type for the resource function:" +
-                        "Expected error? or subset of error? but found: " + returnParamType.getName()
-                );
-            }
-        }
-    }
-
-    private static boolean isParameterTypeErrorOrNull(BType paramType) {
-        if (paramType == BTypes.typeNull || paramType == BTypes.typeError) {
-            return true;
-        }
-        return false;
-    }
-
-    private static void validateConsumerParam(ParamDetail param) {
-        if (param.getVarType().getTag() == TypeTags.OBJECT_TYPE_TAG) {
-            BObjectType type = (BObjectType) param.getVarType();
-            if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
-                    type.getName().equals(CONSUMER_STRUCT_NAME)) {
-                return;
-            }
-        }
-        throw new BallerinaException("Resource signature validation failed for param at index: 0.");
-    }
-
-    private static void validateRecordsParam(ParamDetail param) {
-        if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
-            BArrayType array = (BArrayType) param.getVarType();
-            if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
-                BRecordType type = (BRecordType) array.getElementType();
-                if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
-                        type.getName().equals(CONSUMER_RECORD_STRUCT_NAME)) {
-                    return;
-                }
-
-            }
-        }
-        throw new BallerinaException("Resource signature validation failed for param at index: 1.");
-    }
-
-    private static void validateOffsetsParam(ParamDetail param) {
-        if (param.getVarType().getTag() == TypeTags.ARRAY_TAG) {
-            BArrayType array = (BArrayType) param.getVarType();
-            if (array.getElementType().getTag() == TypeTags.RECORD_TYPE_TAG) {
-                BRecordType type = (BRecordType) array.getElementType();
-                if (type.getPackagePath().equals(KAFKA_NATIVE_PACKAGE) &&
-                        type.getName().equals(OFFSET_STRUCT_NAME)) {
-                    return;
-                }
-            }
-        }
-        throw new BallerinaException("Resource signature validation failed for param at index: 2.");
-    }
-
-    private static void validateGroupIDParam(ParamDetail param) {
-        if (param.getVarType().getTag() == TypeTags.STRING_TAG) {
-            return;
-        }
-        throw new BallerinaException("Resource signature validation failed for param at index: 3.");
     }
 
     public static BValue[] getSignatureParameters(Resource resource,

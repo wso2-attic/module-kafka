@@ -38,9 +38,9 @@ import java.util.List;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_TOPIC;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
@@ -49,7 +49,7 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createError;
  */
 @BallerinaFunction(
         orgName = ORG_NAME,
-        packageName = PACKAGE_NAME,
+        packageName = FULL_PACKAGE_NAME,
         functionName = "getTopicPartitions",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),

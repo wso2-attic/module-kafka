@@ -16,12 +16,12 @@
 
 import wso2/kafka;
 
-string topic = "service-invalid-return-type-test";
+string topic = "service-invalid-resource-name-test";
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
-    groupId: "service-test-invalid-return-type-group",
-    clientId: "service-invalid-return-consumer",
+    groupId: "service-invalid-resource-name-test-group",
+    clientId: "service-invalid-resource-name-consumer",
     offsetReset: "earliest",
     topics: [topic]
 };
@@ -29,11 +29,11 @@ kafka:ConsumerConfig consumerConfigs = {
 listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns int {
+    resource function onMessage(kafka:ConsumerConfig consumer, kafka:ConsumerRecord[] records) {
         foreach kafka:ConsumerRecord kafkaRecord in records {
             byte[] result = kafkaRecord.value;
-            return 1;
         }
     }
 }
+
 

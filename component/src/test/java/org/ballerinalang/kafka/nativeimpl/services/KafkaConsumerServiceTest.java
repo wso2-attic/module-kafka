@@ -26,7 +26,6 @@ import org.ballerinalang.launcher.util.BServiceUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.exceptions.BLangRuntimeException;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -75,12 +74,29 @@ public class KafkaConsumerServiceTest {
 
     @Test(
             description = "Test endpoint bind to a service returning invalid return type",
-            expectedExceptions = BLangRuntimeException.class,
+            expectedExceptions = IllegalStateException.class,
             expectedExceptionsMessageRegExp = ".* Invalid return type for the resource function.*"
     )
     public void testKafkaServiceInvalidReturnType() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_return_type.bal");
-        BServiceUtil.runService(compileResult);
+    }
+
+    @Test(
+            description = "Test kafka service with an invalid resource name",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*Kafka service has invalid resource.*"
+    )
+    public void testKafkaServiceInvalidResourceName() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_resource_name.bal");
+    }
+
+    @Test(
+            description = "Test kafka service with an invalid input parameter type",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*Resource parameter .* is invalid. Expected.*"
+    )
+    public void testKafkaServiceInvalidParameterType() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_parameter_type.bal");
     }
 
     @Test(description = "Test endpoint bind to a service returning valid return type")
@@ -104,19 +120,6 @@ public class KafkaConsumerServiceTest {
     @Test(description = "Test endpoint bind to a service returning custom error type")
     public void testKafkaServiceValidateCustomErrorType() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_custom_error_return_type_validation.bal");
-        BServiceUtil.runService(compileResult);
-        BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
-
-        try {
-            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
-                BValue[] returnBValues = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResultText");
-                Assert.assertEquals(returnBValues.length, 1);
-                Assert.assertTrue(returnBValues[0] instanceof BBoolean);
-                return ((BBoolean) returnBValues[0]).booleanValue();
-            });
-        } catch (Throwable e) {
-            Assert.fail(e.getMessage());
-        }
     }
 
     @Test(description = "Test endpoint bind to a service")

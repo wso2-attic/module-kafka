@@ -36,10 +36,10 @@ import java.util.Objects;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_OFFSET;
 import static org.ballerinalang.kafka.util.KafkaConstants.ALIAS_PARTITION;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.OFFSET_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
 /**
@@ -47,7 +47,7 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createError;
  */
 @BallerinaFunction(
         orgName = ORG_NAME,
-        packageName = PACKAGE_NAME,
+        packageName = FULL_PACKAGE_NAME,
         functionName = "getCommittedOffset",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
