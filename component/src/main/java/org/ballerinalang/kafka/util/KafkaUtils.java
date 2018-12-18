@@ -94,6 +94,32 @@ public class KafkaUtils {
         return bValues;
     }
 
+    public static BValue[] getSignatureParameters(Resource resource,
+                                                  ConsumerRecords<byte[], byte[]> records,
+                                                  KafkaConsumer<byte[], byte[]> kafkaConsumer,
+                                                  String groupId) {
+        List<ParamDetail> paramDetails = resource.getParamDetails();
+        BValue[] bValues = new BValue[paramDetails.size()];
+        if (paramDetails.size() > 0) {
+            bValues[0] = createConsumerStruct(resource, kafkaConsumer, groupId);
+            if (paramDetails.size() > 1) {
+                bValues[1] = createRecordStructArray(resource, records);
+                if (paramDetails.size() > 2) {
+                    bValues[2] = createOffsetStructArray(resource, records);
+                    if (paramDetails.size() > 3) {
+                        if (groupId == null) {
+                            bValues[3] = null;
+                        } else {
+                            bValues[3] = new BString(groupId);
+                        }
+                    }
+                }
+            }
+        }
+
+        return bValues;
+    }
+
     private static BValueArray createRecordStructArray(Resource resource,
                                                           ConsumerRecords<byte[], byte[]> records) {
         // Create records struct array.
@@ -181,32 +207,6 @@ public class KafkaUtils {
 
         consumerStruct.put("config", consumerConfigStruct);
         return consumerStruct;
-    }
-
-    public static BValue[] getSignatureParameters(Resource resource,
-                                                  ConsumerRecords<byte[], byte[]> records,
-                                                  KafkaConsumer<byte[], byte[]> kafkaConsumer,
-                                                  String groupId) {
-        List<ParamDetail> paramDetails = resource.getParamDetails();
-        BValue[] bValues = new BValue[paramDetails.size()];
-        if (paramDetails.size() > 0) {
-            bValues[0] = createConsumerStruct(resource, kafkaConsumer, groupId);
-            if (paramDetails.size() > 1) {
-                bValues[1] = createRecordStructArray(resource, records);
-                if (paramDetails.size() > 2) {
-                    bValues[2] = createOffsetStructArray(resource, records);
-                    if (paramDetails.size() > 3) {
-                        if (groupId == null) {
-                            bValues[3] = null;
-                        } else {
-                            bValues[3] = new BString(groupId);
-                        }
-                    }
-                }
-            }
-        }
-
-        return bValues;
     }
 
     public static Properties processKafkaConsumerConfig(BMap<String, BValue> bStruct) {

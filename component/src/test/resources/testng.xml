@@ -19,8 +19,8 @@ under the License.
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="ballerina-natives-test-suite">
-    <test name="ballerina-kafka-consumer-tests" parallel="false" thread-count="1">
+<suite name="ballerina-natives-test-suite" parallel="false">
+    <test name="ballerina-kafka-consumer-tests">
         <!-- Consumer-Related tests -->
         <classes>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAssignTest"/>

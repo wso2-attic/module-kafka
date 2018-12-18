@@ -19,8 +19,6 @@
 package org.ballerinalang.kafka.transaction;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.common.KafkaException;
-import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.transactions.BallerinaTransactionContext;
 
 import javax.transaction.xa.XAResource;
@@ -42,11 +40,8 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
      */
     @Override
     public void commit() {
-        try {
-            this.kafkaProducer.commitTransaction();
-        } catch (KafkaException ex) {
-            throw new BallerinaException("Transaction commit failed:" + ex.getMessage());
-        }
+        // Kafka exception should be handled at the place where commit is called, as we should return an error there.
+        this.kafkaProducer.commitTransaction();
     }
 
     /**
@@ -55,11 +50,8 @@ public class KafkaTransactionContext implements BallerinaTransactionContext {
      */
     @Override
     public void rollback() {
-        try {
-            this.kafkaProducer.abortTransaction();
-        } catch (KafkaException ex) {
-            throw new BallerinaException("Transaction rollback failed:" + ex.getMessage());
-        }
+        // Kafka exception should be handled at the place where rollback is called, as we should return an error there.
+        this.kafkaProducer.abortTransaction();
     }
 
     /**
