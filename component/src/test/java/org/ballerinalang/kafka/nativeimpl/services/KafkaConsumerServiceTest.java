@@ -122,6 +122,33 @@ public class KafkaConsumerServiceTest {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_custom_error_return_type_validation.bal");
     }
 
+    @Test(
+            description = "Test endpoint bind to a service with no resources",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*No resources found to handle the Kafka records in.*"
+    )
+    public void testKafkaServiceNoResources() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_no_resources.bal");
+    }
+
+    @Test(
+            description = "Test endpoint bind to a service with more than one resource",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*More than one resources found in Kafka service.*"
+    )
+    public void testKafkaServiceMoreThanOneResource() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_more_than_one_resource.bal");
+    }
+
+    @Test(
+            description = "Test endpoint bind to a service with invalid number of arguments in resource function",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*Invalid number of input parameters found in resource.*"
+    )
+    public void testKafkaServiceInvalidNumberOfArguments() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_number_of_arguments.bal");
+    }
+
     @Test(description = "Test endpoint bind to a service")
     public void testKafkaAdvancedService() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_advanced.bal");
