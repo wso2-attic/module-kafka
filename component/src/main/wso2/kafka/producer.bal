@@ -147,7 +147,7 @@ public type SimpleProducer client object {
     # + key - Key that will be included in the record.
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
-    # + return - returns error if send action fails to send data, none otherwise.
+    # + return - Returns error if send action fails to send data, none otherwise.
     public remote extern function send(
                                           byte[] value,
                                           string topic,
