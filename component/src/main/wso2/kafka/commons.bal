@@ -17,7 +17,7 @@
 # This type represents topic partition position in which consumed record is stored.
 #
 # + partition - TopicPartition which record is related.
-# + offset - offset in which record is stored in partition.
+# + offset - Offset in which record is stored in partition.
 public type PartitionOffset record {
     TopicPartition partition;
     int offset;
