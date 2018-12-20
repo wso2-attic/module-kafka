@@ -165,14 +165,14 @@ public type SimpleConsumer client object {
 
     # Commits current consumed offsets for consumer.
     #
-    # + return - error if commit fails, none otherwise.
+    # + return - Error if commit fails, none otherwise.
     public remote extern function commit() returns error?;
 
     # Commits given offsets and partitions for the given topics, for consumer.
     #
     # + duration - Timeout duration for the commit operation execution.
     # + offsets - Offsets to be commited.
-    # + return - error if committing offset is failed, none otherwise.
+    # + return - Error if committing offset is failed, none otherwise.
     public remote extern function commitOffset(PartitionOffset[] offsets, int duration = -1) returns error?;
 
     # Connects consumer to the provided host in the consumer configs.
