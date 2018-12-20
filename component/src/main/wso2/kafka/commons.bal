@@ -26,8 +26,8 @@ public type PartitionOffset record {
 
 # This type represents a topic partition.
 #
-# + topic - topic which partition is related.
-# + partition - index for the partition.
+# + topic - Topic which partition is related.
+# + partition - Index for the partition.
 public type TopicPartition record {
     string topic;
     int partition;
