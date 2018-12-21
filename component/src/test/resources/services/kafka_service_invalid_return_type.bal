@@ -30,6 +30,6 @@ listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
 service kafkaTestService on kafkaConsumer {
     resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns int {
-        // Nothing
+        return 1;
     }
 }

@@ -30,6 +30,6 @@ listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
 service kafkaTestService on kafkaConsumer {
     resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerConfig config) {
-        // Noting
+        // Nothing
     }
 }
