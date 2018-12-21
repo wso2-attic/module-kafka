@@ -20,8 +20,8 @@ under the License.
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="ballerina-natives-test-suite" parallel="false">
-    <!--<test name="ballerina-kafka-consumer-tests">
-        &lt;!&ndash; Consumer-Related tests &ndash;&gt;
+    <test name="ballerina-kafka-consumer-tests">
+        <!-- Consumer-Related tests -->
         <classes>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAssignTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetAvailableTopicsTest"/>
@@ -34,15 +34,15 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribePartitionRebalanceTest"/>
         </classes>
-    </test>-->
+    </test>
     <test name="ballerina-kafka-advanced-tests">
         <!-- Producer-Related tests -->
         <classes>
-            <!--<class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>-->
+            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>
         <!-- Kafka service related tests -->
             <class name="org.ballerinalang.kafka.nativeimpl.services.KafkaConsumerServiceTest"/>
         <!-- Kafka transactions related tests -->
-            <!--<class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerTransactionsTest"/>-->
+            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerTransactionsTest"/>
         </classes>
     </test>
 </suite>
