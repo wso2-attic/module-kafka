@@ -31,7 +31,7 @@ import java.util.List;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_RESOURCE_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_RESOURCE_ON_MESSAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PARAMETER_CONSUMER_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PARAMETER_PARTITION_OFFSET_ARRAY_NAME;
@@ -86,9 +86,9 @@ public class KafkaServiceCompilerPlugin extends AbstractTransportCompilerPlugin 
     private void validateResource(FunctionNode resource) {
         String resourceName = resource.getName().getValue();
         Diagnostic.DiagnosticPosition position = resource.getPosition();
-        if (!resourceName.equals(KAFKA_RESOURCE_NAME)) {
+        if (!KAFKA_RESOURCE_ON_MESSAGE.equals(resourceName)) {
             String message = "Kafka service has invalid resource: " + resourceName
-                    + ". Valid resource name:" + KAFKA_RESOURCE_NAME;
+                    + ". Valid resource name:" + KAFKA_RESOURCE_ON_MESSAGE;
             logError(message, position);
             return;
         }
@@ -111,15 +111,13 @@ public class KafkaServiceCompilerPlugin extends AbstractTransportCompilerPlugin 
     }
 
     private void validateResourceWithTwoInputParameters(
-            List<? extends SimpleVariableNode> parameters, Diagnostic.DiagnosticPosition position
-    ) {
+            List<? extends SimpleVariableNode> parameters, Diagnostic.DiagnosticPosition position) {
         checkParameter(getParameterTypeName(parameters.get(0)), PARAMETER_CONSUMER_NAME, position);
         checkParameter(getParameterTypeName(parameters.get(1)), PARAMETER_RECORD_ARRAY_NAME, position);
     }
 
     private void validateResourceWithFourInputParameters(
-            List<? extends SimpleVariableNode> parameters, Diagnostic.DiagnosticPosition position
-    ) {
+            List<? extends SimpleVariableNode> parameters, Diagnostic.DiagnosticPosition position) {
         checkParameter(getParameterTypeName(parameters.get(0)), PARAMETER_CONSUMER_NAME, position);
         checkParameter(getParameterTypeName(parameters.get(1)), PARAMETER_RECORD_ARRAY_NAME, position);
         checkParameter(getParameterTypeName(parameters.get(2)), PARAMETER_PARTITION_OFFSET_ARRAY_NAME, position);

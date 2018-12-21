@@ -54,7 +54,7 @@ public class KafkaConstants {
     public static final String PARAMETER_PARTITION_OFFSET_ARRAY_NAME =
             PACKAGE_NAME + BLOCK_SEPARATOR + OFFSET_STRUCT_NAME + ARRAY_INDICATOR;
 
-    public static final String KAFKA_RESOURCE_NAME = "onMessage";
+    public static final String KAFKA_RESOURCE_ON_MESSAGE = "onMessage";
 
     public static final String PRODUCER_STRUCT_NAME = "SimpleProducer";
 
