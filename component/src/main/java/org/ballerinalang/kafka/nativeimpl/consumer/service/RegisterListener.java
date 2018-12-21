@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer.endpoint;
+package org.ballerinalang.kafka.nativeimpl.consumer.service;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
@@ -39,16 +39,16 @@ import java.util.Properties;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_SERVER_CONNECTOR_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 
 /**
  * This is used to register a listener to the kafka service.
  */
 @BallerinaFunction(
         orgName = ORG_NAME,
-        packageName = PACKAGE_NAME,
+        packageName = FULL_PACKAGE_NAME,
         functionName = "registerListener",
         receiver = @Receiver(
                 type = TypeKind.OBJECT,

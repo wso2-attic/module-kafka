@@ -23,6 +23,8 @@ import io.debezium.util.Testing;
 import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
+import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -39,7 +41,6 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Test cases for ballerina.net.kafka producer connector.
  */
-@Test(singleThreaded = true)
 public class KafkaProducerTest {
 
     private CompileResult result;
@@ -48,22 +49,41 @@ public class KafkaProducerTest {
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("producer/kafka_producer.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
-        kafkaCluster.createTopic("test", 2, 1);
+    }
+
+    @Test(description = "Test Producer close() action")
+    public void testKafkaProducerClose() {
+        result = BCompileUtil.compile("producer/kafka_producer_close.bal");
+        BValue[] inputBValues = {};
+        BValue[] returnBValue = BRunUtil.invoke(result, "funcTestKafkaClose", inputBValues);
+        Assert.assertEquals(returnBValue.length, 1);
+        Assert.assertTrue(returnBValue[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValue[0]).booleanValue());
+    }
+
+    @Test(description = "Test producer flush function")
+    public void testKafkaProducerFlushRecords() {
+        result = BCompileUtil.compileAndSetup("producer/kafka_producer_flush_records.bal");
+        BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaTestFlush");
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
     }
 
     @Test(description = "Test Basic produce")
-    public void testKafkaProduce() {
+    public void testKafkaProducer() {
+        result = BCompileUtil.compileAndSetup("producer/kafka_producer.bal");
+        String topic = "producer-test-topic";
         BValue[] inputBValues = {};
-        BRunUtil.invoke(result, "funcTestKafkaProduce", inputBValues);
+        BRunUtil.invokeStateful(result, "funcTestKafkaProduce", inputBValues);
 
         final CountDownLatch completion = new CountDownLatch(1);
         final AtomicLong messagesRead = new AtomicLong(0);
 
-        kafkaCluster.useTo().consumeStrings("test", 2, 10, TimeUnit.SECONDS, completion::countDown, (key, value) -> {
+        kafkaCluster.useTo().consumeStrings(topic, 2, 10, TimeUnit.SECONDS, completion::countDown, (key, value) -> {
             messagesRead.incrementAndGet();
             return true;
         });
@@ -73,6 +93,30 @@ public class KafkaProducerTest {
             //Ignore
         }
         Assert.assertEquals(messagesRead.get(), 2);
+    }
+
+    @Test(description = "Test producer topic partition retrieval")
+    public void testKafkaTopicPartitionRetrieval() {
+        String topic1 = "partition-retrieval-topic-1";
+        String topic2 = "partition-retrieval-topic-2";
+        String topicNegative = "partition-retrieval-topic-negative";
+
+        kafkaCluster.createTopic(topic1, 2, 1);
+        kafkaCluster.createTopic(topic2, 5, 1);
+
+        result = BCompileUtil.compile("producer/kafka_producer_partition_retrieval.bal");
+        BValue[] inputBValues = {new BString(topic1)};
+        BValue[] returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);
+        Assert.assertEquals(returnBValues.length, 2);
+
+        inputBValues = new BValue[]{new BString(topic2)};
+        returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);
+        Assert.assertEquals(returnBValues.length, 5);
+
+        //negative test for the case where topic has not been created programmatically
+        inputBValues = new BValue[]{new BString(topicNegative)};
+        returnBValues = BRunUtil.invoke(result, "funcTestPartitionInfoRetrieval", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
     }
 
     @AfterClass

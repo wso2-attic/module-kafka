@@ -138,7 +138,7 @@ public type SimpleConsumer client object {
     }
 
     public function __stop() returns error? {
-        return self.stop();
+        return self->close();
     }
 
     public function __attach(service s, map<any> annotationData) returns error? {
@@ -150,8 +150,6 @@ public type SimpleConsumer client object {
     extern function registerListener(service serviceType, map<any> annotationData) returns error?;
 
     extern function start() returns error?;
-
-    extern function stop() returns error?;
 
     # Assigns consumer to a set of topic partitions.
     #
@@ -167,14 +165,14 @@ public type SimpleConsumer client object {
 
     # Commits current consumed offsets for consumer.
     #
-    # + return - error if commit fails, none otherwise.
+    # + return - Error if commit fails, none otherwise.
     public remote extern function commit() returns error?;
 
     # Commits given offsets and partitions for the given topics, for consumer.
     #
     # + duration - Timeout duration for the commit operation execution.
     # + offsets - Offsets to be commited.
-    # + return - error if committing offset is failed, none otherwise.
+    # + return - Error if committing offset is failed, none otherwise.
     public remote extern function commitOffset(PartitionOffset[] offsets, int duration = -1) returns error?;
 
     # Connects consumer to the provided host in the consumer configs.
@@ -190,7 +188,7 @@ public type SimpleConsumer client object {
     # Returns the available list of topics for a particular consumer.
     #
     # + duration - Timeout duration for the get available topics execution.
-    # + return - Array of topics currently available (authorized) for the consumer to subscribe.
+    # + return - Array of topics currently available (authorized) for the consumer to subscribe, returns error if the operation fails..
     public remote extern function getAvailableTopics(int duration = -1) returns string[]|error;
 
     # Returns start offsets for given set of partitions.
@@ -226,7 +224,7 @@ public type SimpleConsumer client object {
     #
     # + partition - Topic partition in which the position is required.
     # + duration - Timeout duration for the get position offset operation to execute.
-    # + return - Offset which will be fetched next (if a records exists in that offset).
+    # + return - Offset which will be fetched next (if a records exists in that offset), returns error if the operation fails.
     public remote extern function getPositionOffset(TopicPartition partition, int duration = -1) returns int|error;
 
     # Returns set of topics wich are currently subscribed by the consumer.
@@ -296,8 +294,8 @@ public type SimpleConsumer client object {
     # + onPartitionsAssigned - Function which will be executed if partitions are assigned this consumer.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public remote extern function subscribeWithPartitionRebalance(string[] topics,
-                           function(TopicPartition[] partitions) onPartitionsRevoked,
-                           function(TopicPartition[] partitions) onPartitionsAssigned)
+                           function(SimpleConsumer consumer, TopicPartition[] partitions) onPartitionsRevoked,
+                           function(SimpleConsumer consumer, TopicPartition[] partitions) onPartitionsAssigned)
                            returns error?;
 
     # Unsubscribe the consumer from all the topic subscriptions.

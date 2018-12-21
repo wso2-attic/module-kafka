@@ -26,9 +26,9 @@
     <name>Ballerina - Kafka Parent</name>
 
     <scm>
-        <url>https://github.com/ballerinalang/connector-kafka.git</url>
-        <developerConnection>scm:git:https://github.com/ballerinalang/connector-kafka.git</developerConnection>
-        <connection>scm:git:https://github.com/ballerinalang/connector-kafka.git</connection>
+        <url>https://github.com/wso2-ballerina/module-kafka.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-ballerina/module-kafka.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2-ballerina/module-kafka.git</connection>
         <tag>HEAD</tag>
     </scm>
 
@@ -496,7 +496,7 @@
     <properties>
         <scala.version>2.11.0</scala.version>
         <version.kafka.scala>2.11</version.kafka.scala>
-        <debezium.version>0.9.0.Beta1</debezium.version>
+        <debezium.version>0.9.0.Beta2</debezium.version>
         <awaitility.version>3.0.0</awaitility.version>
         <project.scm.id>my-scm-server</project.scm.id>
         <ballerina.version>0.990.0</ballerina.version>

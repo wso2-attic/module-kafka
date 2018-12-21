@@ -17,9 +17,11 @@
 import wso2/kafka;
 import ballerina/transactions;
 
+string topic = "commit-consumer-offsets-topic";
+
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
-    clientID: "commit-consumer-producer",
+    clientID: "commit-consumer-offsets-producer",
     acks: "all",
     transactionalID: "comit-consumer-offset-test-producer",
     noRetries: 3
@@ -29,9 +31,9 @@ kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 kafka:ConsumerConfig consumerConfigs1 = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
-    groupId: "test-group",
+    groupId: "commit-consumer-offsets-test-group-1",
     offsetReset: "earliest",
-    topics: ["test"],
+    topics: [topic],
     autoCommit: false
 };
 
@@ -39,9 +41,9 @@ kafka:SimpleConsumer kafkaConsumer1 = new(consumerConfigs1);
 
 kafka:ConsumerConfig consumerConfigs2 = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
-    groupId: "test-group",
+    groupId: "commit-consumer-offsets-test-group-2",
     offsetReset: "earliest",
-    topics: ["test"],
+    topics: [topic],
     autoCommit: false
 };
 
@@ -50,10 +52,10 @@ kafka:SimpleConsumer kafkaConsumer2 = new(consumerConfigs2);
 function funcTestKafkaProduce() {
     string msg = "test-msg";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProduce(byteMsg, "test");
+    kafkaProduce(byteMsg);
 }
 
-function kafkaProduce(byte[] value, string topic) {
+function kafkaProduce(byte[] value) {
     transaction {
         var result = kafkaProducer->send(value, topic);
     }
@@ -69,7 +71,7 @@ function funcTestKafkaCommitOffsets() returns boolean {
         if (results.length() == 0) {
             return false;
         } else {
-            var result = kafkaProducer->commitConsumerOffsets(results, "test-group");
+            var result = kafkaProducer->commitConsumerOffsets(results, "commit-consumer-offsets-test-group-1");
             if (result is error) {
                 return false;
             }

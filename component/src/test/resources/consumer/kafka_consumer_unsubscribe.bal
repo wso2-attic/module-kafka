@@ -16,13 +16,16 @@
 
 import wso2/kafka;
 
+string topic1 = "consumer-unsubscribe-test-1";
+string topic2 = "consumer-unsubscribe-test-2";
+
 function funcKafkaTestUnsubscribe() returns boolean {
     kafka:SimpleConsumer kafkaConsumer = new({
             bootstrapServers: "localhost:9094",
             groupId: "test-group",
             clientId: "unsubscribe-consumer",
             offsetReset: "earliest",
-            topics: ["test1", "test2"]
+            topics: [topic1, topic2]
         });
     var subscribedTopics = kafkaConsumer->getSubscription();
     if (subscribedTopics is error) {

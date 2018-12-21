@@ -10,36 +10,24 @@
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
+// KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations
 // under the License.
 
 import wso2/kafka;
 
-string topic = "producer-flush-records-test-topic";
+string topic = "service-no-resources-test";
 
-kafka:ProducerConfig producerConfigs = {
+kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "flush-records-producer",
-    acks: "all",
-    noRetries: 3
+    groupId: "service-test-no-resources-group",
+    clientId: "service-no-resources-consumer",
+    offsetReset: "earliest",
+    topics: [topic]
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
-function funcKafkaTestFlush() returns boolean {
-    string msg = "Hello World";
-    byte[] byteMsg = msg.toByteArray("UTF-8");
-    var result = kafkaProducer->send(byteMsg, "test");
-
-    if (result is error) {
-        return false;
-    }
-
-    result = kafkaProducer->flushRecords();
-    if (result is error) {
-        return false;
-    }
-
-    return true;
+service kafkaTestService on kafkaConsumer {
+    // Nothing
 }

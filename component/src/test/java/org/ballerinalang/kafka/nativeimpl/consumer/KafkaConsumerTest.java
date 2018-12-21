@@ -50,7 +50,6 @@ public class KafkaConsumerTest {
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("consumer/kafka_consumer.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
@@ -58,7 +57,8 @@ public class KafkaConsumerTest {
     }
 
     @Test(description = "Test Basic consumer polling with subscription and assignment retrieval")
-    public void testKafkaConsume() {
+    public void testKafkaConsumer() {
+        result = BCompileUtil.compile("consumer/kafka_consumer.bal");
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
         try {
@@ -100,7 +100,16 @@ public class KafkaConsumerTest {
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
         Assert.assertEquals(((BBoolean) returnBValues[0]).booleanValue(), true);
+    }
 
+    @Test(description = "Test functionality of getAvailableTopics() function")
+    public void testKafkaConsumerUnsubscribe () {
+        result = BCompileUtil.compileAndSetup("consumer/kafka_consumer_unsubscribe.bal");
+        BValue[] inputBValues = {};
+        BValue[] returnBValues = BRunUtil.invokeStateful(result, "funcKafkaTestUnsubscribe", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
     }
 
     @AfterClass

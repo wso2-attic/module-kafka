@@ -41,10 +41,10 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_CONSUMER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.TOPIC_PARTITION_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
@@ -55,7 +55,7 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createPartitionList;
  */
 @BallerinaFunction(
         orgName = ORG_NAME,
-        packageName = PACKAGE_NAME,
+        packageName = FULL_PACKAGE_NAME,
         functionName = "subscribeWithPartitionRebalance",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = CONSUMER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),
@@ -67,7 +67,7 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
     public void execute(Context context, CallableUnitCallback callableUnitCallback) {
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         BValueArray topicArray = (BValueArray) context.getRefArgument(1);
-        ArrayList<String> topics = new ArrayList<String>();
+        ArrayList<String> topics = new ArrayList<>();
         for (int counter = 0; counter < topicArray.size(); counter++) {
             topics.add(topicArray.getString(counter));
         }

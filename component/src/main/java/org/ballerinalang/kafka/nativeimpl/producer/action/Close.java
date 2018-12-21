@@ -29,10 +29,10 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 
+import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.NATIVE_PRODUCER;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PRODUCER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaUtils.createError;
 
@@ -41,7 +41,7 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createError;
  */
 @BallerinaFunction(
         orgName = ORG_NAME,
-        packageName = PACKAGE_NAME,
+        packageName = FULL_PACKAGE_NAME,
         functionName = "close",
         receiver = @Receiver(type = TypeKind.OBJECT, structType = PRODUCER_STRUCT_NAME,
                 structPackage = KAFKA_NATIVE_PACKAGE),

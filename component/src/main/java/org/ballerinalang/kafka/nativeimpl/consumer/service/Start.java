@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer.endpoint;
+package org.ballerinalang.kafka.nativeimpl.consumer.service;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
@@ -29,17 +29,18 @@ import org.ballerinalang.natives.annotations.Receiver;
 
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_SERVER_CONNECTOR_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
-import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 
 /**
- * Stops the Kafka service endpoint
+ * Start server connector.
  */
+
 @BallerinaFunction(
         orgName = ORG_NAME,
-        packageName = PACKAGE_NAME,
-        functionName = "stop",
+        packageName = FULL_PACKAGE_NAME,
+        functionName = "start",
         receiver = @Receiver(
                 type = TypeKind.OBJECT,
                 structType = CONSUMER_STRUCT_NAME,
@@ -47,22 +48,19 @@ import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
         ),
         isPublic = true
 )
-public class Stop extends BlockingNativeCallableUnit {
+public class Start extends BlockingNativeCallableUnit {
+
     @Override
     public void execute(Context context) {
         Struct service = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
         KafkaServerConnectorImpl serverConnector = (KafkaServerConnectorImpl) service
                 .getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
-        boolean isStopped = false;
         try {
-            isStopped = serverConnector.stop();
+            serverConnector.start();
         } catch (KafkaConnectorException e) {
             context.setReturnValues(BLangVMErrors.createError(context, e.getMessage()));
             return;
-        } finally {
-            if (!isStopped) {
-                context.setReturnValues(BLangVMErrors.createError(context, "Failed to stop the service"));
-            }
         }
+        context.setReturnValues();
     }
 }

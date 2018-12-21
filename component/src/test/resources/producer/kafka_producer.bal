@@ -16,6 +16,8 @@
 
 import wso2/kafka;
 
+string topic = "producer-test-topic";
+
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
     clientID: "basic-producer",
@@ -28,13 +30,13 @@ kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 function funcTestKafkaProduce() {
     string msg = "Hello World";
     byte[] byteMsg = msg.toByteArray("UTF-8");
-    kafkaProduce(byteMsg, "test");
+    kafkaProduce(byteMsg);
 
     msg = "Hello World 2";
     byteMsg = msg.toByteArray("UTF-8");
-    kafkaProduce(byteMsg, "test");
+    kafkaProduce(byteMsg);
 }
 
-function kafkaProduce(byte[] value, string topic) {
+function kafkaProduce(byte[] value) {
     var result = kafkaProducer->send(value, topic);
 }

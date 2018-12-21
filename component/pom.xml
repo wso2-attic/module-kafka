@@ -459,12 +459,10 @@
                 <version>0.7.8</version>
                 <configuration>
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-                    <!-- Exclude these as,
-                    * Stop is not been used currently
+                    <!-- Exclude these as
                     * KafkaConnectorException is not considered in coverage
                     -->
                     <excludes>
-                        <exclude>org.ballerinalang.kafka.nativeimpl.consumer.endpoint.Stop</exclude>
                         <exclude>org.ballerinalang.kafka.exception.KafkaConnectorException</exclude>
                         <exclude>org.ballerinalang.kafka.StandardSystemPackageRepositoryProvider</exclude>
                     </excludes>

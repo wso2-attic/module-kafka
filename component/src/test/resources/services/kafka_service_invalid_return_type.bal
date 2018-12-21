@@ -28,36 +28,8 @@ kafka:ConsumerConfig consumerConfigs = {
 
 listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
-kafka:ProducerConfig producerConfigs = {
-    bootstrapServers: "localhost:9094",
-    clientID: "service-producer",
-    acks: "all",
-    noRetries: 3
-};
-
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
-
-boolean isSuccess = false;
-
 service kafkaTestService on kafkaConsumer {
     resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns int {
-        foreach kafka:ConsumerRecord kafkaRecord in records {
-            byte[] result = kafkaRecord.value;
-            if (result.length() > 0) {
-                isSuccess = true;
-            }
-        }
         return 1;
     }
 }
-
-function funcKafkaGetResultText() returns boolean {
-    return isSuccess;
-}
-
-function funcKafkaProduce() {
-    string msg = "test_string";
-    byte[] byteMsg = msg.toByteArray("UTF-8");
-    var result = kafkaProducer->send(byteMsg, topic);
-}
-

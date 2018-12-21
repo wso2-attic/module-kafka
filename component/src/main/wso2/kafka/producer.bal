@@ -99,8 +99,8 @@ public type SimpleProducer client object {
 
     # Initialize the producer endpoint.
     #
-    # + config - configurations related to the endpoint.
-    # + return - error if initialization failed, none otherwise.
+    # + config - Configurations related to the endpoint.
+    # + return - Error if initialization failed, none otherwise.
     extern function init(ProducerConfig config) returns error?;
 
     public map<any> producerHolder = {};
@@ -108,36 +108,36 @@ public type SimpleProducer client object {
 
     # Aborts ongoing transaction, if transaction is initialized.
     #
-    # + return - error if aborting the transaction failed, none otherwise.
+    # + return - Error if aborting the transaction failed, none otherwise.
     public remote extern function abortTransaction() returns error?;
 
     # Closes producer connection to the external Kafka broker.
     #
-    # + return - error if closing the producer failed, none otherwise.
+    # + return - Error if closing the producer failed, none otherwise.
     public remote extern function close() returns error?;
 
     # Commits consumer action which commits consumer consumed offsets to offset topic.
     #
     # + consumer - Consumer which needs offsets to be committed.
-    # + return - error if committing the consumer failed, none otherwise.
+    # + return - Error if committing the consumer failed, none otherwise.
     public remote extern function commitConsumer(SimpleConsumer consumer) returns error?;
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #
     # + offsets - Consumer offsets to commit for given transaction.
     # + groupID - Consumer group id.
-    # + return - error if committing consumer offsets failed, none otherwise.
+    # + return - Error if committing consumer offsets failed, none otherwise.
     public remote extern function commitConsumerOffsets(PartitionOffset[] offsets, string groupID) returns error?;
 
     # Flush action which flush batch of records.
     #
-    # + return - error if records couldn't be flushed, none otherwise.
+    # + return - Error if records couldn't be flushed, none otherwise.
     public remote extern function flushRecords() returns error?;
 
     # GetTopicPartitions action which returns given topic partition information.
     #
     # + topic - Topic which the partition information is given.
-    # + return - Partitions for the given topic.
+    # + return - Partitions for the given topic, returns error if operation fails.
     public remote extern function getTopicPartitions(string topic) returns TopicPartition[]|error;
 
     # Simple Send action which produce records to Kafka server.
@@ -147,7 +147,7 @@ public type SimpleProducer client object {
     # + key - Key that will be included in the record.
     # + partition - Partition to which the record should be sent.
     # + timestamp - Timestamp of the record, in milliseconds since epoch.
-    # + return - returns error if send action fails to send data, none otherwise.
+    # + return - Returns error if send action fails to send data, none otherwise.
     public remote extern function send(
                                           byte[] value,
                                           string topic,

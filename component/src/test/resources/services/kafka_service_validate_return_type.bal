@@ -63,4 +63,3 @@ function funcKafkaProduce() {
     byte[] byteMsg = msg.toByteArray("UTF-8");
     var result = kafkaProducer->send(byteMsg, topic);
 }
-

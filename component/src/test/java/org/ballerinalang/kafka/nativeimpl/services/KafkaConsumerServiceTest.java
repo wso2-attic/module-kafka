@@ -26,7 +26,6 @@ import org.ballerinalang.launcher.util.BServiceUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.exceptions.BLangRuntimeException;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -42,7 +41,6 @@ import static org.awaitility.Awaitility.await;
 /**
  * Test cases for ballerina kafka consumer endpoint bind to a service .
  */
-@Test(singleThreaded = true)
 public class KafkaConsumerServiceTest {
 
     private CompileResult compileResult;
@@ -76,12 +74,29 @@ public class KafkaConsumerServiceTest {
 
     @Test(
             description = "Test endpoint bind to a service returning invalid return type",
-            expectedExceptions = BLangRuntimeException.class,
+            expectedExceptions = IllegalStateException.class,
             expectedExceptionsMessageRegExp = ".* Invalid return type for the resource function.*"
     )
     public void testKafkaServiceInvalidReturnType() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_return_type.bal");
-        BServiceUtil.runService(compileResult);
+    }
+
+    @Test(
+            description = "Test kafka service with an invalid resource name",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*Kafka service has invalid resource.*"
+    )
+    public void testKafkaServiceInvalidResourceName() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_resource_name.bal");
+    }
+
+    @Test(
+            description = "Test kafka service with an invalid input parameter type",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*Resource parameter .* is invalid. Expected.*"
+    )
+    public void testKafkaServiceInvalidParameterType() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_parameter_type.bal");
     }
 
     @Test(description = "Test endpoint bind to a service returning valid return type")
@@ -105,6 +120,39 @@ public class KafkaConsumerServiceTest {
     @Test(description = "Test endpoint bind to a service returning custom error type")
     public void testKafkaServiceValidateCustomErrorType() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_custom_error_return_type_validation.bal");
+    }
+
+    @Test(
+            description = "Test endpoint bind to a service with no resources",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*No resources found to handle the Kafka records in.*",
+            enabled = false // Disabled this test as currently no resources will not handle by kafka compiler plugin
+    )
+    public void testKafkaServiceNoResources() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_no_resources.bal");
+    }
+
+    @Test(
+            description = "Test endpoint bind to a service with more than one resource",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*More than one resources found in Kafka service.*"
+    )
+    public void testKafkaServiceMoreThanOneResource() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_more_than_one_resource.bal");
+    }
+
+    @Test(
+            description = "Test endpoint bind to a service with invalid number of arguments in resource function",
+            expectedExceptions = IllegalStateException.class,
+            expectedExceptionsMessageRegExp = ".*Invalid number of input parameters found in resource.*"
+    )
+    public void testKafkaServiceInvalidNumberOfArguments() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_invalid_number_of_arguments.bal");
+    }
+
+    @Test(description = "Test endpoint bind to a service")
+    public void testKafkaAdvancedService() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_advanced.bal");
         BServiceUtil.runService(compileResult);
         BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
 

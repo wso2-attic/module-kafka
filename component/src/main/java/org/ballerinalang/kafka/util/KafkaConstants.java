@@ -26,9 +26,15 @@ public class KafkaConstants {
     private KafkaConstants() {
     }
 
+    public static final String PATH_SEPARATOR = "/";
+    public static final String BLOCK_SEPARATOR = ":";
+    public static final String ARRAY_INDICATOR = "[]";
+
     public static final String ORG_NAME = "wso2";
-    public static final String PACKAGE_NAME = "kafka:0.0.0";
-    public static final String KAFKA_NATIVE_PACKAGE = "wso2/kafka:0.0.0";
+    public static final String PACKAGE_NAME = "kafka";
+    public static final String VERSION = "0.0.0";
+    public static final String FULL_PACKAGE_NAME = PACKAGE_NAME + BLOCK_SEPARATOR + VERSION;
+    public static final String KAFKA_NATIVE_PACKAGE = ORG_NAME + PATH_SEPARATOR + FULL_PACKAGE_NAME;
 
     public static final String NATIVE_CONSUMER = "KafkaConsumer";
     public static final String NATIVE_PRODUCER = "KafkaProducer";
@@ -41,6 +47,14 @@ public class KafkaConstants {
     public static final String CONSUMER_STRUCT_NAME = "SimpleConsumer";
     public static final String CONSUMER_CONFIG_STRUCT_NAME = "ConsumerConfig";
     public static final String CONSUMER_SERVER_CONNECTOR_NAME = "serverConnector";
+
+    public static final String PARAMETER_CONSUMER_NAME = PACKAGE_NAME + BLOCK_SEPARATOR + CONSUMER_STRUCT_NAME;
+    public static final String PARAMETER_RECORD_ARRAY_NAME =
+            PACKAGE_NAME + BLOCK_SEPARATOR + CONSUMER_RECORD_STRUCT_NAME + ARRAY_INDICATOR;
+    public static final String PARAMETER_PARTITION_OFFSET_ARRAY_NAME =
+            PACKAGE_NAME + BLOCK_SEPARATOR + OFFSET_STRUCT_NAME + ARRAY_INDICATOR;
+
+    public static final String KAFKA_RESOURCE_ON_MESSAGE = "onMessage";
 
     public static final String PRODUCER_STRUCT_NAME = "SimpleProducer";
 

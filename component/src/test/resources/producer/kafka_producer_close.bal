@@ -16,6 +16,8 @@
 
 import wso2/kafka;
 
+string topic = "producer-close-test-topic";
+
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
     clientID: "close-producer",
@@ -27,7 +29,6 @@ kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 function funcTestKafkaClose() returns boolean {
     string msg = "Test Message";
-    string topic = "test";
     byte[] byteMsg = msg.toByteArray("UTF-8");
     var result = kafkaProducer->send(byteMsg, topic);
     result = kafkaProducer->close();

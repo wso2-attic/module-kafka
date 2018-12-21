@@ -19,8 +19,8 @@ under the License.
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="ballerina-natives-test-suite" parallel="false" thread-count="1">
-    <test name="ballerina-kafka-consumer-tests" parallel="false" thread-count="1">
+<suite name="ballerina-natives-test-suite" parallel="false">
+    <test name="ballerina-kafka-consumer-tests">
         <!-- Consumer-Related tests -->
         <classes>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAssignTest"/>
@@ -32,31 +32,17 @@ under the License.
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribeToPatternTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSeekTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerUnsubscribeTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribePartitionRebalanceTest"/>
         </classes>
     </test>
-    <test name="ballerina-kafka-producer-tests" parallel="false" thread-count="1">
+    <test name="ballerina-kafka-advanced-tests">
         <!-- Producer-Related tests -->
         <classes>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerCloseTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerFlushRecordsTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerGetPartitionTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>
-        </classes>
-    </test>
-    <test name="ballerina-kafka-services-tests" parallel="false" thread-count="1">
         <!-- Kafka service related tests -->
-        <classes>
-            <class name="org.ballerinalang.kafka.nativeimpl.services.KafkaConsumerAdvancedServiceTest"/>
             <class name="org.ballerinalang.kafka.nativeimpl.services.KafkaConsumerServiceTest"/>
-        </classes>
-    </test>
-    <test name="ballerina-kafka-transaction-tests" parallel="false" thread-count="1">
         <!-- Kafka transactions related tests -->
-        <classes>
-            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerAbortTransactionTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerCommitConsumerOffsetsTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerCommitConsumerTest"/>
+            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerTransactionsTest"/>
         </classes>
     </test>
 </suite>
