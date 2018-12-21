@@ -125,7 +125,8 @@ public class KafkaConsumerServiceTest {
     @Test(
             description = "Test endpoint bind to a service with no resources",
             expectedExceptions = IllegalStateException.class,
-            expectedExceptionsMessageRegExp = ".*No resources found to handle the Kafka records in.*"
+            expectedExceptionsMessageRegExp = ".*No resources found to handle the Kafka records in.*",
+            enabled = false // Disabled this test as currently no resources will not handle by kafka compiler plugin
     )
     public void testKafkaServiceNoResources() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_no_resources.bal");

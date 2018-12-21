@@ -17,8 +17,8 @@
 package org.ballerinalang.kafka.util;
 
 import org.ballerinalang.compiler.plugins.SupportedResourceParamTypes;
+import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.FunctionNode;
-import org.ballerinalang.model.tree.PackageNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.model.types.BTypes;
@@ -29,10 +29,10 @@ import org.wso2.ballerinalang.util.AbstractTransportCompilerPlugin;
 
 import java.util.List;
 
-import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_RECORD_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.CONSUMER_STRUCT_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.FULL_PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_RESOURCE_NAME;
+import static org.ballerinalang.kafka.util.KafkaConstants.PACKAGE_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PARAMETER_CONSUMER_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PARAMETER_PARTITION_OFFSET_ARRAY_NAME;
 import static org.ballerinalang.kafka.util.KafkaConstants.PARAMETER_RECORD_ARRAY_NAME;
@@ -48,8 +48,7 @@ import static org.ballerinalang.util.diagnostic.Diagnostic.Kind.ERROR;
                 name = CONSUMER_STRUCT_NAME
         ),
         paramTypes = {
-                @SupportedResourceParamTypes.Type(packageName = FULL_PACKAGE_NAME, name = CONSUMER_STRUCT_NAME),
-                @SupportedResourceParamTypes.Type(packageName = FULL_PACKAGE_NAME, name = CONSUMER_RECORD_STRUCT_NAME)
+                @SupportedResourceParamTypes.Type(packageName = PACKAGE_NAME, name = CONSUMER_STRUCT_NAME)
         }
 )
 public class KafkaServiceCompilerPlugin extends AbstractTransportCompilerPlugin {
@@ -62,21 +61,18 @@ public class KafkaServiceCompilerPlugin extends AbstractTransportCompilerPlugin 
     }
 
     @Override
-    public void process(PackageNode packageNode) {
-        List<? extends ServiceNode> services = packageNode.getServices();
-
-        for (ServiceNode serviceNode : services) {
-            validateService(serviceNode);
-        }
+    public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
+        validateService(serviceNode);
     }
 
     private void validateService(ServiceNode serviceNode) {
         List<? extends FunctionNode> resources = serviceNode.getResources();
-        if (resources.size() == 0) {
+        // This is currently disabled as resources without parameters does not hit here.
+        /*if (resources.size() == 0) {
             String message = "No resources found to handle the Kafka records in " + serviceNode.getName().getValue();
             logError(message, serviceNode.getPosition());
             return;
-        }
+        }*/
         if (resources.size() > 1) {
             String message = "More than one resources found in Kafka service "
                     + serviceNode.getName().getValue()
@@ -131,10 +127,16 @@ public class KafkaServiceCompilerPlugin extends AbstractTransportCompilerPlugin 
     }
 
     private void checkParameter(String parameterName, String expectedValue, Diagnostic.DiagnosticPosition position) {
-        if (!parameterName.equals(expectedValue)) {
+        String parameter = clearParameter(parameterName);
+        if (!parameter.equals(expectedValue)) {
             String message = "Resource parameter " + parameterName + " is invalid. Expected: " + expectedValue + ".";
             logError(message, position);
         }
+    }
+
+    private String clearParameter(String parameter) {
+        String clearedParameter = parameter.replace("wso2/", "").replace(":0.0.0", "");
+        return clearedParameter;
     }
 
     private String getParameterTypeName (SimpleVariableNode parameter) {
