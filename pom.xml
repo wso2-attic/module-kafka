@@ -27,9 +27,9 @@
     <name>Ballerina - Kafka Parent</name>
 
     <scm>
-        <url>https://github.com/ballerinalang/connector-kafka.git</url>
-        <developerConnection>scm:git:https://github.com/ballerinalang/connector-kafka.git</developerConnection>
-        <connection>scm:git:https://github.com/ballerinalang/connector-kafka.git</connection>
+        <url>https://github.com/wso2-ballerina/module-kafka.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-ballerina/module-kafka.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2-ballerina/module-kafka.git</connection>
         <tag>HEAD</tag>
     </scm>
 
