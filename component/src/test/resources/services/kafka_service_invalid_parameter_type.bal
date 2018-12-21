@@ -33,5 +33,3 @@ service kafkaTestService on kafkaConsumer {
         // Noting
     }
 }
-
-

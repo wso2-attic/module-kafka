@@ -31,5 +31,3 @@ listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 service kafkaTestService on kafkaConsumer {
     // Nothing
 }
-
-

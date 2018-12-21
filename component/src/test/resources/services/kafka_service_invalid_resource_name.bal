@@ -30,9 +30,6 @@ listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
 service kafkaTestService on kafkaConsumer {
     resource function onMessageReceived(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
-        foreach kafka:ConsumerRecord kafkaRecord in records {
-            byte[] result = kafkaRecord.value;
-        }
+        // Nothing
     }
 }
-

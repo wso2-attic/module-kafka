@@ -33,10 +33,6 @@ service kafkaTestService on kafkaConsumer {
                           kafka:SimpleConsumer consumer,
                           kafka:ConsumerRecord[] records,
                           kafka:PartitionOffset[] offsets) {
-        foreach kafka:ConsumerRecord kafkaRecord in records {
-            byte[] result = kafkaRecord.value;
-        }
+        // Nothing
     }
 }
-
-
