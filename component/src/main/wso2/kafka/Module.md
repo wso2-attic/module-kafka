@@ -1,7 +1,7 @@
 ## Package overview
 
 Ballerina Kafka Connector is used to connect Ballerina with Kafka Brokers. With the Kafka Connector, Ballerina can act as Kafka Consumers and Kafka Producers.
-This connector supports both 1.0.0 and 1.1.0 kafka versions.
+This connector supports kafka 1.x.x and 2.0.0 versions.
 
 ## Samples
 ### Simple Kafka Consumer
@@ -12,18 +12,20 @@ Following is a simple service which is subscribed to a topic 'test-kafka-topic' 
 import wso2/kafka;
 import ballerina/io;
 
-endpoint kafka:SimpleConsumer consumer {
+kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers:"localhost:9092",
     groupId:"group-id",
     topics:["test-kafka-topic"],
     pollingInterval:1000
 };
 
-service<kafka:Consumer> kafkaService bind consumer {
+kafka:SimpleConsumer consumer = new(consumerConfigs);
 
-    onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+service kafkaService on consumer {
+
+    resource function onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
-        foreach kafkaRecord in records {
+        foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
     }
@@ -44,7 +46,7 @@ Following is a simple program which publishes a message to 'test-kafka-topic' to
 ```ballerina
 import wso2/kafka;
 
-endpoint kafka:SimpleProducer kafkaProducer {
+kafka:ProducerConfig producerConfigs = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
@@ -53,6 +55,8 @@ endpoint kafka:SimpleProducer kafkaProducer {
     acks:"all",
     noRetries:3
 };
+
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
 
 function main (string... args) {
     string msg = "Hello World, Ballerina";
