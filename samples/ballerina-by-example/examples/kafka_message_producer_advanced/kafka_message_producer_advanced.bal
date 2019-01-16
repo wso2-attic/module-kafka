@@ -32,5 +32,5 @@ function main (string... args) {
     string msg = "Hello World Advanced";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
     kafkaProducer->send(serializedMsg, "test-kafka-topic", partition = 0);
-    kafkaProducer->flush();
+    kafkaProducer->flushRecords();
 }

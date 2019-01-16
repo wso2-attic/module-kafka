@@ -62,7 +62,7 @@ function poll() {
     if (results is error) {
         log:printError("Error occurred while polling ", err = results);
     } else {
-        foreach kafkaRecord in results {
+        foreach var kafkaRecord in results {
             processKafkaRecord(kafkaRecord);
         }
     }
