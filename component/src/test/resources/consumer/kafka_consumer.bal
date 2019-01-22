@@ -24,9 +24,17 @@ kafka:ConsumerConfig consumerConfig = {
     topics: ["test"]
 };
 
+kafka:ConsumerConfig consumerConfigNegative = {};
+kafka:SimpleConsumer negativeConsumer = new (consumerConfigNegative);
+
 function funcKafkaConnect() returns kafka:SimpleConsumer {
     kafka:SimpleConsumer kafkaConsumer = new(consumerConfig);
     return kafkaConsumer;
+}
+
+function funcKafkaConnectNegative() returns error? {
+    error? results = negativeConsumer->connect();
+    return results;
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {

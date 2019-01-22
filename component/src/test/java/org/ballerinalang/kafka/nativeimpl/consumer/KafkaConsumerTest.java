@@ -25,6 +25,7 @@ import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
@@ -54,11 +55,11 @@ public class KafkaConsumerTest {
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
         kafkaCluster.createTopic("test", 2, 1);
+        result = BCompileUtil.compile("consumer/kafka_consumer.bal");
     }
 
     @Test(description = "Test Basic consumer polling with subscription and assignment retrieval")
     public void testKafkaConsumer() {
-        result = BCompileUtil.compile("consumer/kafka_consumer.bal");
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
         try {
@@ -102,7 +103,16 @@ public class KafkaConsumerTest {
         Assert.assertEquals(((BBoolean) returnBValues[0]).booleanValue(), true);
     }
 
-    @Test(description = "Test functionality of getAvailableTopics() function")
+    @Test(description = "Test kafka consumer connect with no config values")
+    public void testKafkaConsumerConnectNegative() {
+        BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnectNegative");
+        Assert.assertTrue(returnBValues.length == 1);
+        Assert.assertTrue(returnBValues[0] instanceof BError);
+        String errorMessage = "Failed to connect to the kafka server: Failed to construct kafka consumer";
+        Assert.assertEquals(((BError) returnBValues[0]).getReason(), errorMessage);
+    }
+
+    @Test(description = "Test functionality of unsubscribe() function")
     public void testKafkaConsumerUnsubscribe () {
         result = BCompileUtil.compileAndSetup("consumer/kafka_consumer_unsubscribe.bal");
         BValue[] inputBValues = {};
