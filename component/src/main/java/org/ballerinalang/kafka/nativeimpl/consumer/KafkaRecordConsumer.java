@@ -93,6 +93,7 @@ public class KafkaRecordConsumer {
         try {
             ConsumerRecords<byte[], byte[]> recordsRetrieved = null;
             try {
+                // Make thread-safe as kafka does not support multiple thread access
                 if (!closed.get()) {
                     recordsRetrieved = this.kafkaConsumer.poll(this.pollingTimeout);
                 }
@@ -156,6 +157,7 @@ public class KafkaRecordConsumer {
      * Stops Kafka consumer polling cycles, shutdowns scheduled thread pool and closes the consumer instance.
      */
     public void stopConsume() {
+        // Make closed true, therefore poll function stops polling, and make stop operation thread-safe
         closed.set(true);
         this.kafkaConsumer.wakeup();
         this.kafkaConsumer.close();
