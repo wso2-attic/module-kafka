@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import javax.transaction.TransactionRolledbackException;
+
 import static org.awaitility.Awaitility.await;
 
 /**
@@ -111,6 +113,23 @@ public class KafkaConsumerServiceTest {
                 Assert.assertEquals(returnBValues.length, 1);
                 Assert.assertTrue(returnBValues[0] instanceof BBoolean);
                 return ((BBoolean) returnBValues[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test(description = "Test kafka service stop() function")
+    public void testKafkaServiceStop() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_stop.bal");
+        BServiceUtil.runService(compileResult);
+        BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
+        try {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] results = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResult");
+                Assert.assertEquals(results.length, 1);
+                Assert.assertTrue(results[0] instanceof BBoolean);
+                return ((BBoolean) results[0]).booleanValue();
             });
         } catch (Throwable e) {
             Assert.fail(e.getMessage());

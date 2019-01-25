@@ -18,7 +18,6 @@
 
 package org.ballerinalang.kafka.impl;
 
-
 import org.apache.kafka.common.KafkaException;
 import org.ballerinalang.kafka.api.KafkaListener;
 import org.ballerinalang.kafka.api.KafkaServerConnector;
