@@ -58,7 +58,7 @@ if [ $? -ne 0 ]; then
     rm -r temp
     else rm $ballerina_lib_location/wso2-$module_name-module-$version.jar
     fi
-    echo "You can install the package by manually copying"
+    echo "You can install the module by manually copying"
     echo 1. "dependencies/wso2-$module_name-module-$version.jar to $ballerina_lib_location"
     echo 2. "Contents of balo directory to $ballerina_balo_location"
     exit 3
@@ -66,5 +66,5 @@ else
     if [ -e "temp/wso2-$module_name-module-$version.jar" ]
     then rm -r temp
     fi
-    echo "Successfully installed Kafka package!"
+    echo "Successfully installed Kafka module!"
 fi

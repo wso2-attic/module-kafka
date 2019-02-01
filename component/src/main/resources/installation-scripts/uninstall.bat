@@ -25,7 +25,7 @@ SET ballerina_balo_location=%ballerina_home%\lib\repo\
 SET version=${project.version}
 SET module_name=kafka
 
-IF NOT EXIST "%ballerina_lib_location%\wso2-%module_name%-package-%version%.jar" (
+IF NOT EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
     IF NOT EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" (
 	   ECHO Kafka module is not installed!
 	   GOTO :END
@@ -49,7 +49,7 @@ IF EXIST "%ballerina_balo_location%\wso2\%module_name%\0.0.0\%module_name%.zip" 
 )
 
 :SUCCESS
-ECHO Successfully uninstalled Kafka package!
+ECHO Successfully uninstalled Kafka module!
 GOTO :END
 
 :FAILED_JAR_DELETION
