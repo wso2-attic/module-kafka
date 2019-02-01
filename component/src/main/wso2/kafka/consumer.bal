@@ -96,7 +96,7 @@ public type ConsumerConfig record {
     boolean checkCRCS = true; // CHECK_CRCS_CONFIG 1
     boolean excludeInternalTopics = true; // EXCLUDE_INTERNAL_TOPICS_CONFIG 2
     boolean decoupleProcessing = false;                 // ALIAS_DECOUPLE_PROCESSING
-    !...
+    !...;
 };
 
 # Type related to consumer record.
@@ -114,7 +114,7 @@ public type ConsumerRecord record {
     int partition;
     int timestamp;
     string topic;
-    !...
+    !...;
 };
 
 # Represent a Kafka consumer endpoint.

@@ -34,7 +34,7 @@ type CustomErrorData record {
     string message = "";
     error? cause = ();
     string data = "";
-    !...
+    !...;
 };
 
 service kafkaTestService on kafkaConsumer {
