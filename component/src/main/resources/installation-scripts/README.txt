@@ -7,6 +7,6 @@ In this directory, you can find two scripts of interest to you. Please note that
 you will need write permission to ballerina installation location.
 
 1. install.{sh/bat} - Installs the Kafka module.
-2. uninstall.{sh/bat} - Uninstalls the Kafka module if installed already.
+2. uninstall.{sh/bat} - Uninstalls the Kafka module if it is already installed.
 
 Happy coding!
