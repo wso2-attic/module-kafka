@@ -35,9 +35,8 @@ import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
 
 /**
- * Start server connector.
+ * Stop the server connector.
  */
-
 @BallerinaFunction(
         orgName = ORG_NAME,
         packageName = FULL_PACKAGE_NAME,

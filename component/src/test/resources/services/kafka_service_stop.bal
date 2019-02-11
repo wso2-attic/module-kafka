@@ -55,5 +55,3 @@ function funcKafkaProduce() {
 function funcKafkaGetResult() returns boolean {
     return isSuccess;
 }
-
-
