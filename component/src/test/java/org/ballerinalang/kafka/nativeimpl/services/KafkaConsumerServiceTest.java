@@ -117,6 +117,23 @@ public class KafkaConsumerServiceTest {
         }
     }
 
+    @Test(description = "Test kafka service stop() function")
+    public void testKafkaServiceStop() {
+        compileResult = BCompileUtil.compileAndSetup("services/kafka_service_stop.bal");
+        BServiceUtil.runService(compileResult);
+        BRunUtil.invokeStateful(compileResult, "funcKafkaProduce");
+        try {
+            await().atMost(10000, TimeUnit.MILLISECONDS).until(() -> {
+                BValue[] results = BRunUtil.invokeStateful(compileResult, "funcKafkaGetResult");
+                Assert.assertEquals(results.length, 1);
+                Assert.assertTrue(results[0] instanceof BBoolean);
+                return ((BBoolean) results[0]).booleanValue();
+            });
+        } catch (Throwable e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
     @Test(description = "Test endpoint bind to a service returning custom error type")
     public void testKafkaServiceValidateCustomErrorType() {
         compileResult = BCompileUtil.compileAndSetup("services/kafka_service_custom_error_return_type_validation.bal");

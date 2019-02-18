@@ -1,4 +1,4 @@
-// Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -16,34 +16,42 @@
 
 import wso2/kafka;
 
-string topic = "service-validate-custom-error-type-test";
+string topic = "service-stop-test";
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094",
-    groupId: "service-test-validate-custom-error-group",
-    clientId: "service-validate-rcustom-error-consumer",
+    groupId: "service-stop-test-group",
+    clientId: "service-stop-consumer",
     offsetReset: "earliest",
     topics: [topic]
 };
 
 listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
 
-type CustomError error<string, CustomErrorData>;
-
-type CustomErrorData record {
-    string message = "";
-    error? cause = ();
-    string data = "";
-    !...;
-};
+boolean isSuccess = false;
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns error? {
-        foreach kafka:ConsumerRecord kafkaRecord in records {
-            CustomError e = error("Custom Error", {data: "sample"});
-        }
-        return;
+    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
+        isSuccess = true;
+        var result = kafkaConsumer.__stop();
     }
 }
 
+kafka:ProducerConfig producerConfigs = {
+    bootstrapServers: "localhost:9094",
+    clientID: "service-producer",
+    acks: "all",
+    noRetries: 3
+};
 
+kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+
+function funcKafkaProduce() {
+    string msg = "test_string";
+    byte[] byteMsg = msg.toByteArray("UTF-8");
+    var result = kafkaProducer->send(byteMsg, topic);
+}
+
+function funcKafkaGetResult() returns boolean {
+    return isSuccess;
+}

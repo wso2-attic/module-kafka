@@ -96,7 +96,7 @@ public type ConsumerConfig record {
     boolean checkCRCS = true; // CHECK_CRCS_CONFIG 1
     boolean excludeInternalTopics = true; // EXCLUDE_INTERNAL_TOPICS_CONFIG 2
     boolean decoupleProcessing = false;                 // ALIAS_DECOUPLE_PROCESSING
-    !...
+    !...;
 };
 
 # Type related to consumer record.
@@ -114,7 +114,7 @@ public type ConsumerRecord record {
     int partition;
     int timestamp;
     string topic;
-    !...
+    !...;
 };
 
 # Represent a Kafka consumer endpoint.
@@ -138,7 +138,7 @@ public type SimpleConsumer client object {
     }
 
     public function __stop() returns error? {
-        return self->close();
+        return self.stop();
     }
 
     public function __attach(service s, map<any> annotationData) returns error? {
@@ -150,6 +150,8 @@ public type SimpleConsumer client object {
     extern function registerListener(service serviceType, map<any> annotationData) returns error?;
 
     extern function start() returns error?;
+
+    extern function stop() returns error?;
 
     # Assigns consumer to a set of topic partitions.
     #

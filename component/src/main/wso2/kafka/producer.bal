@@ -77,7 +77,7 @@ public type ProducerConfig record {
     int transactionTimeout = -1; // TRANSACTION_TIMEOUT_CONFIG 17
 
     boolean enableIdempotence = false; // ENABLE_IDEMPOTENCE_CONFIG 0
-    !...
+    !...;
 };
 
 # Represent a Kafka producer endpoint.

@@ -33,7 +33,7 @@ service kafkaService on consumer {
 
     resource function onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
-        foreach kafkaRecord in records {
+        foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.

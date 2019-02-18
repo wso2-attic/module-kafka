@@ -23,6 +23,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.errors.WakeupException;
 import org.ballerinalang.kafka.api.KafkaListener;
 import org.ballerinalang.kafka.util.KafkaConstants;
 import org.slf4j.Logger;
@@ -37,12 +38,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * {@code KafkaRecordConsumer} This class represents Runnable flow which periodically poll the remote broker and fetch
  * Kafka records.
  */
 public class KafkaRecordConsumer {
+
+    private final AtomicBoolean closed = new AtomicBoolean(false);
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaRecordConsumer.class);
 
@@ -87,7 +91,18 @@ public class KafkaRecordConsumer {
 
     private void poll() {
         try {
-            ConsumerRecords<byte[], byte[]> recordsRetrieved = this.kafkaConsumer.poll(this.pollingTimeout);
+            ConsumerRecords<byte[], byte[]> recordsRetrieved = null;
+            try {
+                // Make thread-safe as kafka does not support multiple thread access
+                if (!closed.get()) {
+                    recordsRetrieved = this.kafkaConsumer.poll(this.pollingTimeout);
+                }
+            } catch (WakeupException e) {
+                // Ignore exception if connection is closing.
+                if (!closed.get()) {
+                    throw e;
+                }
+            }
             if (logger.isDebugEnabled()) {
                 logger.debug("Kafka Consumer " + this.consumerId + " on service " + this.serviceId
                         + " has retrieved " + recordsRetrieved.count() + " records.");
@@ -142,6 +157,8 @@ public class KafkaRecordConsumer {
      * Stops Kafka consumer polling cycles, shutdowns scheduled thread pool and closes the consumer instance.
      */
     public void stopConsume() {
+        // Make closed true, therefore poll function stops polling, and make stop operation thread-safe
+        closed.set(true);
         this.kafkaConsumer.wakeup();
         this.kafkaConsumer.close();
         this.executorService.shutdown();

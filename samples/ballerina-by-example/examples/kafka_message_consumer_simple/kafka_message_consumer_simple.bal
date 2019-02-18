@@ -34,7 +34,7 @@ public function main(string... args) {
     if (results is error) {
         log:printError("Error occurred while polling ", err = results);
     } else {
-        foreach kafkaRecord in results {
+        foreach var kafkaRecord in results {
             // convert byte[] to string
             byte[] serializedMsg = kafkaRecord.value;
             string msg = internal:byteArrayToString(serializedMsg, "UTF-8");

@@ -58,13 +58,7 @@ public class Connect implements NativeCallableUnit {
         // Consumer initialization.
         BMap<String, BValue> consumerStruct = (BMap<String, BValue>) context.getRefArgument(0);
         BMap<String, BValue> consumerConfig = (BMap<String, BValue>) consumerStruct.get("consumerConfig");
-        // Check whether consumer configuration is available.
-        if (Objects.isNull(consumerConfig)) {
-            context.setReturnValues(
-                    createError(context, "Kafka consumer is not initialized with consumer configuration.")
-            );
-            return;
-        }
+
         // Check whether already native consumer is attached to the struct.
         // This can be happen either from Kafka service or via programmatically.
         if (Objects.nonNull(consumerStruct.getNativeData(NATIVE_CONSUMER))) {

@@ -21,7 +21,7 @@
 public type PartitionOffset record {
     TopicPartition partition;
     int offset;
-    !...
+    !...;
 };
 
 # This type represents a topic partition.
@@ -31,5 +31,5 @@ public type PartitionOffset record {
 public type TopicPartition record {
     string topic;
     int partition;
-    !...
+    !...;
 };
