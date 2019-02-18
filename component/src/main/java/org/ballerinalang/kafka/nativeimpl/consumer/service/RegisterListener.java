@@ -18,7 +18,7 @@ package org.ballerinalang.kafka.nativeimpl.consumer.service;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
-import org.ballerinalang.bre.bvm.CallableUnitCallback;
+import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.Service;
 import org.ballerinalang.connector.api.Struct;
@@ -28,7 +28,6 @@ import org.ballerinalang.kafka.exception.KafkaConnectorException;
 import org.ballerinalang.kafka.impl.KafkaListenerImpl;
 import org.ballerinalang.kafka.impl.KafkaServerConnectorImpl;
 import org.ballerinalang.kafka.util.KafkaUtils;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BValue;
@@ -56,10 +55,10 @@ import static org.ballerinalang.kafka.util.KafkaConstants.ORG_NAME;
                 structPackage = KAFKA_NATIVE_PACKAGE
         )
 )
-public class RegisterListener implements NativeCallableUnit {
+public class RegisterListener extends BlockingNativeCallableUnit {
 
     @Override
-    public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+    public void execute(Context context) {
         Service service = BLangConnectorSPIUtil.getServiceRegistered(context);
         Struct serviceEndpoint = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
         BMap<String, BValue> serverConfigs = (BMap<String, BValue>) context.getRefArgument(0);
@@ -78,10 +77,5 @@ public class RegisterListener implements NativeCallableUnit {
             context.setReturnValues(BLangVMErrors.createError(context, "Cannot register: " + e.getMessage()));
         }
         context.setReturnValues();
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return true;
     }
 }

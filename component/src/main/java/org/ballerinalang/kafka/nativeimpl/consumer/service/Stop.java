@@ -17,12 +17,11 @@
 package org.ballerinalang.kafka.nativeimpl.consumer.service;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.bre.bvm.CallableUnitCallback;
+import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.kafka.exception.KafkaConnectorException;
 import org.ballerinalang.kafka.impl.KafkaServerConnectorImpl;
-import org.ballerinalang.model.NativeCallableUnit;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -48,10 +47,10 @@ import static org.ballerinalang.kafka.util.KafkaUtils.createError;
         ),
         isPublic = true
 )
-public class Stop implements NativeCallableUnit {
+public class Stop extends BlockingNativeCallableUnit {
 
     @Override
-    public void execute(Context context, CallableUnitCallback callableUnitCallback) {
+    public void execute(Context context) {
         Struct service = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
         KafkaServerConnectorImpl serverConnector = (KafkaServerConnectorImpl) service
                 .getNativeData(CONSUMER_SERVER_CONNECTOR_NAME);
@@ -65,10 +64,5 @@ public class Stop implements NativeCallableUnit {
         if (!isStopped) {
             context.setReturnValues(createError(context, "Failed to stop the kafka service."));
         }
-    }
-
-    @Override
-    public boolean isBlocking() {
-        return true;
     }
 }
