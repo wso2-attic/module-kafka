@@ -28,26 +28,26 @@ kafka:ConsumerConfig consumerConfigNegative = {};
 kafka:SimpleConsumer negativeConsumer = new (consumerConfigNegative);
 
 function funcKafkaConnect() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer kafkaConsumer = new(consumerConfig);
-    return kafkaConsumer;
+    return new(consumerConfig);
 }
 
 function funcKafkaConnectNegative() returns error? {
-    error? results = negativeConsumer->connect();
-    return results;
+    return negativeConsumer->connect();
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
     kafka:SimpleConsumer consumerEP = consumer;
     var conErr = consumerEP->close();
+    if (conErr is error) {
+        return false;
+    }
     return true;
 }
 
 function funcKafkaGetSubscription(kafka:SimpleConsumer consumer) returns string[]|error {
     kafka:SimpleConsumer consumerEP = consumer;
     string[] topics = [];
-    topics = check consumerEP->getSubscription();
-    return topics;
+    return consumerEP->getSubscription();
 }
 
 function funcKafkaGetAssignment(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
