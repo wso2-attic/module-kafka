@@ -139,13 +139,13 @@ public type SimpleConsumer client object {
         return self.stop();
     }
 
-    public function __attach(service s, map<any> annotationData) returns error? {
-        return self.registerListener(s, annotationData);
+    public function __attach(service s, string? name) returns error? {
+        return self.registerListener(s, name);
     }
 
     function init(ConsumerConfig config) returns error?;
 
-    function registerListener(service serviceType, map<any> annotationData) returns error? = external;
+    function registerListener(service serviceType, string? name) returns error? = external;
 
     function start() returns error? = external;
 
