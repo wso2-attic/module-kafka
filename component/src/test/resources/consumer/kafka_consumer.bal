@@ -36,31 +36,26 @@ function funcKafkaConnectNegative() returns error? {
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var conErr = consumerEP->close();
-    if (conErr is error) {
+    var result = consumer->close();
+    if (result is error) {
         return false;
     }
     return true;
 }
 
 function funcKafkaGetSubscription(kafka:SimpleConsumer consumer) returns string[]|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    string[] topics = [];
-    return consumerEP->getSubscription();
+    return consumer->getSubscription();
 }
 
 function funcKafkaGetAssignment(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    kafka:TopicPartition[] partitions = [];
-    partitions = check consumerEP->getAssignment();
-    return partitions;
+    return consumer->getAssignment();
 }
 
 function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    kafka:ConsumerRecord[] records = [];
-
-    records = check consumerEP->poll(1000);
-    return records.length();
+    var results = consumer->poll(1000);
+    if (results is error) {
+        return results;
+    } else {
+        return results.length();
+    }
 }

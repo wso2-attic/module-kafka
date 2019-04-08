@@ -30,14 +30,15 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var conErr = consumerEP->close();
+    var result = consumer->close();
+    if (result is error) {
+        return false;
+    }
     return true;
 }
 
 function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var records = consumerEP->poll(1000);
+    var records = consumer->poll(1000);
     if (records is error) {
         return records;
     } else {
@@ -46,8 +47,7 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
 }
 
 function funcKafkaPause(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) returns error? {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var result = consumerEP->pause(partitions);
+    var result = consumer->pause(partitions);
     if (result is error) {
         return result;
     }
@@ -55,8 +55,7 @@ function funcKafkaPause(kafka:SimpleConsumer consumer, kafka:TopicPartition[] pa
 }
 
 function funcKafkaResume(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) returns error? {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var result = consumerEP->resume(partitions);
+    var result = consumer->resume(partitions);
     if (result is error) {
         return result;
     }
@@ -64,7 +63,5 @@ function funcKafkaResume(kafka:SimpleConsumer consumer, kafka:TopicPartition[] p
 }
 
 function funcKafkaGetPausedPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var partitions = consumerEP->getPausedPartitions();
-    return partitions;
+    return consumer->getPausedPartitions();
 }
