@@ -78,7 +78,7 @@ public class KafkaConsumerGetAvailableTopicsTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetAvailableTopics", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BValueArray);
-        Assert.assertEquals(((BValueArray) returnBValues[0]).size(), 1);
+        Assert.assertEquals((returnBValues[0]).size(), 1);
         Assert.assertEquals(((BValueArray) returnBValues[0]).getString(0), "test");
 
         completion = new CountDownLatch(1);
@@ -93,7 +93,7 @@ public class KafkaConsumerGetAvailableTopicsTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetAvailableTopicsWithDuration", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BValueArray);
-        Assert.assertEquals(((BValueArray) returnBValues[0]).size(), 2);
+        Assert.assertEquals((returnBValues[0]).size(), 2);
         Assert.assertEquals(((BValueArray) returnBValues[0]).getString(0), "test-2");
         Assert.assertEquals(((BValueArray) returnBValues[0]).getString(1), "test");
 
@@ -115,7 +115,7 @@ public class KafkaConsumerGetAvailableTopicsTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetAvailableTopicsWithDuration", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BValueArray);
-        Assert.assertEquals(((BValueArray) returnBValues[0]).size(), 2);
+        Assert.assertEquals((returnBValues[0]).size(), 2);
         Assert.assertEquals(((BValueArray) returnBValues[0]).getString(0), "test-2");
         Assert.assertEquals(((BValueArray) returnBValues[0]).getString(1), "test");
     }

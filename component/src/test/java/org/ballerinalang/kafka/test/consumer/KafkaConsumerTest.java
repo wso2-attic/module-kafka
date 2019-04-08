@@ -62,6 +62,7 @@ public class KafkaConsumerTest {
     }
 
     @Test(description = "Test Basic consumer polling with subscription and assignment retrieval")
+    @SuppressWarnings("unchecked")
     public void testKafkaConsumer() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
@@ -91,7 +92,7 @@ public class KafkaConsumerTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetSubscription", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BValueArray);
-        Assert.assertEquals(((BValueArray) returnBValues[0]).size(), 1);
+        Assert.assertEquals((returnBValues[0]).size(), 1);
         Assert.assertEquals(((BValueArray) returnBValues[0]).getString(0), "test");
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetAssignment", inputBValues);
@@ -103,13 +104,13 @@ public class KafkaConsumerTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
-        Assert.assertEquals(((BBoolean) returnBValues[0]).booleanValue(), true);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
     }
 
     @Test(description = "Test kafka consumer connect with no config values")
     public void testKafkaConsumerConnectNegative() {
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnectNegative");
-        Assert.assertTrue(returnBValues.length == 1);
+        Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BError);
         String errorMessage = "Failed to connect to the kafka server: Failed to construct kafka consumer";
         Assert.assertEquals(((BError) returnBValues[0]).getReason(), errorMessage);

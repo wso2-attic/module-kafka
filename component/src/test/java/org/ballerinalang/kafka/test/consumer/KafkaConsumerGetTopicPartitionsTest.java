@@ -56,6 +56,7 @@ public class KafkaConsumerGetTopicPartitionsTest {
     }
 
     @Test(description = "Test functionality of getTopicPartitions() function")
+    @SuppressWarnings("unchecked")
     public void testKafkaConsumerGetTopicPartitions () {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);

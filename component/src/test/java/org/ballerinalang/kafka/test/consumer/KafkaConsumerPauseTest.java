@@ -68,6 +68,7 @@ public class KafkaConsumerPauseTest {
     }
 
     @Test(description = "Test Basic consumer with seek")
+    @SuppressWarnings("unchecked")
     public void testKafkaConsumeWithPause() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
@@ -152,7 +153,7 @@ public class KafkaConsumerPauseTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
-        Assert.assertEquals(((BBoolean) returnBValues[0]).booleanValue(), true);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
     }
 
     @AfterClass

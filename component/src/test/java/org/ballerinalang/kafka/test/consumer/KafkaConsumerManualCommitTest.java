@@ -66,6 +66,7 @@ public class KafkaConsumerManualCommitTest {
     }
 
     @Test(description = "Test Basic consumer polling with manual offset commit")
+    @SuppressWarnings("unchecked")
     public void testKafkaConsumeWithManualOffsetCommit() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
@@ -154,7 +155,7 @@ public class KafkaConsumerManualCommitTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
-        Assert.assertEquals(((BBoolean) returnBValues[0]).booleanValue(), true);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
 
     }
 

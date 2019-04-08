@@ -56,6 +56,7 @@ public class KafkaConsumerAssignTest {
     }
 
     @Test(description = "Test assign functions functionality")
+    @SuppressWarnings("unchecked")
     public void testKafkaConsumerAssign() {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);
