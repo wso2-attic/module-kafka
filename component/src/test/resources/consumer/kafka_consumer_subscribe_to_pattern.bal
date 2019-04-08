@@ -37,7 +37,7 @@ function funcKafkaTestGetSubscribedTopicCount(kafka:SimpleConsumer kafkaConsumer
     if (result is error) {
         return result;
     } else {
-        return (result.length());
+        return result.length();
     }
 }
 
