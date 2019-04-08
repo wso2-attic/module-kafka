@@ -54,7 +54,7 @@
 # + checkCRCS - Check the CRC32 of the records consumed.
 # + excludeInternalTopics - Whether records from internal topics should be exposed to the consumer.
 # + decoupleProcessing - Decouples processing
-public type ConsumerConfig record {
+public type ConsumerConfig record {|
     string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
     string? groupId = (); // GROUP_ID_CONFIG 1
     string? offsetReset = (); // AUTO_OFFSET_RESET_CONFIG 2
@@ -96,8 +96,7 @@ public type ConsumerConfig record {
     boolean checkCRCS = true; // CHECK_CRCS_CONFIG 1
     boolean excludeInternalTopics = true; // EXCLUDE_INTERNAL_TOPICS_CONFIG 2
     boolean decoupleProcessing = false;                 // ALIAS_DECOUPLE_PROCESSING
-    !...;
-};
+|};
 
 # Type related to consumer record.
 #
@@ -107,15 +106,14 @@ public type ConsumerConfig record {
 # + partition - Partition in which the record is stored.
 # + timestamp - Timestamp of the record, in milliseconds since epoch.
 # + topic - Topic to which the record belongs to.
-public type ConsumerRecord record {
+public type ConsumerRecord record {|
     byte[] key;
     byte[] value;
     int offset;
     int partition;
     int timestamp;
     string topic;
-    !...;
-};
+|};
 
 # Represent a Kafka consumer endpoint.
 #

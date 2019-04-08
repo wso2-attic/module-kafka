@@ -46,7 +46,7 @@ import ballerina/system;
 # + connectionsMaxIdle - Close idle connections after the number of milliseconds.
 # + transactionTimeout - Timeout for transaction status update from the producer.
 # + enableIdempotence - Exactly one copy of each message is written in the stream when enabled.
-public type ProducerConfig record {
+public type ProducerConfig record {|
     string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks = (); // ACKS_CONFIG 1
     string? compressionType = (); // COMPRESSION_TYPE_CONFIG 2
@@ -77,8 +77,7 @@ public type ProducerConfig record {
     int transactionTimeout = -1; // TRANSACTION_TIMEOUT_CONFIG 17
 
     boolean enableIdempotence = false; // ENABLE_IDEMPOTENCE_CONFIG 0
-    !...;
-};
+|};
 
 # Represent a Kafka producer endpoint.
 #
