@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -29,8 +29,10 @@ import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.util.codegen.ProgramFile;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -39,24 +41,27 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import static org.ballerinalang.kafka.test.utils.Utils.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Utils.ZOOKEEPER_PORT_1;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
 /**
- * Test cases for ballerina.net.kafka consumer ( with manual commit enabled ) manual offset commit
- * using commit() native function.
+ * Test cases for ballerina.net.kafka consumer ( with manual commit enabled )  manual offset commit
+ * using  commitOffset() native function.
  */
 @Test(singleThreaded = true)
-public class KafkaConsumerManualCommitTest {
+public class KafkaConsumerManualOffsetCommitTest {
     private CompileResult result;
     private static File dataDir;
     private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("consumer/kafka_consumer_manual_commit.bal");
+        result = BCompileUtil.compile("consumer/kafka_consumer_manual_offset_commit.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
@@ -90,11 +95,11 @@ public class KafkaConsumerManualCommitTest {
             }
         }
         Assert.assertEquals(msgCount, 10);
-
         ProgramFile programFile = result.getProgFile();
         BMap<String, BValue> part = createPartitionStruct(programFile);
         part.put("topic", new BString("test"));
         part.put("partition", new BInteger(0));
+
         inputBValues = new BValue[]{consumerEndpoint, part};
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetCommittedOffset", inputBValues);
@@ -105,17 +110,55 @@ public class KafkaConsumerManualCommitTest {
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertNotNull(returnBValues[0]);
         Assert.assertTrue(returnBValues[0] instanceof BInteger);
         Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 10);
 
-        inputBValues = new BValue[]{consumerEndpoint};
-        returnBValues = BRunUtil.invoke(result, "funcKafkaCommit", inputBValues);
+        BMap<String, BValue> offset = createOffsetStruct(programFile);
+        offset.put("partition", part);
+        offset.put("offset", new BInteger(5));
+
+        ArrayList<BMap<String, BValue>> structArray = new ArrayList<>();
+        structArray.add(offset);
+        BValueArray offsetArray = new BValueArray(structArray.toArray(new BRefType[0]),
+                createOffsetStruct(programFile).getType());
+
+        inputBValues = new BValue[]{consumerEndpoint, offsetArray};
+        returnBValues = BRunUtil.invoke(result, "funcKafkaCommitOffsets", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
         Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
 
+        // Committed up to 5 th index of topic partition test-0
+        inputBValues = new BValue[]{consumerEndpoint, part};
 
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetCommittedOffset", inputBValues);
+        Assert.assertNotNull(returnBValues[0]);
+        Assert.assertTrue(returnBValues[0] instanceof BMap);
+        Assert.assertEquals(((BInteger) ((BMap<String, BValue>) returnBValues[0])
+                .get("offset")).value().intValue(), 5);
+
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertNotNull(returnBValues[0]);
+        Assert.assertTrue(returnBValues[0] instanceof BInteger);
+        Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 10);
+
+        offset = createOffsetStruct(programFile);
+        offset.put("partition", part);
+        offset.put("offset", new BInteger(10));
+
+        structArray = new ArrayList<>();
+        structArray.add(offset);
+        offsetArray = new BValueArray(structArray.toArray(new BRefType[0]),
+                createOffsetStruct(programFile).getType());
+
+        inputBValues = new BValue[]{consumerEndpoint, offsetArray};
+        returnBValues = BRunUtil.invoke(result, "funcKafkaCommitOffsets", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertTrue(returnBValues[0] instanceof BBoolean);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
+
+        // Committed up to 10 th index of topic partition test-0
         inputBValues = new BValue[]{consumerEndpoint, part};
 
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetCommittedOffset", inputBValues);
@@ -132,9 +175,10 @@ public class KafkaConsumerManualCommitTest {
 
         part.put("topic", new BString("test_not"));
         part.put("partition", new BInteger(100));
+
         inputBValues = new BValue[]{consumerEndpoint, part};
 
-        //test partition which is non existent
+        // Test partition which is non existent
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetCommittedOffset", inputBValues);
         Assert.assertNotNull(returnBValues[0]);
 
@@ -173,8 +217,8 @@ public class KafkaConsumerManualCommitTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-manual-commit-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-manual-offset-commit-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 
@@ -183,4 +227,12 @@ public class KafkaConsumerManualCommitTest {
                 KAFKA_NATIVE_PACKAGE,
                 KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
     }
+
+    private BMap<String, BValue> createOffsetStruct(ProgramFile programFile) {
+        return BLangConnectorSPIUtil.createBStruct(programFile,
+                KAFKA_NATIVE_PACKAGE,
+                KafkaConstants.OFFSET_STRUCT_NAME);
+    }
+
+
 }

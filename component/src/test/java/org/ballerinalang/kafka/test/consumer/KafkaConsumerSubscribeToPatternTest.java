@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -37,6 +37,8 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
+import static org.ballerinalang.kafka.test.utils.Utils.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Utils.ZOOKEEPER_PORT_1;
 
 @Test(singleThreaded = true)
 public class KafkaConsumerSubscribeToPatternTest {
@@ -122,7 +124,7 @@ public class KafkaConsumerSubscribeToPatternTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-subscribe-to-pattern-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 }

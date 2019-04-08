@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -33,6 +33,9 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+
+import static org.ballerinalang.kafka.test.utils.Utils.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Utils.ZOOKEEPER_PORT_1;
 
 /**
  * Test cases for Kafka Consumer assign() function
@@ -90,7 +93,7 @@ public class KafkaConsumerAssignTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-assign-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 }

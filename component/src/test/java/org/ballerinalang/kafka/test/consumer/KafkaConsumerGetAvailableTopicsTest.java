@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -36,6 +36,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+
+import static org.ballerinalang.kafka.test.utils.Utils.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Utils.ZOOKEEPER_PORT_1;
 
 /**
  * Test cases for ballerina.net.kafka consumer for get list of available topics
@@ -135,7 +138,7 @@ public class KafkaConsumerGetAvailableTopicsTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-get-available-topics-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 }

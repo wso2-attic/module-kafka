@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import static org.ballerinalang.kafka.test.utils.Utils.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Utils.ZOOKEEPER_PORT_1;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
 /**
@@ -171,7 +173,7 @@ public class KafkaConsumerPauseTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-pause-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 

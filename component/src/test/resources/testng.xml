@@ -23,26 +23,26 @@ under the License.
     <test name="ballerina-kafka-consumer-tests">
         <!-- Consumer-Related tests -->
         <classes>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerAssignTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetAvailableTopicsTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerGetTopicPartitionsTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerManualCommitTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerManualOffsetCommitTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerPauseTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribeToPatternTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSeekTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerTest"/>
-            <class name="org.ballerinalang.kafka.nativeimpl.consumer.KafkaConsumerSubscribePartitionRebalanceTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerAssignTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerGetAvailableTopicsTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerGetTopicPartitionsTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerManualCommitTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerManualOffsetCommitTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerPauseTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerSubscribeToPatternTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerSeekTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerTest"/>
+            <class name="org.ballerinalang.kafka.test.consumer.KafkaConsumerSubscribePartitionRebalanceTest"/>
         </classes>
     </test>
     <test name="ballerina-kafka-advanced-tests">
         <!-- Producer-Related tests -->
         <classes>
-            <class name="org.ballerinalang.kafka.nativeimpl.producer.KafkaProducerTest"/>
+            <class name="org.ballerinalang.kafka.test.producer.KafkaProducerTest"/>
         <!-- Kafka service related tests -->
-            <class name="org.ballerinalang.kafka.nativeimpl.services.KafkaConsumerServiceTest"/>
+            <class name="org.ballerinalang.kafka.test.services.KafkaConsumerServiceTest"/>
         <!-- Kafka transactions related tests -->
-            <class name="org.ballerinalang.kafka.nativeimpl.transactions.KafkaProducerTransactionsTest"/>
+            <class name="org.ballerinalang.kafka.test.transactions.KafkaProducerTransactionsTest"/>
         </classes>
     </test>
 </suite>
