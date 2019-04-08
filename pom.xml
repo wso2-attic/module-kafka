@@ -490,13 +490,18 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>${maven.shade.plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
 
     <properties>
         <scala.version>2.11.0</scala.version>
         <version.kafka.scala>2.11</version.kafka.scala>
-        <debezium.version>0.9.2.Final</debezium.version>
+        <debezium.version>0.9.3.Final</debezium.version>
         <awaitility.version>3.0.0</awaitility.version>
         <project.scm.id>my-scm-server</project.scm.id>
         <ballerina.version>0.990.3</ballerina.version>
