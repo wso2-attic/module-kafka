@@ -126,7 +126,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
@@ -180,7 +180,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-internal</artifactId>
+                <artifactId>ballerina-utils</artifactId>
                 <version>${ballerina.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
@@ -250,7 +250,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
             </dependency>
             <dependency>
@@ -295,7 +295,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-internal</artifactId>
+                <artifactId>ballerina-utils</artifactId>
                 <version>${ballerina.version}</version>
             </dependency>
             <dependency>
