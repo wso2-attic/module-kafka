@@ -34,8 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import static org.ballerinalang.kafka.test.utils.Utils.KAFKA_BROKER_PORT;
-import static org.ballerinalang.kafka.test.utils.Utils.ZOOKEEPER_PORT_1;
+import static org.ballerinalang.kafka.test.utils.Constants.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Constants.ZOOKEEPER_PORT_1;
 
 /**
  * Test cases for Kafka Consumer assign() function
