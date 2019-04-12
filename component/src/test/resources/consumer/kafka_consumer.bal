@@ -37,10 +37,7 @@ function funcKafkaConnectNegative() returns error? {
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
     var result = consumer->close();
-    if (result is error) {
-        return false;
-    }
-    return true;
+    return !(result is error);
 }
 
 function funcKafkaGetSubscription(kafka:SimpleConsumer consumer) returns string[]|error {

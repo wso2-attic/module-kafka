@@ -31,10 +31,7 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
     var result = consumer->close();
-    if (result is error) {
-        return false;
-    }
-    return true;
+    return !(result is error);
 }
 
 function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {

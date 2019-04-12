@@ -29,7 +29,7 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
     var result = consumer->close();
-    return true;
+    return !(result is error);
 }
 
 function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
@@ -52,8 +52,5 @@ function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPa
 
 function funcKafkaCommitOffsets(kafka:SimpleConsumer consumer, kafka:PartitionOffset[] offsets) returns boolean {
     var result = consumer->commitOffset(offsets);
-    if (result is error) {
-        return false;
-    }
-    return true;
+    return !(result is error);
 }
