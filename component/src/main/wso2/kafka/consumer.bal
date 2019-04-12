@@ -139,7 +139,7 @@ public type SimpleConsumer client object {
         return self.stop();
     }
 
-    public function __attach(service s, string? name) returns error? {
+    public function __attach(service s, string? name = ()) returns error? {
         return self.registerListener(s, name);
     }
 
