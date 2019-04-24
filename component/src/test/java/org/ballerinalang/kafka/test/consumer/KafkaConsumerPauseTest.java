@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -26,6 +26,7 @@ import org.ballerinalang.launcher.util.BCompileUtil;
 import org.ballerinalang.launcher.util.BRunUtil;
 import org.ballerinalang.launcher.util.CompileResult;
 import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefType;
@@ -44,20 +45,22 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import static org.ballerinalang.kafka.test.utils.Constants.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Constants.ZOOKEEPER_PORT_1;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
 /**
- * Test cases for ballerina.net.kafka consumer ( with seek ) native functions.
+ * Test cases for ballerina.net.kafka consumer ( with Pause ) native functions.
  */
 @Test(singleThreaded = true)
-public class KafkaConsumerSeekTest {
+public class KafkaConsumerPauseTest {
     private CompileResult result;
     private static File dataDir;
     private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("consumer/kafka_consumer_seek.bal");
+        result = BCompileUtil.compile("consumer/kafka_consumer_pause.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
@@ -65,7 +68,8 @@ public class KafkaConsumerSeekTest {
     }
 
     @Test(description = "Test Basic consumer with seek")
-    public void testKafkaConsumeWithSeek() {
+    @SuppressWarnings("unchecked")
+    public void testKafkaConsumeWithPause() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
         try {
@@ -95,78 +99,61 @@ public class KafkaConsumerSeekTest {
         BMap<String, BValue> part = createPartitionStruct(programFile);
         part.put("topic", new BString("test"));
         part.put("partition", new BInteger(0));
-        inputBValues = new BValue[]{consumerEndpoint, part};
-
-
-        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
-        Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertNotNull(returnBValues[0]);
-        //Assert.assertNull(returnBValues[1]);
-        Assert.assertTrue(returnBValues[0] instanceof BInteger);
-        Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 10);
-
-
-        BMap<String, BValue> offset = createOffsetStruct(programFile);
-        offset.put("partition", part);
-        offset.put("offset", new BInteger(5));
-
-        inputBValues = new BValue[]{consumerEndpoint, offset};
-        BRunUtil.invoke(result, "funcKafkaSeekOffset", inputBValues);
-
-        inputBValues = new BValue[]{consumerEndpoint, part};
-
-        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
-        Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BInteger);
-        Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 5);
 
         ArrayList<BMap<String, BValue>> structArray = new ArrayList<>();
         structArray.add(part);
         BValueArray partitionArray = new BValueArray(structArray.toArray(new BRefType[0]),
                 createPartitionStruct(programFile).getType());
 
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPausedPartitions", inputBValues);
+        Assert.assertEquals(returnBValues.length, 0);
+
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
-        returnBValues = BRunUtil.invoke(result, "funcKafkaBeginOffsets", inputBValues);
+        returnBValues = BRunUtil.invoke(result, "funcKafkaPause", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertTrue(returnBValues[0] instanceof BMap);
-        BMap<String, BValue> off = (BMap<String, BValue>) returnBValues[0];
-        Assert.assertEquals(((BInteger) off.get("offset")).intValue(), 0);
+        Assert.assertNull(returnBValues[0]);
 
-        inputBValues = new BValue[]{consumerEndpoint, partitionArray};
-        returnBValues = BRunUtil.invoke(result, "funcKafkaEndOffsets", inputBValues);
+        inputBValues = new BValue[]{consumerEndpoint};
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPausedPartitions", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
-        Assert.assertTrue(returnBValues[0] instanceof BMap);
-        off = (BMap<String, BValue>) returnBValues[0];
-        Assert.assertEquals(((BInteger) off.get("offset")).intValue(), 10);
+        BMap<String, BValue> tpReturned = (BMap<String, BValue>) returnBValues[0];
+        Assert.assertEquals(tpReturned.get("topic").stringValue(), "test");
+        Assert.assertEquals(((BInteger) tpReturned.get("partition")).value().intValue(), 0);
 
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
-        BRunUtil.invoke(result, "funcKafkaSeekToBegin", inputBValues);
+        returnBValues = BRunUtil.invoke(result, "funcKafkaResume", inputBValues);
+        Assert.assertEquals(returnBValues.length, 1);
+        Assert.assertNull(returnBValues[0]);
 
-        inputBValues = new BValue[]{consumerEndpoint, part};
+        inputBValues = new BValue[]{consumerEndpoint};
+        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPausedPartitions", inputBValues);
+        Assert.assertEquals(returnBValues.length, 0);
 
-        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
+        //negative tests for pausing and resuming non existing partitions
+        part.put("topic", new BString("test_not"));
+        part.put("partition", new BInteger(100));
+
+        inputBValues = new BValue[]{consumerEndpoint, partitionArray};
+        returnBValues = BRunUtil.invoke(result, "funcKafkaPause", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BInteger);
-        Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 0);
+        Assert.assertTrue(returnBValues[0] instanceof BError);
+        Assert.assertEquals(((BError) returnBValues[0]).getReason(),
+                "No current assignment for partition test_not-100");
 
         inputBValues = new BValue[]{consumerEndpoint, partitionArray};
-        BRunUtil.invoke(result, "funcKafkaSeekToEnd", inputBValues);
-
-        inputBValues = new BValue[]{consumerEndpoint, part};
-
-        returnBValues = BRunUtil.invoke(result, "funcKafkaGetPositionOffset", inputBValues);
+        returnBValues = BRunUtil.invoke(result, "funcKafkaResume", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertNotNull(returnBValues[0]);
-        Assert.assertTrue(returnBValues[0] instanceof BInteger);
-        Assert.assertEquals(((BInteger) returnBValues[0]).intValue(), 10);
+        Assert.assertTrue(returnBValues[0] instanceof BError);
+        Assert.assertEquals(((BError) returnBValues[0]).getReason(),
+                "No current assignment for partition test_not-100");
 
         inputBValues = new BValue[]{consumerEndpoint};
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
-        Assert.assertEquals(((BBoolean) returnBValues[0]).booleanValue(), true);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
     }
 
     @AfterClass
@@ -186,8 +173,8 @@ public class KafkaConsumerSeekTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-seek-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-pause-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 
@@ -195,12 +182,6 @@ public class KafkaConsumerSeekTest {
         return BLangConnectorSPIUtil.createBStruct(programFile,
                 KAFKA_NATIVE_PACKAGE,
                 KafkaConstants.TOPIC_PARTITION_STRUCT_NAME);
-    }
-
-    private BMap<String, BValue> createOffsetStruct(ProgramFile programFile) {
-        return BLangConnectorSPIUtil.createBStruct(programFile,
-                KAFKA_NATIVE_PACKAGE,
-                KafkaConstants.OFFSET_STRUCT_NAME);
     }
 
 }

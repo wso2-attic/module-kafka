@@ -29,15 +29,11 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 }
 
 function funcKafkaAssign (kafka:SimpleConsumer consumer) {
-    kafka:SimpleConsumer consumerEP = consumer;
     kafka:TopicPartition partition = { topic: "test", partition: 1 };
     kafka:TopicPartition [] partitions = [partition];
-    var assignResult = consumerEP->assign(partitions);
+    var assignResult = consumer->assign(partitions);
 }
 
 function funcKafkaGetTopicPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    kafka:TopicPartition[] partitions;
-    partitions = check consumerEP->getTopicPartitions("test");
-    return partitions;
+    return consumer->getTopicPartitions("test");
 }

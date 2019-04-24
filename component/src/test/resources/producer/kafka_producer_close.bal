@@ -32,8 +32,5 @@ function funcTestKafkaClose() returns boolean {
     byte[] byteMsg = msg.toByteArray("UTF-8");
     var result = kafkaProducer->send(byteMsg, topic);
     result = kafkaProducer->close();
-    if (result is error) {
-        return false;
-    }
-    return true;
+    return !(result is error);
 }

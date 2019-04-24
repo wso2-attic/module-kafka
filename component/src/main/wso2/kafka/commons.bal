@@ -18,18 +18,16 @@
 #
 # + partition - TopicPartition which record is related.
 # + offset - Offset in which record is stored in partition.
-public type PartitionOffset record {
+public type PartitionOffset record {|
     TopicPartition partition;
     int offset;
-    !...;
-};
+|};
 
 # This type represents a topic partition.
 #
 # + topic - Topic which partition is related.
 # + partition - Index for the partition.
-public type TopicPartition record {
+public type TopicPartition record {|
     string topic;
     int partition;
-    !...;
-};
+|};

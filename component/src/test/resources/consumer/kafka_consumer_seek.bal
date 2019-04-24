@@ -30,14 +30,12 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var conErr = consumerEP->close();
-    return true;
+    var result = consumer->close();
+    return !(result is error);
 }
 
 function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var records = consumerEP->poll(1000);
+    var records = consumer->poll(1000);
     if (records is error) {
         return records;
     } else {
@@ -46,41 +44,29 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
 }
 
 function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns int|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var offset = consumerEP->getPositionOffset(part);
-    return offset;
+    return consumer->getPositionOffset(part);
 }
 
 function funcKafkaSeekOffset(kafka:SimpleConsumer consumer, kafka:PartitionOffset offset) returns error? {
-    kafka:SimpleConsumer consumerEP = consumer;
-    check consumerEP->seek(offset);
-    return;
+    return consumer->seek(offset);
 }
 
 function funcKafkaSeekToBegin(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) returns error?{
-    kafka:SimpleConsumer consumerEP = consumer;
-    check consumerEP->seekToBeginning(partitions);
-    return;
+    return consumer->seekToBeginning(partitions);
 }
 
 function funcKafkaSeekToEnd(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) returns error?{
-    kafka:SimpleConsumer consumerEP = consumer;
-    check consumerEP->seekToEnd(partitions);
-    return;
+    return consumer->seekToEnd(partitions);
 }
 
 function funcKafkaBeginOffsets(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions)
              returns kafka:PartitionOffset[]|error {
 
-    kafka:SimpleConsumer consumerEP = consumer;
-    var offsets = consumerEP->getBeginningOffsets(partitions);
-    return offsets;
+    return consumer->getBeginningOffsets(partitions);
 }
 
 function funcKafkaEndOffsets(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions)
              returns kafka:PartitionOffset[]|error {
 
-    kafka:SimpleConsumer consumerEP = consumer;
-    var offsets = consumerEP->getEndOffsets(partitions);
-    return offsets;
+    return consumer->getEndOffsets(partitions);
 }

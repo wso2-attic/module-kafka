@@ -33,11 +33,19 @@ function funcKafkaTestSubscribeToPattern(kafka:SimpleConsumer kafkaConsumer) {
 }
 
 function funcKafkaTestGetSubscribedTopicCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
-    string[] subscribedTopics = check kafkaConsumer->getSubscription();
-    return (subscribedTopics.length());
+    var result = kafkaConsumer->getSubscription();
+    if (result is error) {
+        return result;
+    } else {
+        return result.length();
+    }
 }
 
 function funcKafkaGetAvailableTopicsCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
-    string[] availableTopics = check kafkaConsumer->getAvailableTopics(duration = 100);
-    return (availableTopics.length());
+    var result = kafkaConsumer->getAvailableTopics(duration = 100);
+    if (result is error) {
+        return result;
+    } else {
+        return result.length();
+    }
 }

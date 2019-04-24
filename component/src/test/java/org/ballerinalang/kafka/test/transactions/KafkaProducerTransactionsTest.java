@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.transactions;
+package org.ballerinalang.kafka.test.transactions;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -36,6 +36,8 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
+import static org.ballerinalang.kafka.test.utils.Constants.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Constants.ZOOKEEPER_PORT_1;
 
 /**
  * Test cases for Kafka abortTransaction method on kafka producer
@@ -131,7 +133,7 @@ public class KafkaProducerTransactionsTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-transaction-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2184, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 }

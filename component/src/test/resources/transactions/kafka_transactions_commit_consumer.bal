@@ -56,9 +56,6 @@ function funcTestKafkaConsume() returns boolean {
         return false;
     } else {
         var result = kafkaProducer->commitConsumer(kafkaConsumer);
-        if (result is error) {
-            return false;
-        }
-        return true;
+        return !(result is error);
     }
 }

@@ -33,10 +33,7 @@ function funcKafkaAbortTransactionTest() returns boolean {
     string msg = "Hello World Transaction";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
     var result = kafkaAdvancedTransactionalProduce(serializedMsg);
-    if (result is error) {
-        return false;
-    }
-    return true;
+    return !(result is error);
 }
 
 function kafkaAdvancedTransactionalProduce(byte[] msg) returns error? {

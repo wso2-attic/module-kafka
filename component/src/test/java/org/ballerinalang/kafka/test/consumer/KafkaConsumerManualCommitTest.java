@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import static org.ballerinalang.kafka.test.utils.Constants.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Constants.ZOOKEEPER_PORT_1;
 import static org.ballerinalang.kafka.util.KafkaConstants.KAFKA_NATIVE_PACKAGE;
 
 /**
@@ -64,6 +66,7 @@ public class KafkaConsumerManualCommitTest {
     }
 
     @Test(description = "Test Basic consumer polling with manual offset commit")
+    @SuppressWarnings("unchecked")
     public void testKafkaConsumeWithManualOffsetCommit() {
         CountDownLatch completion = new CountDownLatch(1);
         kafkaCluster.useTo().produceStrings("test", 10, completion::countDown, () -> "test_string");
@@ -152,7 +155,7 @@ public class KafkaConsumerManualCommitTest {
         returnBValues = BRunUtil.invoke(result, "funcKafkaClose", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         Assert.assertTrue(returnBValues[0] instanceof BBoolean);
-        Assert.assertEquals(((BBoolean) returnBValues[0]).booleanValue(), true);
+        Assert.assertTrue(((BBoolean) returnBValues[0]).booleanValue());
 
     }
 
@@ -174,7 +177,7 @@ public class KafkaConsumerManualCommitTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-manual-commit-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 

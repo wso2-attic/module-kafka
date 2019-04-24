@@ -43,23 +43,16 @@ function funcKafkaGetNoTimeoutConsumer() returns kafka:SimpleConsumer {
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var conErr = consumerEP->close();
-    return true;
+    var result = consumer->close();
+    return !(result is error);
 }
 
 function funcKafkaGetAvailableTopicsWithDuration(kafka:SimpleConsumer consumer, int duration) returns string[]|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    string[] availableTopics;
-    availableTopics = check consumerEP->getAvailableTopics(duration = duration);
-    return availableTopics;
+    return consumer->getAvailableTopics(duration = duration);
 }
 
 function funcKafkaGetAvailableTopics(kafka:SimpleConsumer consumer) returns string[]|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    string[] availableTopics;
-    availableTopics = check consumerEP->getAvailableTopics();
-    return availableTopics;
+    return consumer->getAvailableTopics();
 }
 
 

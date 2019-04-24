@@ -31,11 +31,8 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    var conErr = consumer->close();
-    if (conErr is error) {
-        return false;
-    }
-    return true;
+    var result = consumer->close();
+    return !(result is error);
 }
 
 function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
@@ -47,28 +44,17 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
     }
 }
 
-function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part)
+function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition partition)
              returns kafka:PartitionOffset|error {
-    kafka:PartitionOffset offset;
-    offset = check consumer->getCommittedOffset(part);
-    return offset;
+    return consumer->getCommittedOffset(partition);
 }
 
 function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns int|error {
-    int offset;
     var result = consumer->getPositionOffset(part);
-    if (result is int) {
-        return result;
-    }
-    else {
-        return result;
-    }
+    return result;
 }
 
 function funcKafkaCommit(kafka:SimpleConsumer consumer) returns boolean {
     var result = consumer->commit();
-    if (result is error) {
-        return false;
-    }
-    return true;
+    return !(result is error);
 }

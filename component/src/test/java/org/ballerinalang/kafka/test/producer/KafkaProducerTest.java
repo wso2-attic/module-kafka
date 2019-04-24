@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.producer;
+package org.ballerinalang.kafka.test.producer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -37,6 +37,9 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static org.ballerinalang.kafka.test.utils.Constants.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Constants.ZOOKEEPER_PORT_1;
 
 /**
  * Test cases for ballerina.net.kafka producer connector.
@@ -137,7 +140,7 @@ public class KafkaProducerTest {
             throw new IllegalStateException();
         }
         dataDir = Testing.Files.createTestingDirectory("cluster-kafka-producer-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2182, 9094);
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 

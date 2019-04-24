@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.kafka.nativeimpl.consumer;
+package org.ballerinalang.kafka.test.consumer;
 
 import io.debezium.kafka.KafkaCluster;
 import io.debezium.util.Testing;
@@ -34,26 +34,30 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import static org.ballerinalang.kafka.test.utils.Constants.KAFKA_BROKER_PORT;
+import static org.ballerinalang.kafka.test.utils.Constants.ZOOKEEPER_PORT_1;
+
 /**
- * Test cases for Kafka Consumer assign() function
+ * Test cases for ballerina.net.kafka consumer for get list of topic partitions using getTopicPartitions function
  */
 @Test(singleThreaded = true)
-public class KafkaConsumerAssignTest {
+public class KafkaConsumerGetTopicPartitionsTest {
     private CompileResult result;
     private static File dataDir;
     private static KafkaCluster kafkaCluster;
 
     @BeforeClass
     public void setup() throws IOException {
-        result = BCompileUtil.compile("consumer/kafka_consumer_assign.bal");
+        result = BCompileUtil.compile("consumer/kafka_consumer_get_topic_partitions.bal");
         Properties prop = new Properties();
         kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true)
                 .deleteDataUponShutdown(true).withKafkaConfiguration(prop).addBrokers(1).startup();
         kafkaCluster.createTopic("test", 1, 1);
     }
 
-    @Test(description = "Test assign functions functionality")
-    public void testKafkaConsumerAssign() {
+    @Test(description = "Test functionality of getTopicPartitions() function")
+    @SuppressWarnings("unchecked")
+    public void testKafkaConsumerGetTopicPartitions () {
         BValue[] inputBValues = {};
         BValue[] returnBValues = BRunUtil.invoke(result, "funcKafkaConnect", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
@@ -61,15 +65,10 @@ public class KafkaConsumerAssignTest {
         // getting kafka endpoint
         BValue consumerEndpoint = returnBValues[0];
         inputBValues = new BValue[]{consumerEndpoint};
-        // Invoke assign to assign topic partitions to the consumer
-        BRunUtil.invoke(result, "funcKafkaAssign", inputBValues);
-
-        // Check whether the partitions are assigned
         returnBValues = BRunUtil.invoke(result, "funcKafkaGetTopicPartitions", inputBValues);
         Assert.assertEquals(returnBValues.length, 1);
         BMap<String, BValue> tpReturned = (BMap<String, BValue>) returnBValues[0];
         Assert.assertEquals(tpReturned.get("topic").stringValue(), "test");
-
     }
 
     @AfterClass
@@ -89,8 +88,8 @@ public class KafkaConsumerAssignTest {
         if (kafkaCluster != null) {
             throw new IllegalStateException();
         }
-        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-assign-test");
-        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(2181, 9094);
+        dataDir = Testing.Files.createTestingDirectory("cluster-kafka-consumer-get-topic-partitions-test");
+        kafkaCluster = new KafkaCluster().usingDirectory(dataDir).withPorts(ZOOKEEPER_PORT_1, KAFKA_BROKER_PORT);
         return kafkaCluster;
     }
 }

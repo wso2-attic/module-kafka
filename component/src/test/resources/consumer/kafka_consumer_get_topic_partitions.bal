@@ -30,14 +30,10 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
 }
 
 function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
-    kafka:SimpleConsumer consumerEP = consumer;
-    var conErr = consumerEP->close();
-    return true;
+    var result = consumer->close();
+    return !(result is error);
 }
 
 function funcKafkaGetTopicPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
-    kafka:SimpleConsumer consumerEP = consumer;
-    kafka:TopicPartition[] partitions;
-    partitions = check consumerEP->getTopicPartitions("test");
-    return partitions;
+    return consumer->getTopicPartitions("test");
 }
