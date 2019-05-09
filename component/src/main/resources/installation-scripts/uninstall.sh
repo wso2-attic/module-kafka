@@ -14,12 +14,16 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-read -p "Enter Ballerina home: "  ballerina_home
+ballerina_home=$BALLERINA_HOME
 
 if [ ! -e "$ballerina_home/bin/ballerina" ]
 then
-    echo "Incorrect Ballerina Home provided!"
-    exit 1
+    read -p "Couldn't find Ballerina home in your System!.Please enter Ballerina Home: "  ballerina_home
+    if [ ! -e "$ballerina_home/bin/ballerina" ]
+    then
+        echo "Incorrect Ballerina Home provided!"
+        exit 1
+    fi
 fi
 
 ballerina_lib_location=$ballerina_home/bre/lib/
