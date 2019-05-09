@@ -58,7 +58,6 @@ if [%filename%] NEQ [] (
             ECHO Successfully uninstalled existing Kafka package: %filename%.jar
         )
     )
-
 )
 
 IF EXIST "%ballerina_lib_location%\wso2-%module_name%-module-%version%.jar" (
