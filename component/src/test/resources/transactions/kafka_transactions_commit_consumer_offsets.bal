@@ -27,7 +27,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 kafka:ConsumerConfig consumerConfigs1 = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
@@ -37,7 +37,7 @@ kafka:ConsumerConfig consumerConfigs1 = {
     autoCommit: false
 };
 
-kafka:SimpleConsumer kafkaConsumer1 = new(consumerConfigs1);
+kafka:Listener kafkaConsumer1 = new(consumerConfigs1);
 
 kafka:ConsumerConfig consumerConfigs2 = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
@@ -47,7 +47,7 @@ kafka:ConsumerConfig consumerConfigs2 = {
     autoCommit: false
 };
 
-kafka:SimpleConsumer kafkaConsumer2 = new(consumerConfigs2);
+kafka:Listener kafkaConsumer2 = new(consumerConfigs2);
 
 function funcTestKafkaProduce() {
     string msg = "test-msg";
@@ -88,12 +88,12 @@ function funcTestPollAgain() returns boolean {
         if (results.length() == 0) {
             return true;
         } else {
-            return false; // This should not recieve any records as they are already committed.
+            return false; // This should not receive any records as they are already committed.
         }
     }
 }
 
-function funcGetPartitionOffset(kafka:SimpleConsumer consumer) returns kafka:PartitionOffset[]|error {
+function funcGetPartitionOffset(kafka:Listener consumer) returns kafka:PartitionOffset[]|error {
     error|kafka:ConsumerRecord[] result = consumer->poll(2000);
     if (result is error) {
         return result;

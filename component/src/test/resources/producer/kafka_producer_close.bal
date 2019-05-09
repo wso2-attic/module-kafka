@@ -25,7 +25,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 function funcTestKafkaClose() returns boolean {
     string msg = "Test Message";

@@ -25,9 +25,9 @@ kafka:ConsumerConfig consumerConfig = {
 };
 
 kafka:ConsumerConfig consumerConfigNegative = {};
-kafka:SimpleConsumer negativeConsumer = new (consumerConfigNegative);
+kafka:Listener negativeConsumer = new (consumerConfigNegative);
 
-function funcKafkaConnect() returns kafka:SimpleConsumer {
+function funcKafkaConnect() returns kafka:Listener {
     return new(consumerConfig);
 }
 
@@ -35,20 +35,20 @@ function funcKafkaConnectNegative() returns error? {
     return negativeConsumer->connect();
 }
 
-function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
+function funcKafkaClose(kafka:Listener consumer) returns boolean {
     var result = consumer->close();
     return !(result is error);
 }
 
-function funcKafkaGetSubscription(kafka:SimpleConsumer consumer) returns string[]|error {
+function funcKafkaGetSubscription(kafka:Listener consumer) returns string[]|error {
     return consumer->getSubscription();
 }
 
-function funcKafkaGetAssignment(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
+function funcKafkaGetAssignment(kafka:Listener consumer) returns kafka:TopicPartition[]|error {
     return consumer->getAssignment();
 }
 
-function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
+function funcKafkaPoll(kafka:Listener consumer) returns int|error {
     var results = consumer->poll(1000);
     if (results is error) {
         return results;

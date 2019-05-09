@@ -24,16 +24,16 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: ["test"]
 };
 
-function funcKafkaConnect() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+function funcKafkaConnect() returns kafka:Listener {
+    kafka:Listener kafkaConsumer = new(consumerConfigs);
     return kafkaConsumer;
 }
 
-function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
+function funcKafkaClose(kafka:Listener consumer) returns boolean {
     var result = consumer->close();
     return !(result is error);
 }
 
-function funcKafkaGetTopicPartitions(kafka:SimpleConsumer consumer) returns kafka:TopicPartition[]|error {
+function funcKafkaGetTopicPartitions(kafka:Listener consumer) returns kafka:TopicPartition[]|error {
     return consumer->getTopicPartitions("test");
 }

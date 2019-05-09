@@ -27,7 +27,7 @@ kafka:ConsumerConfig consumerConfigs = {
     autoCommit:false
 };
 
-listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+listener kafka:Listener kafkaConsumer = new(consumerConfigs);
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
@@ -36,13 +36,13 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 boolean isSuccess = false;
 
 service kafkaService on kafkaConsumer {
     resource function onMessage(
-        kafka:SimpleConsumer consumer,
+        kafka:Listener consumer,
         kafka:ConsumerRecord[] records,
         kafka:PartitionOffset[] offsets,
         string groupId

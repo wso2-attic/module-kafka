@@ -25,17 +25,17 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: ["test"]
 };
 
-function funcKafkaConnect() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer simpleKafkaConsumer = new(consumerConfigs);
+function funcKafkaConnect() returns kafka:Listener {
+    kafka:Listener simpleKafkaConsumer = new(consumerConfigs);
     return simpleKafkaConsumer;
 }
 
-function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
+function funcKafkaClose(kafka:Listener consumer) returns boolean {
     var result = consumer->close();
     return !(result is error);
 }
 
-function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
+function funcKafkaPoll(kafka:Listener consumer) returns int|error {
     var records = consumer->poll(1000);
     if (records is error) {
         return records;
@@ -44,17 +44,17 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
     }
 }
 
-function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition partition)
+function funcKafkaGetCommittedOffset(kafka:Listener consumer, kafka:TopicPartition partition)
              returns kafka:PartitionOffset|error {
     return consumer->getCommittedOffset(partition);
 }
 
-function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns int|error {
+function funcKafkaGetPositionOffset(kafka:Listener consumer, kafka:TopicPartition part) returns int|error {
     var result = consumer->getPositionOffset(part);
     return result;
 }
 
-function funcKafkaCommit(kafka:SimpleConsumer consumer) returns boolean {
+function funcKafkaCommit(kafka:Listener consumer) returns boolean {
     var result = consumer->commit();
     return !(result is error);
 }

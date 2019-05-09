@@ -19,7 +19,7 @@ kafka:ConsumerConfig consumerConfigs = {
     pollingInterval:1000
 };
 
-kafka:SimpleConsumer consumer = new(consumerConfigs);
+kafka:Listener consumer = new(consumerConfigs);
 
 service kafkaService on consumer {
 
@@ -56,7 +56,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries:3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 function main (string... args) {
     string msg = "Hello World, Ballerina";

@@ -26,12 +26,12 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+listener kafka:Listener kafkaConsumer = new(consumerConfigs);
 
 boolean isSuccess = false;
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
+    resource function onMessage(kafka:Listener consumer, kafka:ConsumerRecord[] records) {
         isSuccess = true;
         var result = kafkaConsumer.__stop();
     }
@@ -44,7 +44,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 function funcKafkaProduce() {
     string msg = "test_string";

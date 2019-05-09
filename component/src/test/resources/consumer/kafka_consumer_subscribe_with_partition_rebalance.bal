@@ -28,23 +28,23 @@ kafka:ConsumerConfig consumerConfigs = {
     defaultApiTimeout: 100
 };
 
-function funcKafkaGetKafkaConsumer() returns kafka:SimpleConsumer {
+function funcKafkaGetKafkaConsumer() returns kafka:Listener {
     return new(consumerConfigs);
 }
 
-function funcKafkaTestSubscribeWithPartitionRebalance(kafka:SimpleConsumer kafkaConsumer) {
-    function(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) onAssigned = funcKafkaOnPartitionsAssigned;
-    function(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) onRevoked = funcKafkaOnPartitionsRevoke;
+function funcKafkaTestSubscribeWithPartitionRebalance(kafka:Listener kafkaConsumer) {
+    function(kafka:Listener consumer, kafka:TopicPartition[] partitions) onAssigned = funcKafkaOnPartitionsAssigned;
+    function(kafka:Listener consumer, kafka:TopicPartition[] partitions) onRevoked = funcKafkaOnPartitionsRevoke;
 
     var result = kafkaConsumer->subscribeWithPartitionRebalance(topics, onRevoked, onAssigned);
 }
 
-function funcKafkaTestGetSubscribedTopicCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
+function funcKafkaTestGetSubscribedTopicCount(kafka:Listener kafkaConsumer) returns int|error {
     string[] subscribedTopics = check kafkaConsumer->getSubscription();
     return (subscribedTopics.length());
 }
 
-function funcKafkaGetAvailableTopicsCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
+function funcKafkaGetAvailableTopicsCount(kafka:Listener kafkaConsumer) returns int|error {
     var result = kafkaConsumer->getAvailableTopics(duration = 100);
     if (result is error) {
         return result;
@@ -56,20 +56,20 @@ function funcKafkaGetAvailableTopicsCount(kafka:SimpleConsumer kafkaConsumer) re
 int rebalnceInvokedPartitions = -1;
 int rebalnceAssignedPartitions = -1;
 
-function funcKafkaOnPartitionsRevoke(kafka:SimpleConsumer kafkaConsumer, kafka:TopicPartition[] partitions) {
+function funcKafkaOnPartitionsRevoke(kafka:Listener kafkaConsumer, kafka:TopicPartition[] partitions) {
     rebalnceInvokedPartitions = partitions.length();
 }
 
-function funcKafkaOnPartitionsAssigned(kafka:SimpleConsumer kafkaConsumer, kafka:TopicPartition[] partitions) {
+function funcKafkaOnPartitionsAssigned(kafka:Listener kafkaConsumer, kafka:TopicPartition[] partitions) {
     rebalnceAssignedPartitions = partitions.length();
 }
 
-function funcKafkaGetRebalanceInvokedPartitionsCount(kafka:SimpleConsumer kafkaConsumer) returns int {
+function funcKafkaGetRebalanceInvokedPartitionsCount(kafka:Listener kafkaConsumer) returns int {
     var result = kafkaConsumer->poll(1000);
     return rebalnceInvokedPartitions;
 }
 
-function funcKafkaGetRebalanceAssignedPartitionsCount(kafka:SimpleConsumer kafkaConsumer) returns int {
+function funcKafkaGetRebalanceAssignedPartitionsCount(kafka:Listener kafkaConsumer) returns int {
     var result = kafkaConsumer->poll(1000);
     return rebalnceAssignedPartitions;
 }

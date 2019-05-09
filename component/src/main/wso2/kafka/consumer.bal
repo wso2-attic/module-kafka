@@ -118,7 +118,7 @@ public type ConsumerRecord record {|
 # Represent a Kafka consumer endpoint.
 #
 # + consumerConfig - Used to store configurations related to a Kafka connection.
-public type SimpleConsumer client object {
+public type Listener client object {
     *AbstractListener;
 
     public ConsumerConfig? consumerConfig = ();
@@ -294,8 +294,8 @@ public type SimpleConsumer client object {
     # + onPartitionsAssigned - Function which will be executed if partitions are assigned this consumer.
     # + return - Returns an error if encounters an error, returns nil otherwise.
     public remote function subscribeWithPartitionRebalance(string[] topics,
-                           function(SimpleConsumer consumer, TopicPartition[] partitions) onPartitionsRevoked,
-                           function(SimpleConsumer consumer, TopicPartition[] partitions) onPartitionsAssigned)
+                           function(Listener consumer, TopicPartition[] partitions) onPartitionsRevoked,
+                           function(Listener consumer, TopicPartition[] partitions) onPartitionsAssigned)
                            returns error? = external;
 
     # Unsubscribe the consumer from all the topic subscriptions.
@@ -304,7 +304,7 @@ public type SimpleConsumer client object {
     public remote function unsubscribe() returns error? = external;
 };
 
-function SimpleConsumer.init(ConsumerConfig config) returns error? {
+function Listener.init(ConsumerConfig config) returns error? {
     if (config.bootstrapServers is string) {
         check self->connect();
     }
