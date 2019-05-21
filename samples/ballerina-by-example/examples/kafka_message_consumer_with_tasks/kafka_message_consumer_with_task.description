@@ -1,1 +1,1 @@
-// Ballerina natively supports Kafka. Here is an example where we create a simple Kafka consumer which periodically poll inside Ballerina Task.
+// Ballerina natively supports Kafka. Here is an example where we create a Kafka consumer which periodically poll inside Ballerina Task.

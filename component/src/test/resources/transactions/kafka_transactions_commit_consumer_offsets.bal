@@ -37,7 +37,7 @@ kafka:ConsumerConfig consumerConfigs1 = {
     autoCommit: false
 };
 
-kafka:Listener kafkaConsumer1 = new(consumerConfigs1);
+kafka:Consumer kafkaConsumer1 = new(consumerConfigs1);
 
 kafka:ConsumerConfig consumerConfigs2 = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
@@ -47,7 +47,7 @@ kafka:ConsumerConfig consumerConfigs2 = {
     autoCommit: false
 };
 
-kafka:Listener kafkaConsumer2 = new(consumerConfigs2);
+kafka:Consumer kafkaConsumer2 = new(consumerConfigs2);
 
 function funcTestKafkaProduce() {
     string msg = "test-msg";
@@ -93,7 +93,7 @@ function funcTestPollAgain() returns boolean {
     }
 }
 
-function funcGetPartitionOffset(kafka:Listener consumer) returns kafka:PartitionOffset[]|error {
+function funcGetPartitionOffset(kafka:Consumer consumer) returns kafka:PartitionOffset[]|error {
     error|kafka:ConsumerRecord[] result = consumer->poll(2000);
     if (result is error) {
         return result;

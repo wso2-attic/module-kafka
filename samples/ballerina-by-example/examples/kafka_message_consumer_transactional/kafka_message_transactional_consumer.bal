@@ -27,7 +27,7 @@ kafka:ConsumerConfig consumerConfigs = {
     isolationLevel:"read_committed"
 };
 
-listener kafka:SimpleConsumer consumer = new(consumerConfigs);
+consumer kafka:Consumer consumer = new(consumerConfigs);
 
 service kafkaService on consumer {
 

@@ -20,7 +20,7 @@ string topic1 = "consumer-unsubscribe-test-1";
 string topic2 = "consumer-unsubscribe-test-2";
 
 function funcKafkaTestUnsubscribe() returns boolean {
-    kafka:Listener kafkaConsumer = new({
+    kafka:Consumer kafkaConsumer = new({
             bootstrapServers: "localhost:9094",
             groupId: "test-group",
             clientId: "unsubscribe-consumer",

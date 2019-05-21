@@ -26,11 +26,11 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:Listener kafkaConsumer = new(consumerConfigs);
+listener kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 service kafkaTestService on kafkaConsumer {
     resource function onMessage(
-                          kafka:Listener consumer,
+                          kafka:Consumer consumer,
                           kafka:ConsumerRecord[] records,
                           kafka:PartitionOffset[] offsets) {
         // Nothing

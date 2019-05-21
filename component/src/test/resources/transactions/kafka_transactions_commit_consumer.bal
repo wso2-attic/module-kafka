@@ -36,7 +36,7 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-kafka:Listener kafkaConsumer = new(consumerConfigs);
+kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 function funcTestKafkaProduce() {
     string msg = "Hello World";

@@ -91,13 +91,13 @@ public class SubscribeWithPartitionRebalance implements NativeCallableUnit {
                     "The onPartitionsAssigned function is not provided."));
         }
 
-        ConsumerRebalanceListener listener = new KafkaRebalanceListener(context, onPartitionsRevoked,
+        ConsumerRebalanceListener consumer = new KafkaRebalanceListener(context, onPartitionsRevoked,
                 onPartitionsAssigned, consumerStruct);
 
         KafkaConsumer<byte[], byte[]> kafkaConsumer = (KafkaConsumer) consumerStruct.getNativeData(NATIVE_CONSUMER);
 
         try {
-            kafkaConsumer.subscribe(topics, listener);
+            kafkaConsumer.subscribe(topics, consumer);
         } catch (IllegalArgumentException | IllegalStateException | KafkaException e) {
             context.setReturnValues(createError(context, e.getMessage()));
         }

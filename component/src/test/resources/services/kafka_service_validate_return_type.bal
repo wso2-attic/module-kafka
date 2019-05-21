@@ -26,7 +26,7 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:Listener kafkaConsumer = new(consumerConfigs);
+listener kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
@@ -40,7 +40,7 @@ kafka:Producer kafkaProducer = new(producerConfigs);
 boolean isSuccess = false;
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:Listener consumer, kafka:ConsumerRecord[] records) returns error? {
+    resource function onMessage(kafka:Consumer consumer, kafka:ConsumerRecord[] records) returns error? {
         foreach kafka:ConsumerRecord kafkaRecord in records {
             byte[] result = kafkaRecord.value;
             if (result.length() > 0) {

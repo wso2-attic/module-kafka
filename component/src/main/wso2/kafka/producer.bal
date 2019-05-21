@@ -119,7 +119,7 @@ public type Producer client object {
     #
     # + consumer - Consumer which needs offsets to be committed.
     # + return - Error if committing the consumer failed, none otherwise.
-    public remote function commitConsumer(Listener consumer) returns error? = external;
+    public remote function commitConsumer(Consumer consumer) returns error? = external;
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #

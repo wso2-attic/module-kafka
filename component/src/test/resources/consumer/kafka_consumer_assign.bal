@@ -23,17 +23,17 @@ kafka:ConsumerConfig consumerConfig = {
     offsetReset: "earliest"
 };
 
-function funcKafkaConnect() returns kafka:Listener {
-    kafka:Listener kafkaConsumer = new(consumerConfig);
+function funcKafkaConnect() returns kafka:Consumer {
+    kafka:Consumer kafkaConsumer = new(consumerConfig);
     return kafkaConsumer;
 }
 
-function funcKafkaAssign (kafka:Listener consumer) {
+function funcKafkaAssign (kafka:Consumer consumer) {
     kafka:TopicPartition partition = { topic: "test", partition: 1 };
     kafka:TopicPartition [] partitions = [partition];
     var assignResult = consumer->assign(partitions);
 }
 
-function funcKafkaGetTopicPartitions(kafka:Listener consumer) returns kafka:TopicPartition[]|error {
+function funcKafkaGetTopicPartitions(kafka:Consumer consumer) returns kafka:TopicPartition[]|error {
     return consumer->getTopicPartitions("test");
 }

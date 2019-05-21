@@ -26,7 +26,7 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:Listener kafkaConsumer = new(consumerConfigs);
+listener kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 service kafkaTestService on kafkaConsumer {
     // Nothing

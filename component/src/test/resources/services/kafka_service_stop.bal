@@ -26,12 +26,12 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:Listener kafkaConsumer = new(consumerConfigs);
+listener kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 boolean isSuccess = false;
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:Listener consumer, kafka:ConsumerRecord[] records) {
+    resource function onMessage(kafka:Consumer consumer, kafka:ConsumerRecord[] records) {
         isSuccess = true;
         var result = kafkaConsumer.__stop();
     }

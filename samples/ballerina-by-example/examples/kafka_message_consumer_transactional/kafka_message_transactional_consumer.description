@@ -1,2 +1,2 @@
-// Ballerina natively supports Kafka. Here is an example where we create a simple Kafka transactional consumer which
+// Ballerina natively supports Kafka. Here is an example where we create a Kafka transactional consumer which
 consume non-transactional messages or committed transactional messages.

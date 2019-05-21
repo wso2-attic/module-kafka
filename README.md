@@ -41,11 +41,11 @@ kafka:ConsumerConfig consumerConfig = {
     autoCommit:false
 };
 
-listener kafka:Listener consumer = new(consumerConfig);
+listener kafka:Consumer consumer = new(consumerConfig);
 
 service kafkaService on consumer {
 
-    resource function onMessage(kafka:Listener consumer, kafka:ConsumerRecord[] records) {
+    resource function onMessage(kafka:Consumer consumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
         foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);

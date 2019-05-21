@@ -24,17 +24,17 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: ["test"]
 };
 
-function funcKafkaConnect() returns kafka:Listener {
-    kafka:Listener kafkaConsumer = new(consumerConfigs);
+function funcKafkaConnect() returns kafka:Consumer {
+    kafka:Consumer kafkaConsumer = new(consumerConfigs);
     return kafkaConsumer;
 }
 
-function funcKafkaClose(kafka:Listener consumer) returns boolean {
+function funcKafkaClose(kafka:Consumer consumer) returns boolean {
     var result = consumer->close();
     return !(result is error);
 }
 
-function funcKafkaPoll(kafka:Listener consumer) returns int|error {
+function funcKafkaPoll(kafka:Consumer consumer) returns int|error {
     var records = consumer->poll(1000);
     if (records is error) {
         return records;
@@ -43,29 +43,29 @@ function funcKafkaPoll(kafka:Listener consumer) returns int|error {
     }
 }
 
-function funcKafkaGetPositionOffset(kafka:Listener consumer, kafka:TopicPartition part) returns int|error {
+function funcKafkaGetPositionOffset(kafka:Consumer consumer, kafka:TopicPartition part) returns int|error {
     return consumer->getPositionOffset(part);
 }
 
-function funcKafkaSeekOffset(kafka:Listener consumer, kafka:PartitionOffset offset) returns error? {
+function funcKafkaSeekOffset(kafka:Consumer consumer, kafka:PartitionOffset offset) returns error? {
     return consumer->seek(offset);
 }
 
-function funcKafkaSeekToBegin(kafka:Listener consumer, kafka:TopicPartition[] partitions) returns error?{
+function funcKafkaSeekToBegin(kafka:Consumer consumer, kafka:TopicPartition[] partitions) returns error?{
     return consumer->seekToBeginning(partitions);
 }
 
-function funcKafkaSeekToEnd(kafka:Listener consumer, kafka:TopicPartition[] partitions) returns error?{
+function funcKafkaSeekToEnd(kafka:Consumer consumer, kafka:TopicPartition[] partitions) returns error?{
     return consumer->seekToEnd(partitions);
 }
 
-function funcKafkaBeginOffsets(kafka:Listener consumer, kafka:TopicPartition[] partitions)
+function funcKafkaBeginOffsets(kafka:Consumer consumer, kafka:TopicPartition[] partitions)
              returns kafka:PartitionOffset[]|error {
 
     return consumer->getBeginningOffsets(partitions);
 }
 
-function funcKafkaEndOffsets(kafka:Listener consumer, kafka:TopicPartition[] partitions)
+function funcKafkaEndOffsets(kafka:Consumer consumer, kafka:TopicPartition[] partitions)
              returns kafka:PartitionOffset[]|error {
 
     return consumer->getEndOffsets(partitions);
