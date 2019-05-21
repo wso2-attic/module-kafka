@@ -22,7 +22,7 @@ then
     read -p "Please enter Ballerina home: "  ballerina_home
     if [ ! -e "$ballerina_home/bin/ballerina" ]
     then
-        echo "[ERROR] Incorrect Ballerina Home provided!"
+        echo "[ERROR] Incorrect Ballerina home provided!"
         exit 1
     fi
 fi
@@ -31,14 +31,14 @@ ballerina_lib_location=$ballerina_home/bre/lib
 ballerina_balo_location=$ballerina_home/lib/repo
 version=${project.version}
 module_name=kafka
-fileNamePattern="wso2-kafka-module-*.*.*.jar"
+fileNamePattern="wso2-kafka-*-*.*.*.jar"
 
 for filename in $ballerina_home/bre/lib/*; do
     existingFile=${filename##*/}
     [[ $existingFile == $fileNamePattern ]] && file=$existingFile || file=""
     if [ "$file" != "" ]; then
         echo "[WARNING] Another version of Kafka module is already installed."
-        read -r -p "Do you want to uninstall it? (Y/N): " response
+        read -r -p "Do you want to uninstall the previous version and continue installation? (Y/N): " response
         if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
             rm $ballerina_lib_location/$existingFile
@@ -59,7 +59,8 @@ for filename in $ballerina_home/bre/lib/*; do
                 echo "[INFO] Successfully uninstalled existing Kafka module: $existingFile"
             fi
         elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
-            echo "[INFO] Installing module without uninstall the existing version of Kafka module: [$existingFile]."
+            echo "[WARNING] Couldn't maintain the different versions of Kafka module."
+            exit 1
         else
             echo "[ERROR] Invalid option provided."
             exit 1
@@ -79,7 +80,7 @@ cp dependencies/wso2-$module_name-module-$version.jar $ballerina_lib_location
 
 if [ $? -ne 0 ]
 then
-    echo "[WARNING] Error occurred while copying dependencies to $ballerina_lib_location"
+    echo "[ERROR] Error occurred while copying dependencies to $ballerina_lib_location"
     if [ -e temp ]
     then rm -r temp
     fi
@@ -92,7 +93,7 @@ fi
 cp -r balo/* $ballerina_balo_location/
 
 if [ $? -ne 0 ]; then
-    echo "[WARNING] Error occurred while copying $module_name balo to $ballerina_balo_location. Reverting the changes"
+    echo "[ERROR] Error occurred while copying $module_name balo to $ballerina_balo_location. Reverting the changes"
     if [ -e temp/wso2-$module_name-module-$version.jar ]; then
         cp temp/wso2-$module_name-module-$version.jar $ballerina_lib_location/
         rm -r temp

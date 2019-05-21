@@ -19,10 +19,10 @@ ballerina_home=$BALLERINA_HOME
 if [ ! -e "$ballerina_home/bin/ballerina" ]
 then
     echo "[WARNING] Unable to find Ballerina home in your System!"
-    read -p "Please enter Ballerina Home: "  ballerina_home
+    read -p "Please enter Ballerina home: "  ballerina_home
     if [ ! -e "$ballerina_home/bin/ballerina" ]
     then
-        echo "[ERROR] Incorrect Ballerina Home provided!"
+        echo "[ERROR] Incorrect Ballerina home provided!"
         exit 1
     fi
 fi
@@ -44,7 +44,7 @@ fi
 rm $ballerina_lib_location/wso2-$module_name-module-$version.jar
 
 if [ -e "$ballerina_lib_location/wso2-$module_name-module-$version.jar" ]; then
-    echo "[WARNING] Error occurred while deleting dependencies from $ballerina_lib_location"
+    echo "[ERROR] Error occurred while deleting dependencies from $ballerina_lib_location"
     echo "[INFO] Please manually delete $ballerina_lib_location/wso2-$module_name-module-$version.jar and $ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip"
     exit 1
 fi
@@ -52,7 +52,7 @@ fi
 rm -r $ballerina_balo_location/wso2/$module_name/0.0.0
 
 if [ -e "$ballerina_balo_location/wso2/$module_name/0.0.0/$module_name.zip" ]; then
-    echo "[WARNING] Error occurred while deleting $module_name balo from $ballerina_balo_location"
+    echo "[ERROR] Error occurred while deleting $module_name balo from $ballerina_balo_location"
     echo "[INFO] Please manually delete $ballerina_balo_location/wso2/$module_name/0.0.0 directory"
     exit 2
 else

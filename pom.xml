@@ -22,7 +22,7 @@
     <groupId>org.ballerinalang</groupId>
     <artifactId>ballerina-kafka-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.980.5-SNAPSHOT</version>
+    <version>0.980.4-SNAPSHOT</version>
     <name>Ballerina - Kafka Parent</name>
 
     <scm>
