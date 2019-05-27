@@ -26,10 +26,10 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+listener kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessageReceived(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) {
+    resource function onMessageReceived(kafka:Consumer consumer, kafka:ConsumerRecord[] records) {
         // Nothing
     }
 }

@@ -44,7 +44,7 @@ public class KafkaConstants {
     public static final String OFFSET_STRUCT_NAME = "PartitionOffset";
 
     public static final String CONSUMER_RECORD_STRUCT_NAME = "ConsumerRecord";
-    public static final String CONSUMER_STRUCT_NAME = "SimpleConsumer";
+    public static final String CONSUMER_STRUCT_NAME = "Consumer";
     public static final String CONSUMER_CONFIG_STRUCT_NAME = "ConsumerConfig";
     public static final String CONSUMER_SERVER_CONNECTOR_NAME = "serverConnector";
 
@@ -56,7 +56,7 @@ public class KafkaConstants {
 
     public static final String KAFKA_RESOURCE_ON_MESSAGE = "onMessage";
 
-    public static final String PRODUCER_STRUCT_NAME = "SimpleProducer";
+    public static final String PRODUCER_STRUCT_NAME = "Producer";
 
     public static final String PROPERTIES_ARRAY = "properties";
 

@@ -19,7 +19,7 @@ kafka:ConsumerConfig consumerConfigs = {
     pollingInterval:1000
 };
 
-kafka:SimpleConsumer consumer = new(consumerConfigs);
+listener kafka:Consumer consumer = new(consumerConfigs);
 
 service kafkaService on consumer {
 
@@ -39,7 +39,7 @@ function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
 }
 ````
 
-### Simple Kafka Producer
+### Kafka Producer
 
 Following is a simple program which publishes a message to 'test-kafka-topic' topic in a remote Kafka broker cluster.
 
@@ -56,7 +56,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries:3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 function main (string... args) {
     string msg = "Hello World, Ballerina";

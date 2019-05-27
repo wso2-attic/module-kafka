@@ -84,7 +84,7 @@ public type ProducerConfig record {|
 # + producerHolder - List of producers available.
 # + connectorID - Unique ID for a particular connector.
 # + producerConfig - Used to store configurations related to a Kafka connection.
-public type SimpleProducer client object {
+public type Producer client object {
 
     public ProducerConfig? producerConfig = ();
 
@@ -119,7 +119,7 @@ public type SimpleProducer client object {
     #
     # + consumer - Consumer which needs offsets to be committed.
     # + return - Error if committing the consumer failed, none otherwise.
-    public remote function commitConsumer(SimpleConsumer consumer) returns error? = external;
+    public remote function commitConsumer(Consumer consumer) returns error? = external;
 
     # CommitConsumerOffsets action which commits consumer offsets in given transaction.
     #

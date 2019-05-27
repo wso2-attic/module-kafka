@@ -41,17 +41,17 @@ kafka:ConsumerConfig consumerConfig = {
     autoCommit:false
 };
 
-listener kafka:SimpleConsumer consumer = new(consumerConfig);
+listener kafka:Consumer consumer = new(consumerConfig);
 
 service kafkaService on consumer {
 
-    resource function onMessage(kafka:SimpleConsumer simpleConsumer, kafka:ConsumerRecord[] records) {
+    resource function onMessage(kafka:Consumer consumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
         foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        simpleConsumer->commit();
+        consumer->commit();
     }
 }
 
@@ -80,7 +80,7 @@ kafka:ProducerConfig producerConfig = {
     noRetries:3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfig);
+kafka:Producer kafkaProducer = new(producerConfig);
 
 public function main() {
     string msg = "Hello World Advance";

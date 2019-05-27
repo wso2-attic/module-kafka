@@ -16,8 +16,8 @@
 
 import wso2/kafka;
 
-function funcKafkaConnect() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer kafkaConsumer = new({
+function funcKafkaConnect() returns kafka:Consumer {
+    kafka:Consumer kafkaConsumer = new({
             bootstrapServers: "localhost:9094",
             groupId: "test-group",
             clientId: "manual-offset-commit-consumer",
@@ -27,12 +27,12 @@ function funcKafkaConnect() returns kafka:SimpleConsumer {
     return kafkaConsumer;
 }
 
-function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
+function funcKafkaClose(kafka:Consumer consumer) returns boolean {
     var result = consumer->close();
     return !(result is error);
 }
 
-function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
+function funcKafkaPoll(kafka:Consumer consumer) returns int|error {
     var records = consumer->poll(1000);
     if (records is error) {
         return records;
@@ -41,16 +41,16 @@ function funcKafkaPoll(kafka:SimpleConsumer consumer) returns int|error {
     }
 }
 
-function funcKafkaGetCommittedOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part)
+function funcKafkaGetCommittedOffset(kafka:Consumer consumer, kafka:TopicPartition part)
              returns kafka:PartitionOffset|error {
     return consumer->getCommittedOffset(part);
 }
 
-function funcKafkaGetPositionOffset(kafka:SimpleConsumer consumer, kafka:TopicPartition part) returns int|error {
+function funcKafkaGetPositionOffset(kafka:Consumer consumer, kafka:TopicPartition part) returns int|error {
     return consumer->getPositionOffset(part);
 }
 
-function funcKafkaCommitOffsets(kafka:SimpleConsumer consumer, kafka:PartitionOffset[] offsets) returns boolean {
+function funcKafkaCommitOffsets(kafka:Consumer consumer, kafka:PartitionOffset[] offsets) returns boolean {
     var result = consumer->commitOffset(offsets);
     return !(result is error);
 }

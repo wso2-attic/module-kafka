@@ -23,7 +23,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 function funcTestPartitionInfoRetrieval(string topic) returns kafka:TopicPartition[]? {
     return getPartitionInfo(topic);

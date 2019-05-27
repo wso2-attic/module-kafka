@@ -28,7 +28,7 @@ kafka:ConsumerConfig consumerConfigs = {
     autoCommit:false
 };
 
-kafka:SimpleConsumer consumer = new(consumerConfigs);
+kafka:Consumer consumer = new(consumerConfigs);
 
 public function main(string... args) {
     // Here we initializes a consumer which connects to remote cluster.
@@ -38,8 +38,8 @@ public function main(string... args) {
     string[] topics = ["test-kafka-topic"];
     //var subErr = consumer -> subscribe(topics);
 
-    function(kafka:SimpleConsumer simpleConsumer, kafka:TopicPartition[] partitions) onAssigned = printAssignedPartitions;
-    function(kafka:SimpleConsumer simpleConsumer, kafka:TopicPartition[] partitions) onRevoked = printRevokedPartitions;
+    function(kafka:Consumer consumer, kafka:TopicPartition[] partitions) onAssigned = printAssignedPartitions;
+    function(kafka:Consumer consumer, kafka:TopicPartition[] partitions) onRevoked = printRevokedPartitions;
 
     var subErr = consumer->subscribeWithPartitionRebalance(topics, onRevoked, onAssigned);
     if (subErr is error) {
@@ -87,10 +87,10 @@ function pollError(error e) {
     log:printError("Error occurred while polling ", err = e);
 }
 
-function printAssignedPartitions(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) {
+function printAssignedPartitions(kafka:Consumer consumer, kafka:TopicPartition[] partitions) {
     io:println("Number of partitions assigned to consumer: " + lengthof partitions);
 }
 
-function printRevokedPartitions(kafka:SimpleConsumer consumer, kafka:TopicPartition[] partitions) {
+function printRevokedPartitions(kafka:Consumer consumer, kafka:TopicPartition[] partitions) {
     io:println("Number of partitions revoked from consumer: " + lengthof partitions);
 }

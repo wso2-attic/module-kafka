@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 
 /**
- *  Kafka Connector listener for Ballerina.
+ *  Kafka Connector Consumer for Ballerina.
  */
 public class KafkaListenerImpl implements KafkaListener {
 
@@ -59,9 +59,9 @@ public class KafkaListenerImpl implements KafkaListener {
     @Override
     public void onRecordsReceived(ConsumerRecords records,
                                   KafkaConsumer kafkaConsumer,
-                                  KafkaPollCycleFutureListener listener,
+                                  KafkaPollCycleFutureListener consumer,
                                   String groupID) {
-        Executor.submit(resource, listener, Collections.emptyMap(), null,
+        Executor.submit(resource, consumer, Collections.emptyMap(), null,
                         KafkaUtils.getSignatureParameters(resource, records, kafkaConsumer, groupID));
 
     }

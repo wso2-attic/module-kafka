@@ -27,7 +27,7 @@ kafka:ProducerConfig producerConfigs = {
     transactionalID:"abort-transaction-test-producer"
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 function funcKafkaAbortTransactionTest() returns boolean {
     string msg = "Hello World Transaction";

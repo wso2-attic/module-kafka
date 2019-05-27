@@ -26,7 +26,7 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-listener kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+listener kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 type CustomError error<string, CustomErrorData>;
 
@@ -37,7 +37,7 @@ type CustomErrorData record {|
 |};
 
 service kafkaTestService on kafkaConsumer {
-    resource function onMessage(kafka:SimpleConsumer consumer, kafka:ConsumerRecord[] records) returns error? {
+    resource function onMessage(kafka:Consumer consumer, kafka:ConsumerRecord[] records) returns error? {
         foreach kafka:ConsumerRecord kafkaRecord in records {
             CustomError e = error("Custom Error", {data: "sample"});
         }

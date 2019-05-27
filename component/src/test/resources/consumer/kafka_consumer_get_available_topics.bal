@@ -32,26 +32,26 @@ kafka:ConsumerConfig consumerConfigsNoTimeout = {
     defaultApiTimeout: -1
 };
 
-function funcKafkaConnect() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+function funcKafkaConnect() returns kafka:Consumer {
+    kafka:Consumer kafkaConsumer = new(consumerConfigs);
     return kafkaConsumer;
 }
 
-function funcKafkaGetNoTimeoutConsumer() returns kafka:SimpleConsumer {
-    kafka:SimpleConsumer kafkaConsumer = new(consumerConfigsNoTimeout);
+function funcKafkaGetNoTimeoutConsumer() returns kafka:Consumer {
+    kafka:Consumer kafkaConsumer = new(consumerConfigsNoTimeout);
     return kafkaConsumer;
 }
 
-function funcKafkaClose(kafka:SimpleConsumer consumer) returns boolean {
+function funcKafkaClose(kafka:Consumer consumer) returns boolean {
     var result = consumer->close();
     return !(result is error);
 }
 
-function funcKafkaGetAvailableTopicsWithDuration(kafka:SimpleConsumer consumer, int duration) returns string[]|error {
+function funcKafkaGetAvailableTopicsWithDuration(kafka:Consumer consumer, int duration) returns string[]|error {
     return consumer->getAvailableTopics(duration = duration);
 }
 
-function funcKafkaGetAvailableTopics(kafka:SimpleConsumer consumer) returns string[]|error {
+function funcKafkaGetAvailableTopics(kafka:Consumer consumer) returns string[]|error {
     return consumer->getAvailableTopics();
 }
 

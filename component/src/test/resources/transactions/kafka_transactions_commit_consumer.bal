@@ -27,7 +27,7 @@ kafka:ProducerConfig producerConfigs = {
     noRetries: 3
 };
 
-kafka:SimpleProducer kafkaProducer = new(producerConfigs);
+kafka:Producer kafkaProducer = new(producerConfigs);
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9094, localhost:9095, localhost:9096",
@@ -36,7 +36,7 @@ kafka:ConsumerConfig consumerConfigs = {
     topics: [topic]
 };
 
-kafka:SimpleConsumer kafkaConsumer = new(consumerConfigs);
+kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 function funcTestKafkaProduce() {
     string msg = "Hello World";

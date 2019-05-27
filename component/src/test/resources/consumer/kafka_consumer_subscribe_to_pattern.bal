@@ -24,15 +24,15 @@ kafka:ConsumerConfig consumerConfigs = {
     defaultApiTimeout: 100
 };
 
-function funcKafkaGetKafkaConsumer() returns kafka:SimpleConsumer {
+function funcKafkaGetKafkaConsumer() returns kafka:Consumer {
     return new(consumerConfigs);
 }
 
-function funcKafkaTestSubscribeToPattern(kafka:SimpleConsumer kafkaConsumer) {
+function funcKafkaTestSubscribeToPattern(kafka:Consumer kafkaConsumer) {
     var result = kafkaConsumer->subscribeToPattern("test.*");
 }
 
-function funcKafkaTestGetSubscribedTopicCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
+function funcKafkaTestGetSubscribedTopicCount(kafka:Consumer kafkaConsumer) returns int|error {
     var result = kafkaConsumer->getSubscription();
     if (result is error) {
         return result;
@@ -41,7 +41,7 @@ function funcKafkaTestGetSubscribedTopicCount(kafka:SimpleConsumer kafkaConsumer
     }
 }
 
-function funcKafkaGetAvailableTopicsCount(kafka:SimpleConsumer kafkaConsumer) returns int|error {
+function funcKafkaGetAvailableTopicsCount(kafka:Consumer kafkaConsumer) returns int|error {
     var result = kafkaConsumer->getAvailableTopics(duration = 100);
     if (result is error) {
         return result;
