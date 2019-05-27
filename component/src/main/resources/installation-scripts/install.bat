@@ -72,7 +72,7 @@ IF EXIST "%ballerina_lib_location%\%fileNamePattern%" (
         )
     ) ELSE (
         IF "%response%"=="N" (
-            ECHO [WARNING] Couldn't maintain the different versions of Kafka module.
+            ECHO [ERROR] Another version of Kafka module already exists. Please remove it before install another version.
             GOTO :END
         ) ELSE (
             ECHO [ERROR] Invalid option provided.

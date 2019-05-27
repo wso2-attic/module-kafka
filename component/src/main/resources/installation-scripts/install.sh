@@ -59,7 +59,7 @@ for filename in $ballerina_home/bre/lib/*; do
                 echo "[INFO] Successfully uninstalled existing Kafka module: $existingFile"
             fi
         elif [[ $response =~ ^([nN][oO]|[nN])$ ]]; then
-            echo "[WARNING] Couldn't maintain the different versions of Kafka module."
+            echo "[ERROR] Another version of Kafka module already exists. Please remove it before install another version."
             exit 1
         else
             echo "[ERROR] Invalid option provided."
