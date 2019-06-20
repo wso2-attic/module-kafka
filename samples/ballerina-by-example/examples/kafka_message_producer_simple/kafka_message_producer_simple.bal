@@ -15,6 +15,7 @@
 // under the License.
 
 import wso2/kafka;
+import ballerina/log;
 
 kafka:ProducerConfig producerConfigs = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
@@ -28,10 +29,16 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:Producer kafkaProducer = new(producerConfigs);
 
-function main (string... args) {
+public function main (string... args) {
     string msg = "Hello World, Ballerina";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(serializedMsg, "test-topic");
-    kafkaProducer->flushRecords();
+    var sendResult = kafkaProducer->send(serializedMsg, "test-kafka-topic");
+    if (sendResult is error) {
+        log:printError("Kafka producer failed to send data", err = sendResult);
+    }
+    var flushResult = kafkaProducer->flushRecords();
+    if (flushResult is error) {
+        log:printError("Kafka producer failed to flush the records", err = flushResult);
+    }
 }
 

@@ -17,7 +17,7 @@
 import wso2/kafka;
 import ballerina/io;
 import ballerina/log;
-import ballerina/internal;
+import ballerina/encoding;
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers:"localhost:9092",
@@ -37,7 +37,7 @@ public function main(string... args) {
         foreach var kafkaRecord in results {
             // convert byte[] to string
             byte[] serializedMsg = kafkaRecord.value;
-            string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
+            string msg = encoding:byteArrayToString(serializedMsg);
             io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
         }
     }

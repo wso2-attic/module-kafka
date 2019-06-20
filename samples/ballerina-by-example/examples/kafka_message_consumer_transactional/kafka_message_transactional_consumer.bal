@@ -16,7 +16,8 @@
 
 import wso2/kafka;
 import ballerina/io;
-import ballerina/internal;
+import ballerina/encoding;
+import ballerina/log;
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers:"localhost:9092",
@@ -27,23 +28,26 @@ kafka:ConsumerConfig consumerConfigs = {
     isolationLevel:"read_committed"
 };
 
-consumer kafka:Consumer consumer = new(consumerConfigs);
+listener kafka:Consumer consumer = new(consumerConfigs);
 
 service kafkaService on consumer {
 
-    resource function onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+    resource function onMessage(kafka:Consumer kafkaConsumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
         foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        consumerAction->commit();
+        var commitResult = kafkaConsumer->commit();
+        if (commitResult is error) {
+            log:printError("Error occurred while committing the offsets for the consumer ", err = commitResult);
+        }
     }
 }
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
     byte[] serializedMsg = kafkaRecord.value;
-    string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
+    string msg = encoding:byteArrayToString(serializedMsg);
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }
