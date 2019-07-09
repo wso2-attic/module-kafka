@@ -71,7 +71,7 @@ public type ProducerConfig record {|
     string? metricReporterClasses = (); // METRIC_REPORTER_CLASSES_CONFIG 5
     string? partitionerClass = (); // PARTITIONER_CLASS_CONFIG 6
     string? interceptorClasses = (); // INTERCEPTOR_CLASSES_CONFIG 7
-    string? transactionalID = (); // TRANSACTIONAL_ID_CONFIG 8
+     string? transactionalId = (); // TRANSACTIONAL_ID_CONFIG 8
     string? securityProtocol = (); // SECURITY_PROTOCOL_CONFIG 9
     string? sslProtocol = (); // SSL_PROTOCOL_CONFIG 10
     string? sslProvider = (); // SSL_PROVIDER_CONFIG 11
