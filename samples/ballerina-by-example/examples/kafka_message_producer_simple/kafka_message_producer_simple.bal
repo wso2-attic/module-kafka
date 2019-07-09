@@ -29,7 +29,7 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:Producer kafkaProducer = new(producerConfigs);
 
-public function main (string... args) {
+public function main () {
     string msg = "Hello World, Ballerina";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
     var sendResult = kafkaProducer->send(serializedMsg, "test-kafka-topic");
