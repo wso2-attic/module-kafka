@@ -22,7 +22,7 @@
 # + partitionAssignmentStrategy - Strategy class for handling the partition assignment among consumers.
 # + metricsRecordingLevel - Metrics recording level.
 # + metricsReporterClasses - Metrics reporter classes.
-# + clientId - ID to be used for server side logging.
+# + clientId - Identifier to be used for server side logging.
 # + interceptorClasses - Interceptor classes to be used before sending records.
 # + isolationLevel - Transactional message reading method. Use "read_committed" to read committed messages only in transactional mode when poll() is called. Use "read_uncommitted" to read all the messages, even the aborted ones.
 # + topics - Topics to be subscribed by the consumer.

@@ -30,7 +30,7 @@ kafka:ConsumerConfig consumerConfigs = {
 
 kafka:Consumer consumer = new(consumerConfigs);
 
-public function main(string... args) {
+public function main() {
     // Here we initializes a consumer which connects to remote cluster.
     var conError = consumer->connect();
 

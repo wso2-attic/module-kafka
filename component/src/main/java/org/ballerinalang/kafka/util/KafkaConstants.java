@@ -117,12 +117,12 @@ public class KafkaConstants {
     public static final String PRODUCER_BOOTSTRAP_SERVERS_CONFIG = "bootstrapServers";
     public static final String PRODUCER_ACKS_CONFIG = "acks";
     public static final String PRODUCER_COMPRESSION_TYPE_CONFIG = "compressionType";
-    public static final String PRODUCER_CLIENT_ID_CONFIG = "clientID";
+    public static final String PRODUCER_CLIENT_ID_CONFIG = "clientId";
     public static final String PRODUCER_METRICS_RECORDING_LEVEL_CONFIG = "metricsRecordingLevel";
     public static final String PRODUCER_METRIC_REPORTER_CLASSES_CONFIG = "metricReporterClasses";
     public static final String PRODUCER_PARTITIONER_CLASS_CONFIG = "partitionerClass";
     public static final String PRODUCER_INTERCEPTOR_CLASSES_CONFIG = "interceptorClasses";
-    public static final String PRODUCER_TRANSACTIONAL_ID_CONFIG = "transactionalID";
+    public static final String PRODUCER_TRANSACTIONAL_ID_CONFIG = "transactionalId";
     public static final String PRODUCER_BUFFER_MEMORY_CONFIG = "bufferMemory";
     public static final String PRODUCER_RETRIES_CONFIG = "noRetries";
     public static final String PRODUCER_BATCH_SIZE_CONFIG = "batchSize";

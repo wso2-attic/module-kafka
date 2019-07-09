@@ -19,7 +19,7 @@ import ballerina/log;
 
 kafka:ProducerConfig producerConfigs = {
     // Here we create a producer configs with SSL parameters
-    // clientID - used for broker side logging.
+    // clientId - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
     // securityProtocol - communication protocol
@@ -29,7 +29,7 @@ kafka:ProducerConfig producerConfigs = {
     // sslKeystorePassword - keystore password
     // sslKeyPassword - password of the private key in the key store file
     bootstrapServers: "localhost:9093",
-    clientID:"basic-producer",
+    clientId:"basic-producer",
     acks:"all",
     noRetries:3,
     sslEnabledProtocols:"TLSv1.2,TLSv1.1,TLSv1",
@@ -43,7 +43,7 @@ kafka:ProducerConfig producerConfigs = {
 
 kafka:Producer kafkaProducer = new(producerConfigs);
 
-public function main (string... args) {
+public function main () {
     string msg = "Hello World, Ballerina";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
     var sendResult = kafkaProducer->send(serializedMsg, "test-kafka-topic");

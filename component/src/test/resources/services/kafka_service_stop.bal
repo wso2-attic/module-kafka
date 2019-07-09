@@ -39,7 +39,7 @@ service kafkaTestService on kafkaConsumer {
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "service-producer",
+    clientId: "service-producer",
     acks: "all",
     noRetries: 3
 };

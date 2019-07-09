@@ -20,7 +20,7 @@ string topic = "producer-flush-records-test-topic";
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "flush-records-producer",
+    clientId: "flush-records-producer",
     acks: "all",
     noRetries: 3
 };

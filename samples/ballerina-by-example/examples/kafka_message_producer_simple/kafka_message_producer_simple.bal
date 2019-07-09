@@ -22,7 +22,7 @@ kafka:ProducerConfig producerConfigs = {
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
     bootstrapServers: "localhost:9092",
-    clientID:"basic-producer",
+    clientId:"basic-producer",
     acks:"all",
     noRetries:3
 };

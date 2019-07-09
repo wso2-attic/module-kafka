@@ -21,12 +21,12 @@ import ballerina/system;
 # + bootstrapServers - List of remote server endpoints of Kafka brokers.
 # + acks - Number of acknowledgments.
 # + compressionType - Compression type to be used for messages.
-# + clientID - ID to be used for server side logging.
+# + clientId - Identifier to be used for server side logging.
 # + metricsRecordingLevel - Metrics recording level.
 # + metricReporterClasses - Metrics reporter classes.
 # + partitionerClass - Partitioner class to be used to select partition to which the message is sent.
 # + interceptorClasses - Interceptor classes to be used before sending records.
-# + transactionalID - Transactional ID to be used in transactional delivery.
+# + transactionalId - Transactional ID to be used in transactional delivery.
 # + bufferMemory - Total bytes of memory the producer can use to buffer records.
 # + noRetries - Number of retries to resend a record.
 # + batchSize - Number of records to be batched for a single request. Use 0 for no batching.
@@ -66,12 +66,12 @@ public type ProducerConfig record {|
     string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks = (); // ACKS_CONFIG 1
     string? compressionType = (); // COMPRESSION_TYPE_CONFIG 2
-    string? clientID = (); // CLIENT_ID_CONFIG 3
+    string? clientId = (); // CLIENT_ID_CONFIG 3
     string? metricsRecordingLevel = (); // METRICS_RECORDING_LEVEL_CONFIG 4
     string? metricReporterClasses = (); // METRIC_REPORTER_CLASSES_CONFIG 5
     string? partitionerClass = (); // PARTITIONER_CLASS_CONFIG 6
     string? interceptorClasses = (); // INTERCEPTOR_CLASSES_CONFIG 7
-     string? transactionalId = (); // TRANSACTIONAL_ID_CONFIG 8
+    string? transactionalId = (); // TRANSACTIONAL_ID_CONFIG 8
     string? securityProtocol = (); // SECURITY_PROTOCOL_CONFIG 9
     string? sslProtocol = (); // SSL_PROTOCOL_CONFIG 10
     string? sslProvider = (); // SSL_PROVIDER_CONFIG 11

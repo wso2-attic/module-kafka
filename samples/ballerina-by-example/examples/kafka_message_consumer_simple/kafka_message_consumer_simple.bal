@@ -28,7 +28,7 @@ kafka:ConsumerConfig consumerConfigs = {
 
 kafka:Consumer consumer = new(consumerConfigs);
 
-public function main(string... args) {
+public function main() {
     // polling consumer for messages
     var results = consumer->poll(1000);
     if (results is error) {
