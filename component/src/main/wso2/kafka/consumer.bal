@@ -22,7 +22,7 @@
 # + partitionAssignmentStrategy - Strategy class for handling the partition assignment among consumers.
 # + metricsRecordingLevel - Metrics recording level.
 # + metricsReporterClasses - Metrics reporter classes.
-# + clientId - ID to be used for server side logging.
+# + clientId - Identifier to be used for server side logging.
 # + interceptorClasses - Interceptor classes to be used before sending records.
 # + isolationLevel - Transactional message reading method. Use "read_committed" to read committed messages only in transactional mode when poll() is called. Use "read_uncommitted" to read all the messages, even the aborted ones.
 # + topics - Topics to be subscribed by the consumer.
@@ -54,6 +54,22 @@
 # + checkCRCS - Check the CRC32 of the records consumed.
 # + excludeInternalTopics - Whether records from internal topics should be exposed to the consumer.
 # + decoupleProcessing - Decouples processing
+# + sslEnabledProtocols - The list of protocols enabled for SSL connections.
+# + securityProtocol - Protocol used to communicate with brokers.
+# + sslProtocol - The SSL protocol used to generate the SSLContext. Default setting is TLS, which is fine for most cases. Allowed values in recent JVMs are TLS, TLSv1.1 and TLSv1.2. SSL, SSLv2 and SSLv3 may be supported in older JVMs, but their usage is discouraged due to known security vulnerabilities.
+# + sslProvider - The name of the security provider used for SSL connections. Default value is the default security provider of the JVM.
+# + sslKeyPassword - The password of the private key in the key store file. This is optional for client.
+# + sslKeystoreType - The file format of the key store file. This is optional for client.
+# + sslKeystoreLocation - The location of the key store file. This is optional for client and can be used for two-way authentication for client.
+# + sslKeystorePassword - The store password for the key store file. This is optional for client and only needed if ssl.keystore.location is configured.
+# + sslTruststoreType - The file format of the trust store file.
+# + sslTruststoreLocation - The location of the trust store file.
+# + sslTruststorePassword - The password for the trust store file. If a password is not set access to the truststore is still available, but integrity checking is disabled.
+# + sslCipherSuites - A list of cipher suites. This is a named combination of authentication, encryption, MAC and key exchange algorithm used to negotiate the security settings for a network connection using TLS or SSL network protocol. By default all the available cipher suites are supported.
+# + sslEndpointIdentificationAlgorithm - The endpoint identification algorithm to validate server hostname using server certificate.
+# + sslKeymanagerAlgorithm - The algorithm used by key manager factory for SSL connections. Default value is the key manager factory algorithm configured for the Java Virtual Machine.
+# + sslTrustmanagerAlgorithm - The algorithm used by trust manager factory for SSL connections. Default value is the trust manager factory algorithm configured for the Java Virtual Machine.
+# + sslSecureRandomImplementation - The SecureRandom PRNG implementation to use for SSL cryptography operations.
 public type ConsumerConfig record {|
     string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
     string? groupId = (); // GROUP_ID_CONFIG 1
@@ -64,6 +80,22 @@ public type ConsumerConfig record {|
     string? clientId = (); // CLIENT_ID_CONFIG 6
     string? interceptorClasses = (); // INTERCEPTOR_CLASSES_CONFIG 7
     string? isolationLevel = (); // ISOLATION_LEVEL_CONFIG 8
+    string? securityProtocol = (); // SECURITY_PROTOCOL_CONFIG 9
+    string? sslProtocol = (); // SSL_PROTOCOL_CONFIG 10
+    string? sslProvider = (); // SSL_PROVIDER_CONFIG 11
+    string? sslKeyPassword = (); // SSL_KEY_PASSWORD_CONFIG 12
+    string? sslKeystoreType = (); // SSL_KEYSTORE_TYPE_CONFIG 13
+    string? sslKeystoreLocation = (); // SSL_KEYSTORE_LOCATION_CONFIG 14
+    string? sslKeystorePassword = (); // SSL_KEYSTORE_PASSWORD_CONFIG 15
+    string? sslTruststoreType = (); // SSL_TRUSTSTORE_TYPE_CONFIG 16
+    string? sslTruststoreLocation = (); // SSL_TRUSTSTORE_LOCATION_CONFIG 17
+    string? sslTruststorePassword = (); // SSL_TRUSTSTORE_PASSWORD_CONFIG 18
+    string? sslCipherSuites = (); // SSL_CIPHER_SUITES_CONFIG 19
+    string? sslEndpointIdentificationAlgorithm = (); // SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG 20
+    string? sslKeymanagerAlgorithm = (); // SSL_KEYMANAGER_ALGORITHM_CONFIG 21
+    string? sslTrustmanagerAlgorithm = (); // SSL_TRUSTMANAGER_ALGORITHM_CONFIG 22
+    string? sslSecureRandomImplementation = (); // SSL_SECURE_RANDOM_IMPLEMENTATION_CONFIG 23
+    string? sslEnabledProtocols = (); // SSL_ENABLED_PROTOCOLS_CONFIG 24
 
     string[]? topics = (); // ALIAS_TOPICS 0
     string[]? properties = (); // PROPERTIES_ARRAY 1

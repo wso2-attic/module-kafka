@@ -17,7 +17,7 @@
 import ballerina/io;
 import ballerina/log;
 import ballerina/runtime;
-import ballerina/internal;
+import ballerina/encoding;
 import ballerina/task;
 import wso2/kafka;
 
@@ -30,7 +30,7 @@ kafka:ConsumerConfig consumerConfigs = {
 
 kafka:Consumer consumer = new(consumerConfigs);
 
-public function main(string... args) {
+public function main() {
     // Here we initializes a consumer which connects to remote cluster.
     var conError = consumer->connect();
 
@@ -43,40 +43,57 @@ public function main(string... args) {
 
     var subErr = consumer->subscribeWithPartitionRebalance(topics, onRevoked, onAssigned);
     if (subErr is error) {
-        log:printError("Error occurred while subscribing", err = e);
+        log:printError("Error occurred while subscribing", err = subErr);
         return;
     }
-
-    // Consumer poll() function will be called every time the timer goes off.
-    function () onTriggerFunction = poll;
-
-    // Consumer pollError() error function will be called if an error occurs while consumer poll the topics.
-    function (error e) onErrorFunction = pollError;
-
     // Schedule a timer task which initially starts poll cycle in 500ms from now and there
     //onwards runs every 2000ms.
     //var taskId, schedulerError = task:scheduleTimer(onTriggerFunction, onErrorFunction, {delay:500, interval:2000});
-    task:Timer timer = new(onTriggerFunction, onErrorFunction, 2000, delay = 500);
-    timer.start();
+
+    task:TimerConfiguration timerConfiguration = {
+        interval: 2000,
+        initialDelay: 500
+    };
+    task:Scheduler timer = new(timerConfiguration);
+    var result  = timer.attach(timerService);
+    if (result is error) {
+        log:printError("Error while attaching the timer service: ", err = result);
+        return;
+    }
+    result = timer.start();
+    if (result is error) {
+        log:printError("Error while starting the timer: ", err = result);
+        return;
+    }
 
     runtime:sleep(30000); // Temporary workaround to stop the process from exiting.
 }
+
+// Consumer poll() function will be called every time the timer goes off.
+service timerService = service {
+    resource function onTrigger() {
+        poll();
+    }
+};
 
 function poll() {
     var results = consumer->poll(1000);
     if (results is error) {
         log:printError("Error occurred while polling ", err = results);
     } else {
-        foreach kafkaRecord in results {
+        foreach var kafkaRecord in results {
             processKafkaRecord(kafkaRecord);
         }
     }
-    consumer->commit();
+    var result = consumer->commit();
+     if (result is error) {
+        log:printError("Error occurred while committing the offsets for the consumer ", err = result);
+    }
 }
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
     byte[] serializedMsg = kafkaRecord.value;
-    string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
+    string msg = encoding:byteArrayToString(serializedMsg);
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }
@@ -87,10 +104,10 @@ function pollError(error e) {
     log:printError("Error occurred while polling ", err = e);
 }
 
-function printAssignedPartitions(kafka:Consumer consumer, kafka:TopicPartition[] partitions) {
-    io:println("Number of partitions assigned to consumer: " + lengthof partitions);
+function printAssignedPartitions(kafka:Consumer consumer1, kafka:TopicPartition[] partitions) {
+    io:println("Number of partitions assigned to consumer: " + partitions.length());
 }
 
-function printRevokedPartitions(kafka:Consumer consumer, kafka:TopicPartition[] partitions) {
-    io:println("Number of partitions revoked from consumer: " + lengthof partitions);
+function printRevokedPartitions(kafka:Consumer consumer2, kafka:TopicPartition[] partitions) {
+    io:println("Number of partitions revoked from consumer: " + partitions.length());
 }

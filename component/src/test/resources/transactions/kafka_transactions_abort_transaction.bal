@@ -21,10 +21,10 @@ string topic = "abort-transaction-topic";
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers:"localhost:9094, localhost:9095, localhost:9096",
-    clientID:"abort-transaction-producer",
+    clientId:"abort-transaction-producer",
     acks:"all",
     noRetries:3,
-    transactionalID:"abort-transaction-test-producer"
+    transactionalId:"abort-transaction-test-producer"
 };
 
 kafka:Producer kafkaProducer = new(producerConfigs);

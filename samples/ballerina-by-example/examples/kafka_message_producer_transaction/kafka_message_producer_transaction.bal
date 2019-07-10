@@ -16,35 +16,44 @@
 
 import wso2/kafka;
 import ballerina/io;
+import ballerina/log;
 
 kafka:ProducerConfig producerConfigs = {
     // Here we create a producer configs with optional parameters client.id - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
     bootstrapServers:"localhost:9092",
-    clientID:"basic-producer",
+    clientId:"basic-producer",
     acks:"all",
     noRetries:3,
-    transactionalID:"test-transactional-id"
+    transactionalId:"test-transactional-id"
 };
 
 kafka:Producer kafkaProducer = new(producerConfigs);
 
-public function main(string... args) {
-    string msg = "Hello World Transaction";
-    byte[] serializedMsg = msg.toByteArray("UTF-8");
+public function main() {
+    string msg1 = "Hello World Transaction Message 1";
+    string msg2 = "Hello World Transaction Message 2";
+    byte[] serializedMsg1 = msg1.toByteArray("UTF-8");
+    byte[] serializedMsg2 = msg2.toByteArray("UTF-8");
 
     // Here we create a producer configs with optional parameter transactional.id - enable transactional message production.
-    kafkaAdvancedTransactionalProduce(serializedMsg);
+    kafkaAdvancedTransactionalProduce(serializedMsg1, serializedMsg2);
 }
 
-function kafkaAdvancedTransactionalProduce(byte[] msg) {
+function kafkaAdvancedTransactionalProduce(byte[] msg1, byte[] msg2) {
     // Kafka transactions allows messages to be send multiple partition atomically on KafkaProducerClient. Kafka Local transactions can only be used
     // when you are sending multiple messages using the same KafkaProducerClient instance.
     boolean transactionSuccess = false;
     transaction {
-        kafkaProducer->send(msg, "test-kafka-topic", partition = 0);
-        kafkaProducer->send(msg, "test-kafka-topic", partition = 0);
+        var sendResult1 = kafkaProducer->send(msg1, "test-kafka-topic", partition = 0);
+        if (sendResult1 is error) {
+            log:printError("Kafka producer failed to send first message", err = sendResult1);
+        }
+        var sendResult2 = kafkaProducer->send(msg2, "test-kafka-topic", partition = 0);
+        if (sendResult2 is error) {
+            log:printError("Kafka producer failed to send second message", err = sendResult2);
+        }
         transactionSuccess = true;
     }
 

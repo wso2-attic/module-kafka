@@ -31,7 +31,7 @@ listener kafka:Consumer kafkaConsumer = new(consumerConfigs);
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "advanced-service-producer",
+    clientId: "advanced-service-producer",
     acks: "all",
     noRetries: 3
 };

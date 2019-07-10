@@ -1,4 +1,4 @@
-// Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -18,21 +18,35 @@ import wso2/kafka;
 import ballerina/log;
 
 kafka:ProducerConfig producerConfigs = {
-    // Here we create a producer configs with optional parameters client.id - used for broker side logging.
+    // Here we create a producer configs with SSL parameters
+    // clientId - used for broker side logging.
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
-    bootstrapServers: "localhost:9092",
+    // securityProtocol - communication protocol
+    // sslTruststoreLocation - location of truststore file
+    // sslTruststorePassword - truststore password
+    // sslKeystoreLocation - location of keystore file
+    // sslKeystorePassword - keystore password
+    // sslKeyPassword - password of the private key in the key store file
+    bootstrapServers: "localhost:9093",
     clientId:"basic-producer",
     acks:"all",
-    noRetries:3
+    noRetries:3,
+    sslEnabledProtocols:"TLSv1.2,TLSv1.1,TLSv1",
+    securityProtocol:"SSL",
+    sslTruststoreLocation:"<FILE-PATH>/kafka.client.truststore.jks",
+    sslTruststorePassword:"test1234",
+    sslKeystoreLocation:"<FILE-PATH>/kafka.client.keystore.jks",
+    sslKeystorePassword:"test1234",
+    sslKeyPassword:"test1234"
 };
 
 kafka:Producer kafkaProducer = new(producerConfigs);
 
 public function main () {
-    string msg = "Hello World Advanced Producer Message";
+    string msg = "Hello World, Ballerina";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
-    var sendResult = kafkaProducer->send(serializedMsg, "test-kafka-topic", partition = 0);
+    var sendResult = kafkaProducer->send(serializedMsg, "test-kafka-topic");
     if (sendResult is error) {
         log:printError("Kafka producer failed to send data", err = sendResult);
     }
@@ -41,3 +55,4 @@ public function main () {
         log:printError("Kafka producer failed to flush the records", err = flushResult);
     }
 }
+

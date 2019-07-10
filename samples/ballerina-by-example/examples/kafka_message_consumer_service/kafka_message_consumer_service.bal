@@ -16,7 +16,7 @@
 
 import wso2/kafka;
 import ballerina/io;
-import ballerina/internal;
+import ballerina/encoding;
 
 kafka:ConsumerConfig consumerConfigs = {
     bootstrapServers: "localhost:9092",
@@ -25,10 +25,10 @@ kafka:ConsumerConfig consumerConfigs = {
     pollingInterval: 1000
 };
 
-consumer kafka:Consumer consumer = new(consumerConfigs);
+listener kafka:Consumer consumer = new(consumerConfigs);
 
 service kafkaService on consumer {
-    resource function onMessage(kafka:ConsumerAction consumerAction, kafka:ConsumerRecord[] records) {
+    resource function onMessage(kafka:Consumer kafkaConsumer, kafka:ConsumerRecord[] records) {
         // Dispatched set of Kafka records to service, We process each one by one.
         foreach var kafkaRecord in records {
             processKafkaRecord(kafkaRecord);
@@ -38,7 +38,7 @@ service kafkaService on consumer {
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
     byte[] serializedMsg = kafkaRecord.value;
-    string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
+    string msg = encoding:byteArrayToString(serializedMsg);
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Partition: " + kafkaRecord.partition + " Received Message: " + msg);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -20,10 +20,23 @@ import ballerina/log;
 import ballerina/encoding;
 
 kafka:ConsumerConfig consumerConfigs = {
-    bootstrapServers:"localhost:9092",
+    // Here we create a consumer configs with SSL parameters
+    // securityProtocol - communication protocol
+    // sslTruststoreLocation - location of truststore file
+    // sslTruststorePassword - truststore password
+    // sslKeystoreLocation - location of keystore file
+    // sslKeystorePassword - keystore password
+    // sslKeyPassword - password of the private key in the key store file
+    bootstrapServers:"localhost:9093",
     groupId:"group-id",
     offsetReset:"earliest",
-    topics:["test-kafka-topic"]
+    topics:["test-kafka-topic"],
+    securityProtocol:"SSL",
+    sslTruststoreLocation:"<FILE-PATH>/kafka.client.truststore.jks",
+    sslTruststorePassword:"test1234",
+    sslKeystoreLocation:"<FILE-PATH>/kafka.client.keystore.jks",
+    sslKeystorePassword:"test1234",
+    sslKeyPassword:"test1234"
 };
 
 kafka:Consumer consumer = new(consumerConfigs);

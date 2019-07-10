@@ -18,7 +18,7 @@ import wso2/kafka;
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "partition-retrieval-producer",
+    clientId: "partition-retrieval-producer",
     acks: "all",
     noRetries: 3
 };

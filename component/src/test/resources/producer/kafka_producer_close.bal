@@ -20,7 +20,7 @@ string topic = "producer-close-test-topic";
 
 kafka:ProducerConfig producerConfigs = {
     bootstrapServers: "localhost:9094",
-    clientID: "close-producer",
+    clientId: "close-producer",
     acks: "all",
     noRetries: 3
 };

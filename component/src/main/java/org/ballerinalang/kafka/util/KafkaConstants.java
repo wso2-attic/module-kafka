@@ -117,12 +117,12 @@ public class KafkaConstants {
     public static final String PRODUCER_BOOTSTRAP_SERVERS_CONFIG = "bootstrapServers";
     public static final String PRODUCER_ACKS_CONFIG = "acks";
     public static final String PRODUCER_COMPRESSION_TYPE_CONFIG = "compressionType";
-    public static final String PRODUCER_CLIENT_ID_CONFIG = "clientID";
+    public static final String PRODUCER_CLIENT_ID_CONFIG = "clientId";
     public static final String PRODUCER_METRICS_RECORDING_LEVEL_CONFIG = "metricsRecordingLevel";
     public static final String PRODUCER_METRIC_REPORTER_CLASSES_CONFIG = "metricReporterClasses";
     public static final String PRODUCER_PARTITIONER_CLASS_CONFIG = "partitionerClass";
     public static final String PRODUCER_INTERCEPTOR_CLASSES_CONFIG = "interceptorClasses";
-    public static final String PRODUCER_TRANSACTIONAL_ID_CONFIG = "transactionalID";
+    public static final String PRODUCER_TRANSACTIONAL_ID_CONFIG = "transactionalId";
     public static final String PRODUCER_BUFFER_MEMORY_CONFIG = "bufferMemory";
     public static final String PRODUCER_RETRIES_CONFIG = "noRetries";
     public static final String PRODUCER_BATCH_SIZE_CONFIG = "batchSize";
@@ -143,5 +143,21 @@ public class KafkaConstants {
     public static final String PRODUCER_TRANSACTION_TIMEOUT_CONFIG = "transactionTimeout";
     public static final String PRODUCER_ENABLE_IDEMPOTENCE_CONFIG = "enableIdempotence";
 
-
+    // SSL Configuration parameters.
+    public static final String SSL_ENABLED_PROTOCOLS_CONFIG = "sslEnabledProtocols";
+    public static final String SECURITY_PROTOCOL_CONFIG = "securityProtocol";
+    public static final String SSL_PROTOCOL_CONFIG = "sslProtocol";
+    public static final String SSL_PROVIDER_CONFIG = "sslProvider";
+    public static final String SSL_KEY_PASSWORD_CONFIG = "sslKeyPassword";
+    public static final String SSL_KEYSTORE_TYPE_CONFIG = "sslKeystoreType";
+    public static final String SSL_KEYSTORE_LOCATION_CONFIG = "sslKeystoreLocation";
+    public static final String SSL_KEYSTORE_PASSWORD_CONFIG = "sslKeystorePassword";
+    public static final String SSL_TRUSTSTORE_TYPE_CONFIG = "sslTruststoreType";
+    public static final String SSL_TRUSTSTORE_LOCATION_CONFIG = "sslTruststoreLocation";
+    public static final String SSL_TRUSTSTORE_PASSWORD_CONFIG = "sslTruststorePassword";
+    public static final String SSL_CIPHER_SUITES_CONFIG = "sslCipherSuites";
+    public static final String SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG = "sslEndpointIdentificationAlgorithm";
+    public static final String SSL_KEYMANAGER_ALGORITHM_CONFIG = "sslKeymanagerAlgorithm";
+    public static final String SSL_TRUSTMANAGER_ALGORITHM_CONFIG = "sslTrustmanagerAlgorithm";
+    public static final String SSL_SECURE_RANDOM_IMPLEMENTATION_CONFIG = "sslSecureRandomImplementation";
 }

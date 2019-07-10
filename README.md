@@ -31,7 +31,7 @@ by setting property `autoCommit: false` at endpoint parameter.
 ```ballerina
 import wso2/kafka;
 import ballerina/io;
-import ballerina/internal;
+import ballerina/encoding;
 
 kafka:ConsumerConfig consumerConfig = {
     bootstrapServers:"localhost:9092",
@@ -51,13 +51,16 @@ service kafkaService on consumer {
             processKafkaRecord(kafkaRecord);
         }
         // Commit offsets returned for returned records, marking them as consumed.
-        consumer->commit();
+        var commitResult = consumer->commit();
+        if (commitResult is error) {
+            log:printError("Error occurred while committing the offsets for the consumer ", err = commitResult);
+        }
     }
 }
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
     byte[] serializedMsg = kafkaRecord.value;
-    string msg = internal:byteArrayToString(serializedMsg, "UTF-8");
+    string msg = encoding:byteArrayToString(serializedMsg);
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }
@@ -85,7 +88,10 @@ kafka:Producer kafkaProducer = new(producerConfig);
 public function main() {
     string msg = "Hello World Advance";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(serializedMsg, "test-kafka-topic", partition = 0);
+    var sendResult = kafkaProducer->send(serializedMsg, "test-kafka-topic", partition = 0);
+    if (sendResult is error) {
+        log:printError("Kafka producer failed to send data", err = sendResult);
+    }
 }
 ````
 

@@ -10,6 +10,7 @@ Following is a simple service which is subscribed to a topic 'test-kafka-topic' 
 
 ```ballerina
 import wso2/kafka;
+import ballerina/encoding;
 import ballerina/io;
 
 kafka:ConsumerConfig consumerConfigs = {
@@ -33,7 +34,7 @@ service kafkaService on consumer {
 
 function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
     byte[] serializedMsg = kafkaRecord.value;
-    string msg = serializedMsg.toString("UTF-8");
+    string msg = encoding:byteArrayToString(serializedMsg);
     // Print the retrieved Kafka record.
     io:println("Topic: " + kafkaRecord.topic + " Received Message: " + msg);
 }
@@ -51,16 +52,19 @@ kafka:ProducerConfig producerConfigs = {
     // acks - number of acknowledgments for request complete,
     // noRetries - number of retries if record send fails.
     bootstrapServers: "localhost:9092",
-    clientID:"basic-producer",
+    clientId:"basic-producer",
     acks:"all",
     noRetries:3
 };
 
 kafka:Producer kafkaProducer = new(producerConfigs);
 
-function main (string... args) {
+function main () {
     string msg = "Hello World, Ballerina";
     byte[] serializedMsg = msg.toByteArray("UTF-8");
-    kafkaProducer->send(serializedMsg, "test-kafka-topic");
+    var sendResult = kafkaProducer->send(serializedMsg, "test-kafka-topic");
+    if (sendResult is error) {
+        log:printError("Kafka producer failed to send data", err = sendResult);
+    }
 }
 ````
