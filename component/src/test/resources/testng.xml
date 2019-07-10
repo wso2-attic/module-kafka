@@ -45,4 +45,11 @@ under the License.
             <class name="org.ballerinalang.kafka.test.transactions.KafkaProducerTransactionsTest"/>
         </classes>
     </test>
+    <test name="ballerina-kafka-ssl-tests">
+        <classes>
+            <!-- Kafka SSL related tests -->
+            <class name="org.ballerinalang.kafka.test.ssl.KafkaConsumerAndProducerWithSSLTest"/>
+
+        </classes>
+    </test>
 </suite>
