@@ -40,6 +40,49 @@ function processKafkaRecord(kafka:ConsumerRecord kafkaRecord) {
 }
 ````
 
+Please find the consumer parameters below:
+
+| Parameter | Description  |
+| :---   | :- |
+| bootstrapServers | The list of host and port pairs, which are the addresses of the Kafka brokers in a "bootstrap" Kafka cluster. |
+| groupId | The Identifier of the consumer group. |
+| topics | The topics that must be listened by this consumer. |
+| pollingInterval | The time interval that a consumer polls the topic. |
+| offsetReset | Offset reset strategy if no initial offset. |
+| partitionAssignmentStrategy | Strategy class for handling the partition assignment among consumers. |
+| metricsRecordingLevel | Metrics recording level. |
+| metricsReporterClasses | Metrics reporter classes. |
+| clientId | ID to be used for server side logging. |
+| interceptorClasses | Interceptor classes to be used before sending records. |
+| isolationLevel | Transactional message reading method. Use "read_committed" to read committed messages only in transactional mode when poll() is called. Use "read_uncommitted" to read all the messages, even the aborted ones. |
+| properties | Additional properties if required. |
+| sessionTimeout | Timeout used to detect consumer failures when heartbeat threshold is reached. |
+| heartBeatInterval | Expected time between heartbeats. |
+| metadataMaxAge | Maximum time to force a refresh of metadata. |
+| autoCommitInterval | Auto committing interval for commit offset, when auto-commit is enabled. |
+| maxPartitionFetchBytes | The maximum amount of data per-partition the server returns. |
+| sendBuffer | Size of the TCP send buffer (SO_SNDBUF). |
+| receiveBuffer | Size of the TCP receive buffer (SO_RCVBUF). |
+| fetchMinBytes | Minimum amount of data the server should return for a fetch request. |
+| fetchMaxBytes | Maximum amount of data the server should return for a fetch request. |
+| fetchMaxWait | Maximum amount of time the server will block before answering the fetch request. |
+| reconnectBackoffMax | Maximum amount of time in milliseconds to wait when reconnecting. |
+| retryBackoff | Time to wait before attempting to retry a failed request. |
+| metricsSampleWindow | Window of time a metrics sample is computed over. |
+| metricsNumSamples | Number of samples maintained to compute metrics. |
+| requestTimeout | Wait time for response of a request. |
+| connectionMaxIdle | Close idle connections after the number of milliseconds. |
+| maxPollRecords | Maximum number of records returned in a single call to poll. |
+| maxPollInterval | Maximum delay between invocations of poll. |
+| reconnectBackoff | Time to wait before attempting to reconnect. |
+| pollingTimeout | Timeout interval for polling. |
+| concurrentConsumers | Number of concurrent consumers. |
+| defaultApiTimeout | Default API timeout value for APIs with duration. |
+| autoCommit | Enables auto committing offsets. |
+| checkCRCS | Check the CRC32 of the records consumed. |
+| excludeInternalTopics | Whether records from internal topics should be exposed to the consumer. |
+| decoupleProcessing | Decouples processing. |
+
 ### Kafka Producer
 
 Following is a simple program which publishes a message to 'test-kafka-topic' topic in a remote Kafka broker cluster.
@@ -68,3 +111,36 @@ function main () {
     }
 }
 ````
+
+Please find the producer configuration parameters below:
+
+| Parameter | Description  |
+| :---   | :- |
+| bootstrapServers | List of remote server endpoints of Kafka brokers. |
+| acks | Number of acknowledgments. |
+| compressionType | Compression type to be used for messages. |
+| clientID | ID to be used for server side logging. |
+| metricsRecordingLevel | Metrics recording level. |
+| metricReporterClasses | Metrics reporter classes. |
+| partitionerClass | Partitioner class to be used to select partition to which the message is sent. |
+| interceptorClasses | Interceptor classes to be used before sending records. |
+| transactionalID | Transactional ID to be used in transactional delivery. |
+| bufferMemory | Total bytes of memory the producer can use to buffer records. |
+| noRetries | Number of retries to resend a record. |
+| batchSize | Number of records to be batched for a single request. Use 0 for no batching. |
+| linger | Delay to allow other records to be batched. |
+| sendBuffer | Size of the TCP send buffer (SO_SNDBUF). |
+| receiveBuffer | Size of the TCP receive buffer (SO_RCVBUF). |
+| maxRequestSize | The maximum size of a request in bytes. |
+| reconnectBackoff | Time to wait before attempting to reconnect. |
+| reconnectBackoffMax | Maximum amount of time in milliseconds to wait when reconnecting. |
+| retryBackoff | Time to wait before attempting to retry a failed request. |
+| maxBlock | Maximum block time which the send is blocked, when the buffer is full. |
+| requestTimeout | Wait time for response of a request. |
+| metadataMaxAge | Maximum time to force a refresh of metadata. |
+| metricsSampleWindow | Time window for a metrics sample to computed over. |
+| metricsNumSamples | Number of samples maintained to compute metrics. |
+| maxInFlightRequestsPerConnection | Maximum number of unacknowledged requests on a single connection. |
+| connectionsMaxIdle | Close idle connections after the number of milliseconds. |
+| transactionTimeout | Timeout for transaction status update from the producer. |
+| enableIdempotence | Exactly one copy of each message is written in the stream when enabled. |
