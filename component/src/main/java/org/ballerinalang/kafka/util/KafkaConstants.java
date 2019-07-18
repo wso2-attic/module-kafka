@@ -144,20 +144,22 @@ public class KafkaConstants {
     public static final String PRODUCER_ENABLE_IDEMPOTENCE_CONFIG = "enableIdempotence";
 
     // SSL Configuration parameters.
-    public static final String SSL_ENABLED_PROTOCOLS_CONFIG = "sslEnabledProtocols";
+    public static final String SECURE_SOCKET = "secureSocket";
+    public static final String KEYSTORE_CONFIG = "keyStore";
+    public static final String TRUSTSTORE_CONFIG = "trustStore";
+    public static final String PROTOCOL_CONFIG = "protocol";
+    public static final String LOCATION_CONFIG = "location";
+    public static final String PASSWORD_CONFIG = "password";
+    public static final String KEYSTORE_TYPE_CONFIG = "keyStoreType";
+    public static final String KEYMANAGER_ALGORITHM_CONFIG = "keyManagerAlgorithm";
+    public static final String TRUSTSTORE_TYPE_CONFIG = "trustStoreType";
+    public static final String TRUSTMANAGER_ALGORITHM_CONFIG = "trustManagerAlgorithm";
+    public static final String ENABLED_PROTOCOLS_CONFIG = "sslProtocolVersions";
     public static final String SECURITY_PROTOCOL_CONFIG = "securityProtocol";
     public static final String SSL_PROTOCOL_CONFIG = "sslProtocol";
     public static final String SSL_PROVIDER_CONFIG = "sslProvider";
     public static final String SSL_KEY_PASSWORD_CONFIG = "sslKeyPassword";
-    public static final String SSL_KEYSTORE_TYPE_CONFIG = "sslKeystoreType";
-    public static final String SSL_KEYSTORE_LOCATION_CONFIG = "sslKeystoreLocation";
-    public static final String SSL_KEYSTORE_PASSWORD_CONFIG = "sslKeystorePassword";
-    public static final String SSL_TRUSTSTORE_TYPE_CONFIG = "sslTruststoreType";
-    public static final String SSL_TRUSTSTORE_LOCATION_CONFIG = "sslTruststoreLocation";
-    public static final String SSL_TRUSTSTORE_PASSWORD_CONFIG = "sslTruststorePassword";
     public static final String SSL_CIPHER_SUITES_CONFIG = "sslCipherSuites";
     public static final String SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG = "sslEndpointIdentificationAlgorithm";
-    public static final String SSL_KEYMANAGER_ALGORITHM_CONFIG = "sslKeymanagerAlgorithm";
-    public static final String SSL_TRUSTMANAGER_ALGORITHM_CONFIG = "sslTrustmanagerAlgorithm";
     public static final String SSL_SECURE_RANDOM_IMPLEMENTATION_CONFIG = "sslSecureRandomImplementation";
 }
