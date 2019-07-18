@@ -46,22 +46,7 @@ import ballerina/system;
 # + connectionsMaxIdle - Close idle connections after the number of milliseconds.
 # + transactionTimeout - Timeout for transaction status update from the producer.
 # + enableIdempotence - Exactly one copy of each message is written in the stream when enabled.
-# + sslEnabledProtocols - The list of protocols enabled for SSL connections.
-# + securityProtocol - Protocol used to communicate with brokers.
-# + sslProtocol - The SSL protocol used to generate the SSLContext. Default setting is TLS, which is fine for most cases. Allowed values in recent JVMs are TLS, TLSv1.1 and TLSv1.2. SSL, SSLv2 and SSLv3 may be supported in older JVMs, but their usage is discouraged due to known security vulnerabilities.
-# + sslProvider - The name of the security provider used for SSL connections. Default value is the default security provider of the JVM.
-# + sslKeyPassword - The password of the private key in the key store file. This is optional for client.
-# + sslKeystoreType - The file format of the key store file. This is optional for client.
-# + sslKeystoreLocation - The location of the key store file. This is optional for client and can be used for two-way authentication for client.
-# + sslKeystorePassword - The store password for the key store file. This is optional for client and only needed if ssl.keystore.location is configured.
-# + sslTruststoreType - The file format of the trust store file.
-# + sslTruststoreLocation - The location of the trust store file.
-# + sslTruststorePassword - The password for the trust store file. If a password is not set access to the truststore is still available, but integrity checking is disabled.
-# + sslCipherSuites - A list of cipher suites. This is a named combination of authentication, encryption, MAC and key exchange algorithm used to negotiate the security settings for a network connection using TLS or SSL network protocol. By default all the available cipher suites are supported.
-# + sslEndpointIdentificationAlgorithm - The endpoint identification algorithm to validate server hostname using server certificate.
-# + sslKeymanagerAlgorithm - The algorithm used by key manager factory for SSL connections. Default value is the key manager factory algorithm configured for the Java Virtual Machine.
-# + sslTrustmanagerAlgorithm - The algorithm used by trust manager factory for SSL connections. Default value is the trust manager factory algorithm configured for the Java Virtual Machine.
-# + sslSecureRandomImplementation - The SecureRandom PRNG implementation to use for SSL cryptography operations.
+# + secureSocket - SSL/TLS related options
 public type ProducerConfig record {|
     string? bootstrapServers = (); // BOOTSTRAP_SERVERS_CONFIG 0
     string? acks = (); // ACKS_CONFIG 1
@@ -72,22 +57,6 @@ public type ProducerConfig record {|
     string? partitionerClass = (); // PARTITIONER_CLASS_CONFIG 6
     string? interceptorClasses = (); // INTERCEPTOR_CLASSES_CONFIG 7
     string? transactionalId = (); // TRANSACTIONAL_ID_CONFIG 8
-    string? securityProtocol = (); // SECURITY_PROTOCOL_CONFIG 9
-    string? sslProtocol = (); // SSL_PROTOCOL_CONFIG 10
-    string? sslProvider = (); // SSL_PROVIDER_CONFIG 11
-    string? sslKeyPassword = (); // SSL_KEY_PASSWORD_CONFIG 12
-    string? sslKeystoreType = (); // SSL_KEYSTORE_TYPE_CONFIG 13
-    string? sslKeystoreLocation = (); // SSL_KEYSTORE_LOCATION_CONFIG 14
-    string? sslKeystorePassword = (); // SSL_KEYSTORE_PASSWORD_CONFIG 15
-    string? sslTruststoreType = (); // SSL_TRUSTSTORE_TYPE_CONFIG 16
-    string? sslTruststoreLocation = (); // SSL_TRUSTSTORE_LOCATION_CONFIG 17
-    string? sslTruststorePassword = (); // SSL_TRUSTSTORE_PASSWORD_CONFIG 18
-    string? sslCipherSuites = (); // SSL_CIPHER_SUITES_CONFIG 19
-    string? sslEndpointIdentificationAlgorithm = (); // SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG 20
-    string? sslKeymanagerAlgorithm = (); // SSL_KEYMANAGER_ALGORITHM_CONFIG 21
-    string? sslTrustmanagerAlgorithm = (); // SSL_TRUSTMANAGER_ALGORITHM_CONFIG 22
-    string? sslSecureRandomImplementation = (); // SSL_SECURE_RANDOM_IMPLEMENTATION_CONFIG 23
-    string? sslEnabledProtocols = (); // SSL_ENABLED_PROTOCOLS_CONFIG 24
 
     int bufferMemory = -1; // BUFFER_MEMORY_CONFIG 0
     int noRetries = -1; // RETRIES_CONFIG 1
@@ -109,6 +78,8 @@ public type ProducerConfig record {|
     int transactionTimeout = -1; // TRANSACTION_TIMEOUT_CONFIG 17
 
     boolean enableIdempotence = false; // ENABLE_IDEMPOTENCE_CONFIG 0
+
+    SecureSocket secureSocket?;
 |};
 
 # Represent a Kafka producer endpoint.

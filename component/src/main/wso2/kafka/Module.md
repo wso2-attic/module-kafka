@@ -52,7 +52,7 @@ Please find the consumer parameters below:
 | partitionAssignmentStrategy | Strategy class for handling the partition assignment among consumers. |
 | metricsRecordingLevel | Metrics recording level. |
 | metricsReporterClasses | Metrics reporter classes. |
-| clientId | ID to be used for server side logging. |
+| clientId | Identifier to be used for server side logging. |
 | interceptorClasses | Interceptor classes to be used before sending records. |
 | isolationLevel | Transactional message reading method. Use "read_committed" to read committed messages only in transactional mode when poll() is called. Use "read_uncommitted" to read all the messages, even the aborted ones. |
 | properties | Additional properties if required. |
@@ -119,12 +119,12 @@ Please find the producer configuration parameters below:
 | bootstrapServers | List of remote server endpoints of Kafka brokers. |
 | acks | Number of acknowledgments. |
 | compressionType | Compression type to be used for messages. |
-| clientID | ID to be used for server side logging. |
+| clientId | Identifier to be used for server side logging. |
 | metricsRecordingLevel | Metrics recording level. |
 | metricReporterClasses | Metrics reporter classes. |
 | partitionerClass | Partitioner class to be used to select partition to which the message is sent. |
 | interceptorClasses | Interceptor classes to be used before sending records. |
-| transactionalID | Transactional ID to be used in transactional delivery. |
+| transactionalId | Transactional ID to be used in transactional delivery. |
 | bufferMemory | Total bytes of memory the producer can use to buffer records. |
 | noRetries | Number of retries to resend a record. |
 | batchSize | Number of records to be batched for a single request. Use 0 for no batching. |

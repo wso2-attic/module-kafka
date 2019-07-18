@@ -291,8 +291,9 @@ public class KafkaUtils {
 
         addBooleanParamIfPresent(ALIAS_DECOUPLE_PROCESSING, bStruct, configParams,
                 ALIAS_DECOUPLE_PROCESSING, false);
-
-        processSSLProperties(bStruct, configParams);
+        if (Objects.nonNull(bStruct.get(KafkaConstants.SECURE_SOCKET))) {
+            processSSLProperties(bStruct, configParams);
+        }
         processDefaultConsumerProperties(configParams);
         return configParams;
     }
@@ -363,42 +364,56 @@ public class KafkaUtils {
 
         addBooleanParamIfPresent(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, bStruct,
                 configParams, KafkaConstants.PRODUCER_ENABLE_IDEMPOTENCE_CONFIG, false);
-        processSSLProperties(bStruct, configParams);
+        if (Objects.nonNull(bStruct.get(KafkaConstants.SECURE_SOCKET))) {
+            processSSLProperties(bStruct, configParams);
+        }
         processDefaultProducerProperties(configParams);
         return configParams;
     }
 
     private static void processSSLProperties(BMap<String, BValue> bStruct, Properties configParams) {
-        addStringParamIfPresent(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_ENABLED_PROTOCOLS_CONFIG);
-        addStringParamIfPresent(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, bStruct, configParams,
+        BMap<String, BValue> secureSocketStruct = (BMap<String, BValue>) bStruct.get(KafkaConstants.SECURE_SOCKET);
+        addStringParamIfPresent(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.KEYSTORE_CONFIG), configParams,
+                KafkaConstants.KEYSTORE_TYPE_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.KEYSTORE_CONFIG), configParams,
+                KafkaConstants.LOCATION_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.KEYSTORE_CONFIG), configParams,
+                KafkaConstants.PASSWORD_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_KEYMANAGER_ALGORITHM_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.KEYSTORE_CONFIG), configParams,
+                KafkaConstants.KEYMANAGER_ALGORITHM_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.TRUSTSTORE_CONFIG), configParams,
+                KafkaConstants.TRUSTSTORE_TYPE_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.TRUSTSTORE_CONFIG), configParams,
+                KafkaConstants.LOCATION_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.TRUSTSTORE_CONFIG), configParams,
+                KafkaConstants.PASSWORD_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_TRUSTMANAGER_ALGORITHM_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.TRUSTSTORE_CONFIG), configParams,
+                KafkaConstants.TRUSTMANAGER_ALGORITHM_CONFIG);
+        addStringParamIfPresent(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.PROTOCOL_CONFIG), configParams,
                 KafkaConstants.SECURITY_PROTOCOL_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_PROTOCOL_CONFIG, bStruct, configParams,
+        addStringParamIfPresent(SslConfigs.SSL_PROTOCOL_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.PROTOCOL_CONFIG), configParams,
                 KafkaConstants.SSL_PROTOCOL_CONFIG);
+        addStringParamIfPresent(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG,
+                (BMap<String, BValue>) secureSocketStruct.get(KafkaConstants.PROTOCOL_CONFIG), configParams,
+                KafkaConstants.ENABLED_PROTOCOLS_CONFIG);
         addStringParamIfPresent(SslConfigs.SSL_PROVIDER_CONFIG, bStruct, configParams,
                 KafkaConstants.SSL_PROVIDER_CONFIG);
         addStringParamIfPresent(SslConfigs.SSL_KEY_PASSWORD_CONFIG, bStruct, configParams,
                 KafkaConstants.SSL_KEY_PASSWORD_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_KEYSTORE_TYPE_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_KEYSTORE_LOCATION_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_KEYSTORE_PASSWORD_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_TRUSTSTORE_TYPE_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_TRUSTSTORE_LOCATION_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_TRUSTSTORE_PASSWORD_CONFIG);
         addStringParamIfPresent(SslConfigs.SSL_CIPHER_SUITES_CONFIG, bStruct, configParams,
                 KafkaConstants.SSL_CIPHER_SUITES_CONFIG);
         addStringParamIfPresent(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, bStruct, configParams,
                 KafkaConstants.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_KEYMANAGER_ALGORITHM_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_KEYMANAGER_ALGORITHM_CONFIG);
-        addStringParamIfPresent(SslConfigs.SSL_TRUSTMANAGER_ALGORITHM_CONFIG, bStruct, configParams,
-                KafkaConstants.SSL_TRUSTMANAGER_ALGORITHM_CONFIG);
         addStringParamIfPresent(SslConfigs.SSL_SECURE_RANDOM_IMPLEMENTATION_CONFIG, bStruct, configParams,
                 KafkaConstants.SSL_SECURE_RANDOM_IMPLEMENTATION_CONFIG);
     }

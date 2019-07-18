@@ -24,13 +24,22 @@ kafka:ProducerConfig producerConfigs = {
     clientId:"ssl-producer",
     acks:"all",
     noRetries:3,
-    sslEnabledProtocols:"TLSv1.2,TLSv1.1,TLSv1",
-    securityProtocol:"SSL",
-    sslTruststoreLocation:"<FILE-PATH>/kafka.client.truststore.jks",
-    sslTruststorePassword:"test1234",
-    sslKeystoreLocation:"<FILE-PATH>/kafka.client.keystore.jks",
-    sslKeystorePassword:"test1234",
-    sslKeyPassword:"test1234"
+    secureSocket: {
+        keyStore:{
+            location:"<FILE_PATH>/kafka.client.keystore.jks",
+            password:"test1234"
+        },
+        trustStore: {
+            location:"<FILE_PATH>/kafka.client.truststore.jks",
+            password:"test1234"
+        },
+        protocol: {
+            sslProtocol:"TLS",
+            sslProtocolVersions:"TLSv1.2,TLSv1.1,TLSv1",
+            securityProtocol:"SSL"
+        },
+        sslKeyPassword:"test1234"
+    }
 };
 
 kafka:ConsumerConfig consumerConfig = {
@@ -39,12 +48,22 @@ kafka:ConsumerConfig consumerConfig = {
     clientId: "ssl-consumer",
     offsetReset:"earliest",
     topics:["test-topic-ssl"],
-    securityProtocol:"SSL",
-    sslTruststoreLocation:"<FILE-PATH>/kafka.client.truststore.jks",
-    sslTruststorePassword:"test1234",
-    sslKeystoreLocation:"<FILE-PATH>/kafka.client.keystore.jks",
-    sslKeystorePassword:"test1234",
-    sslKeyPassword:"test1234"
+    secureSocket: {
+        keyStore:{
+            location:"<FILE_PATH>/kafka.client.keystore.jks",
+            password:"test1234"
+        },
+        trustStore: {
+            location:"<FILE_PATH>/kafka.client.truststore.jks",
+            password:"test1234"
+        },
+        protocol: {
+            sslProtocol:"TLS",
+            sslProtocolVersions:"TLSv1.2,TLSv1.1,TLSv1",
+            securityProtocol:"SSL"
+        },
+        sslKeyPassword:"test1234"
+    }
 };
 
 kafka:ProducerConfig producerNegativeConfigs = {

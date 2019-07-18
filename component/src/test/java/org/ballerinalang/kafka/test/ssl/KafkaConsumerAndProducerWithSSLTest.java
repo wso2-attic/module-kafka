@@ -62,7 +62,7 @@ public class KafkaConsumerAndProducerWithSSLTest {
     private String message = "Hello World SSL Test";
 
     //Constants
-    private String filePath = "<FILE-PATH>";
+    private String filePath = "<FILE_PATH>";
     private String keystoresAndTruststores = "keystores-truststores";
 
     @BeforeClass
