@@ -1,5 +1,13 @@
 [![Build Status](https://travis-ci.org/wso2-ballerina/module-kafka.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-kafka)
 
+## Deprecated
+
+Please note that the module kafka is now deprecated since the kafka is now packed with ballerina distribution. Kafka can be directly imported using
+
+```ballerina
+import ballerina/kafka;
+```
+
 # **Ballerina Kafka Client Endpoint**
 
 Ballerina Kafka Client Endpoint is used to connect Ballerina with Kafka Brokers. With this Kafka Client Endpoint, Ballerina can act as Kafka Consumers and Kafka Producers.
